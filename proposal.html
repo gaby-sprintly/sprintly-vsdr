@@ -8,7 +8,6 @@
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="css/design-system.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 body { display: flex; }
 .main { padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
@@ -186,6 +185,9 @@ body { display: flex; }
 .add-sec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .add-sec-option { padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; text-align: center; transition: all 0.15s; }
 .add-sec-option:hover { border-color: var(--green); background: rgba(78,203,113,0.05); }
+.add-sec-option.selected { border-color: #4ECB71; background: rgba(78,203,113,0.1); box-shadow: inset 0 0 0 2px rgba(78,203,113,0.3); }
+.add-sec-option.selected::after { content: '✓'; position: absolute; top: 6px; right: 8px; color: #4ECB71; font-size: 14px; font-weight: 700; }
+.add-sec-option { position: relative; }
 .add-sec-icon { font-size: 24px; margin-bottom: 6px; }
 .add-sec-label { font-size: 13px; font-weight: 600; color: var(--n50); }
 .add-sec-desc { font-size: 11px; color: var(--n400); margin-top: 2px; }
@@ -242,17 +244,21 @@ body { display: flex; }
   <div class="sp-body" id="spBody"></div>
 </div>
 
-<!-- Add Section Modal -->
+<!-- Add Section Modal (multi-select) -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal-card" style="max-width:560px">
-    <h3 class="modal-title">Add Section</h3>
+  <div class="modal-card" style="max-width:600px">
+    <h3 class="modal-title">Add Sections</h3>
+    <p style="color:#64748B;font-size:13px;margin-bottom:16px">Select one or more section types to add.</p>
     <div class="add-sec-grid" id="addGrid"></div>
-    <div class="modal-actions"><button class="btn-secondary" onclick="closeAddModal()">Cancel</button></div>
+    <div class="add-selected" id="addSelected" style="display:none;margin-top:16px;padding:12px 16px;background:rgba(78,203,113,0.06);border:1px solid rgba(78,203,113,0.2);border-radius:4px;font-size:13px;color:#4ECB71"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+      <button class="sp-btn save" id="btnAddSecs" onclick="addSelectedSections()" style="display:none">Add Selected</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-<div id="pdfBox" style="position:absolute;left:-9999px;top:0;width:900px"></div>
 
 <script src="js/supabase-client.js"></script>
 <script src="js/proposal-data.js"></script>
@@ -488,20 +494,65 @@ async function sendCR(id){
   try{var cr=await createChangeRequest(id,P.id,msg,'Yousra');crs.push(cr);var s=secs.find(function(x){return x.id===id;});if(s)s.status='change_requested';renderAll();openPanel(id);showToast('Sent to Gaby','success');}catch(e){showToast('Failed','error');}
 }
 
-// Add/Delete
+// Add/Delete — multi-select
+var selectedTypes = [];
+
 function openAddModal(){
-  document.getElementById('addGrid').innerHTML=SECTION_TYPES.map(function(t){return '<div class="add-sec-option" onclick="addSec(\''+t.type+'\')"><div class="add-sec-icon">'+t.icon+'</div><div class="add-sec-label">'+t.label+'</div><div class="add-sec-desc">'+t.desc+'</div></div>';}).join('');
+  selectedTypes = [];
+  document.getElementById('addGrid').innerHTML=SECTION_TYPES.map(function(t){
+    return '<div class="add-sec-option" data-type="'+t.type+'" onclick="toggleAddType(this,\''+t.type+'\')">' +
+      '<div class="add-sec-icon">'+t.icon+'</div><div class="add-sec-label">'+t.label+'</div><div class="add-sec-desc">'+t.desc+'</div></div>';
+  }).join('');
+  updateAddUI();
   document.getElementById('addModal').classList.add('open');
 }
-function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
+function closeAddModal(){document.getElementById('addModal').classList.remove('open');selectedTypes=[];}
 document.getElementById('addModal').addEventListener('click',function(e){if(e.target.id==='addModal')closeAddModal();});
 
-async function addSec(type){
-  closeAddModal();var info=SECTION_TYPES.find(function(t){return t.type===type;})||{};
-  try{
-    var s=await createSection(P.id,{sort_order:secs.length+1,title:info.label||type,content_type:type,content:type==='text'||type==='callout'?'':null,content_json:{},status:'pending'});
-    if(s){secs.push(s);renderAll();selectSection(s.id);showToast('Added','success');}
-  }catch(e){showToast('Failed','error');}
+function toggleAddType(el, type) {
+  var idx = selectedTypes.indexOf(type);
+  if (idx === -1) { selectedTypes.push(type); el.classList.add('selected'); }
+  else { selectedTypes.splice(idx, 1); el.classList.remove('selected'); }
+  updateAddUI();
+}
+
+function updateAddUI() {
+  var sel = document.getElementById('addSelected');
+  var btn = document.getElementById('btnAddSecs');
+  if (selectedTypes.length === 0) {
+    sel.style.display = 'none'; btn.style.display = 'none';
+  } else {
+    var names = selectedTypes.map(function(t){ var info = SECTION_TYPES.find(function(x){return x.type===t;}); return info ? info.label : t; });
+    sel.style.display = 'block'; btn.style.display = 'inline-flex';
+    sel.textContent = selectedTypes.length + ' selected: ' + names.join(', ');
+    btn.textContent = 'Add ' + selectedTypes.length + ' Section' + (selectedTypes.length > 1 ? 's' : '');
+  }
+}
+
+async function addSelectedSections() {
+  if (!selectedTypes.length) return;
+  var btn = document.getElementById('btnAddSecs');
+  btn.disabled = true; btn.textContent = 'Adding...';
+  var added = [];
+  try {
+    for (var i = 0; i < selectedTypes.length; i++) {
+      var type = selectedTypes[i];
+      var info = SECTION_TYPES.find(function(t){return t.type===type;}) || {};
+      var s = await createSection(P.id, {
+        sort_order: secs.length + 1 + i,
+        title: info.label || type,
+        content_type: type,
+        content: type==='text'||type==='callout' ? '' : null,
+        content_json: {},
+        status: 'pending'
+      });
+      if (s) { secs.push(s); added.push(s); }
+    }
+    closeAddModal(); renderAll();
+    if (added.length) selectSection(added[0].id);
+    showToast(added.length + ' section' + (added.length>1?'s':'') + ' added', 'success');
+  } catch(e) { showToast('Failed: ' + e.message, 'error'); }
+  finally { btn.disabled = false; }
 }
 
 async function delSec(id){
@@ -519,31 +570,24 @@ function saved(){var el=document.getElementById('saveInd');el.textContent='Saved
 function saving(){var el=document.getElementById('saveInd');el.textContent='Saving...';el.className='save-ind show';}
 function offlineSaved(){var el=document.getElementById('saveInd');el.textContent='Offline';el.className='save-ind show offline';}
 
-// PDF — exact same as client view
-async function exportPDF(){
-  showToast('Generating PDF...','success');
-  var c=document.getElementById('pdfBox');
-  var css='<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:General Sans,Helvetica Neue,Arial,sans-serif;color:#0F172A}.cover-page{background:linear-gradient(135deg,#0F1923,#162030,#1a2942);border-radius:12px;padding:80px 60px;min-height:500px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}.cover-brand{margin-bottom:48px}.cover-logo{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;letter-spacing:4px;text-transform:uppercase}.cover-logo span{color:#94A3B8;font-weight:400;margin-left:4px}.cover-title{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:48px;color:#fff;line-height:1.15;margin-bottom:16px;max-width:650px}.cover-subtitle{font-size:20px;color:#94A3B8;margin-bottom:40px}.cover-meta{display:flex;gap:40px;flex-wrap:wrap}.cover-meta-item{display:flex;flex-direction:column;gap:4px}.cover-meta-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#64748B}.cover-meta-item span:last-child{font-size:15px;color:#F8FAFC;font-weight:500}.cover-accent-bar{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4ECB71,#2DD4BF,#F59E0B)}.sec-text p{font-size:16px;line-height:1.9;color:#334155;margin-bottom:16px}.sec-callout-inline{border-left:3px solid #F59E0B;padding:16px 20px;margin:24px 0;background:rgba(245,158,11,0.06);border-radius:0 4px 4px 0}.sec-callout-inline p{font-style:italic;color:#334155;margin:0}.sec-callout-inline cite{color:#64748B}.sec-table-wrap{border-radius:8px;border:1px solid rgba(0,0,0,0.08);overflow:hidden}.sec-table{width:100%;border-collapse:collapse;font-size:14px}.sec-table th{padding:14px 18px;background:#F8FAFC;text-align:left;font-weight:600;color:#0F172A;border-bottom:1px solid rgba(0,0,0,0.08);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}.sec-table td{padding:12px 18px;border-bottom:1px solid rgba(0,0,0,0.04);color:#475569}.sec-table tr:last-child td{border-bottom:none}.sec-table .rec-col{background:rgba(78,203,113,0.08)}.sec-table th.rec-col{color:#16a34a}.rec-badge{font-size:9px;background:#4ECB71;color:#fff;padding:2px 6px;border-radius:2px;margin-left:6px}.sec-pricing .price-row td{font-weight:700;font-size:16px;color:#0F172A;font-family:Space Grotesk,sans-serif}.sec-metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.metric-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:24px;border-top:3px solid var(--accent,#4ECB71);-webkit-print-color-adjust:exact;print-color-adjust:exact}.metric-icon svg{width:28px;height:28px}.metric-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:36px;color:#0F172A;line-height:1;margin-bottom:4px}.metric-label{font-size:13px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:0.5px}.metric-sub{font-size:12px;color:#94A3B8;margin-top:8px;line-height:1.5}.sec-roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.roi-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:20px;text-align:center}.roi-label{font-size:12px;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}.roi-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#4ECB71}.roi-conservative .roi-value{color:#64748B}.roi-stretch .roi-value{color:#F59E0B}.sec-gantt{padding:20px 0}.gantt-header{display:flex;padding:0 0 12px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:12px}.gantt-header span{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748B}.gantt-header span:first-child{width:140px;flex-shrink:0}.gantt-row{display:flex;align-items:center;padding:8px 0}.gantt-label{width:140px;flex-shrink:0;font-size:14px;font-weight:500;color:#0F172A}.gantt-track{flex:1;height:36px;background:rgba(0,0,0,0.03);border-radius:6px;position:relative;overflow:hidden}.gantt-bar{position:absolute;top:3px;bottom:3px;border-radius:4px;display:flex;align-items:center;justify-content:center;min-width:40px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.gantt-bar-label{font-size:11px;font-weight:600;color:rgba(0,0,0,0.7)}.gantt-markers{display:flex;position:relative;margin-top:8px;padding-left:140px;height:20px}.gantt-marker{position:absolute;font-size:10px;color:#94A3B8;transform:translateX(-50%)}.sec-callout{border-left:4px solid #F59E0B;padding:28px 32px;background:rgba(245,158,11,0.04);border-radius:0 8px 8px 0;position:relative}.callout-mark{font-family:Georgia,serif;font-size:72px;color:rgba(245,158,11,0.15);position:absolute;top:-12px;left:16px;line-height:1}.sec-callout p{font-size:20px;font-style:italic;line-height:1.7;color:#334155;margin:0;position:relative;z-index:1}.sec-callout cite{display:block;margin-top:16px;font-size:15px;color:#64748B;font-style:normal;position:relative;z-index:1}.sec-image img{width:100%;height:auto;border-radius:8px}.sec-divider{padding:24px 0}.divider-line{height:2px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.06),rgba(78,203,113,0.2),rgba(0,0,0,0.06),transparent)}.sec-empty{display:none}</style>';
+// PDF — use the client view page which already renders perfectly
+function exportPDF(){
+  // Ensure share token exists so client view can load the proposal
+  if (!P.share_token) {
+    var token = crypto.randomUUID();
+    updateProposal(P.id, {share_token: token}).then(function(){
+      P.share_token = token;
+      doExportPDF();
+    }).catch(function(){ showToast('Failed to generate export link','error'); });
+  } else {
+    doExportPDF();
+  }
+}
 
-  var html=css+'<div style="max-width:800px;margin:0 auto">';
-  // Cover
-  var cover=secs.find(function(s){return s.content_type==='cover';});
-  html+='<div style="page-break-after:always">'+(cover?renderCoverPage(P,cover):renderCoverPage(P,{content_json:{tagline:P.title,subtitle:'Prepared for '+(P.client_name||'Client')}}))+'</div>';
-  // Sections
-  var num=0;
-  secs.forEach(function(s){
-    if(s.content_type==='cover')return;
-    if(s.content_type==='divider'){html+='<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.08),rgba(78,203,113,0.2),rgba(0,0,0,0.08),transparent);margin:32px 0"></div>';return;}
-    num++;
-    html+='<div style="margin-bottom:48px;page-break-inside:avoid">';
-    html+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px"><div style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;background:rgba(78,203,113,0.1);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center">'+String(num).padStart(2,'0')+'</div><h2 style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#0F172A">'+esc(s.title)+'</h2></div>';
-    html+=renderSectionContent(s,P)+'</div>';
-  });
-  html+='<div style="text-align:center;padding:40px 0;color:#94A3B8;font-size:13px;border-top:1px solid rgba(0,0,0,0.06)"><p>Prepared by <strong style="color:#0F172A">Sprintly Partners</strong></p></div></div>';
-
-  c.innerHTML=html;c.style.display='block';
-  try{await html2pdf().set({margin:[10,10],filename:(P.slug||'proposal')+'.pdf',image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,useCORS:true,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['avoid-all','css','legacy']}}).from(c).save();showToast('PDF exported!','success');}catch(e){showToast('PDF failed','error');}
-  finally{c.style.display='none';}
+function doExportPDF(){
+  showToast('Opening proposal for PDF export...','success');
+  // Open the client view with autoexport flag — it triggers PDF download automatically
+  window.open('proposal-view.html?token=' + P.share_token + '&autoexport=1', '_blank');
 }
 
 async function generateShareLink(){
