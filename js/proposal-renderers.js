@@ -23,14 +23,17 @@ function renderCoverPage(proposal, section) {
   const subtitle = cj.subtitle || ('Prepared for ' + (proposal.client_name || 'Client'));
   const date = new Date(proposal.created_at || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   const ref = proposal.proposal_index || '';
+  const showLogo = cj.show_logo !== false;
+  const align = cj.align || 'left';
+  const alignStyle = align === 'center' ? 'align-items:center;text-align:center;' : 'align-items:flex-start;text-align:left;';
 
-  return '<div class="cover-page">' +
-    '<div class="cover-brand">' +
+  return '<div class="cover-page" style="' + alignStyle + '">' +
+    (showLogo ? '<div class="cover-brand">' +
       '<div class="cover-logo">SPRINTLY<span>PARTNERS</span></div>' +
-    '</div>' +
+    '</div>' : '') +
     '<div class="cover-content">' +
-      '<h1 class="cover-title">' + escHtml(tagline) + '</h1>' +
-      '<p class="cover-subtitle">' + escHtml(subtitle) + '</p>' +
+      '<h1 class="cover-title" style="text-align:' + align + '">' + escHtml(tagline) + '</h1>' +
+      '<p class="cover-subtitle" style="text-align:' + align + '">' + escHtml(subtitle) + '</p>' +
       '<div class="cover-meta">' +
         '<div class="cover-meta-item"><span class="cover-meta-label">Date</span><span>' + date + '</span></div>' +
         '<div class="cover-meta-item"><span class="cover-meta-label">Reference</span><span>' + escHtml(ref) + '</span></div>' +
