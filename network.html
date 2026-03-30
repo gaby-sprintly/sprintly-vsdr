@@ -6,7 +6,7 @@
 <title>Network — VSDR</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -15,60 +15,60 @@
   --charcoal: #0F1923;
   --teal: #2DD4BF;
   --amber: #F59E0B;
-  --red: #EF4444;
+  --coral: #EF4444;
+  --gold: #FBBF24;
   --n50: #F8FAFC;
   --n400: #94A3B8;
   --n800: #1E293B;
   --surface: rgba(255,255,255,0.03);
   --border: rgba(255,255,255,0.06);
   --sidebar-w: 240px;
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'General Sans', sans-serif;
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'General Sans', sans-serif;
 }
 
-html, body {
-  height: 100%;
+html { background: var(--charcoal); }
+
+body {
+  font-family: var(--body);
   background: var(--charcoal);
   color: var(--n50);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
 }
 
 a { text-decoration: none; color: inherit; }
 
-/* ── Sidebar ── */
+/* ── SIDEBAR ── */
 .sidebar {
-  position: fixed;
-  top: 0; left: 0;
   width: var(--sidebar-w);
-  height: 100%;
+  min-height: 100vh;
   background: var(--charcoal);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
   z-index: 100;
-  transition: transform 0.25s ease;
+  padding: 32px 0 24px;
 }
 
-.sidebar-brand { padding: 32px 24px 0; }
+.sidebar-brand { padding: 0 24px; margin-bottom: 8px; }
 
 .sidebar-logo {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.sidebar-logo h1 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 22px;
-  color: #fff;
-  letter-spacing: 1px;
-}
-
 .pulse-dot {
-  width: 8px; height: 8px;
+  width: 8px;
+  height: 8px;
   background: var(--green);
   border-radius: 50%;
   animation: pulse 2s ease-in-out infinite;
@@ -79,736 +79,54 @@ a { text-decoration: none; color: inherit; }
   50% { transform: scale(1.2); opacity: 1.0; }
 }
 
-.sidebar-subtitle {
-  font-family: var(--font-body);
+.sidebar-sub {
+  font-family: var(--body);
   font-size: 11px;
   color: var(--n400);
   letter-spacing: 2px;
   text-transform: uppercase;
-  font-variant: small-caps;
-  margin-top: 6px;
+  padding: 0 24px;
+  margin-top: 4px;
 }
 
-.sidebar-nav { margin-top: 40px; flex: 1; }
-
-.sidebar-nav a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--n400);
-  border-left: 3px solid transparent;
-  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.sidebar-nav a:hover { color: #fff; }
-
-.sidebar-nav a.active {
-  color: #fff;
-  border-left-color: var(--green);
-  background: rgba(78,203,113,0.06);
-}
-
-.sidebar-nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
-
-.sidebar-version { padding: 24px; font-size: 12px; color: var(--n400); }
-
-.sidebar-close {
-  display: none;
-  position: absolute;
-  top: 20px; right: 16px;
-  background: none; border: none;
-  color: var(--n400);
-  font-size: 24px;
-  cursor: pointer;
-  line-height: 1;
-  font-family: var(--font-body);
-}
-
-/* ── Hamburger ── */
-.hamburger {
-  display: none;
-  position: fixed;
-  top: 16px; left: 16px;
-  z-index: 90;
-  background: none; border: none;
-  cursor: pointer; padding: 4px;
-}
-
-.hamburger span {
-  display: block;
-  width: 22px; height: 2px;
-  background: var(--n400);
-  margin: 5px 0;
-  transition: background 0.15s ease;
-}
-
-.hamburger:hover span { background: #fff; }
-
-/* ── Overlay ── */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 99;
-}
-
-.sidebar-overlay.open { display: block; }
-
-/* ── Main ── */
-.main {
-  margin-left: var(--sidebar-w);
-  min-height: 100%;
-  padding: 48px;
-}
-
-.main-inner { max-width: 1200px; }
-
-/* ── Header ── */
-.page-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 36px;
-  color: var(--n50);
-  line-height: 1.2;
-}
-
-.page-subtitle {
-  font-family: var(--font-body);
-  font-weight: 400;
-  font-size: 16px;
-  color: var(--n400);
-  margin-top: 8px;
-}
-
-.sync-time {
-  font-family: var(--font-body);
-  font-size: 12px;
-  color: var(--n400);
-  margin-top: 6px;
-  opacity: 0.7;
-}
-
-/* ── Stats Bar ── */
-.stats-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+.sidebar-nav {
   margin-top: 40px;
-}
-
-.stat-block {
-  background: var(--n800);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  border-radius: 2px;
-  padding: 24px;
-  text-align: center;
-}
-
-.stat-value {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 36px;
-  color: var(--n50);
-  line-height: 1;
-}
-
-.stat-value.green { color: var(--green); }
-.stat-value.red { color: var(--red); }
-
-.stat-label {
-  font-family: var(--font-body);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--n400);
-  margin-top: 8px;
-}
-
-.stat-note {
-  font-size: 11px;
-  color: var(--n400);
-  opacity: 0.6;
-  margin-top: 4px;
-}
-
-/* ── Sections ── */
-.section {
-  margin-top: 48px;
-}
-
-.section-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 20px;
-  color: var(--n50);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.section-title .count-badge {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
-  background: rgba(255,255,255,0.06);
-  color: var(--n400);
-  padding: 2px 10px;
-  border-radius: 10px;
-}
-
-/* ── Glass Cards ── */
-.glass-card {
-  background: var(--n800);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  border-radius: 2px;
-  padding: 24px;
-  margin-bottom: 12px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255,255,255,0.12);
-}
-
-/* ── Empty State ── */
-.empty-state {
-  background: var(--n800);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  border-radius: 2px;
-  padding: 40px;
-  text-align: center;
-}
-
-.empty-state .check-icon {
-  width: 48px; height: 48px;
-  border: 2px solid var(--green);
-  border-radius: 50%;
-  margin: 0 auto 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.empty-state .check-icon::after {
-  content: '';
-  width: 12px; height: 20px;
-  border-right: 2px solid var(--green);
-  border-bottom: 2px solid var(--green);
-  transform: rotate(45deg) translate(-2px, -2px);
-}
-
-.empty-state p {
-  font-family: var(--font-body);
-  font-size: 15px;
-  color: var(--n400);
-  line-height: 1.6;
-}
-
-.empty-state .empty-hint {
-  font-size: 13px;
-  color: var(--n400);
-  opacity: 0.6;
-  margin-top: 4px;
-}
-
-/* ── Follow-up Cards ── */
-.followup-card {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.followup-card .border-bar {
-  width: 3px;
-  min-height: 100%;
-  border-radius: 2px;
-  flex-shrink: 0;
-  align-self: stretch;
-}
-
-.border-bar.overdue { background: var(--red); box-shadow: 0 0 8px rgba(239,68,68,0.3); }
-.border-bar.today { background: var(--amber); box-shadow: 0 0 8px rgba(245,158,11,0.3); }
-.border-bar.upcoming { background: var(--teal); box-shadow: 0 0 8px rgba(45,212,191,0.3); }
-.border-bar.vip { background: var(--amber); box-shadow: 0 0 8px rgba(245,158,11,0.25); }
-
-.followup-content { flex: 1; }
-
-.followup-name {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 16px;
-  color: var(--n50);
-}
-
-.followup-company {
-  font-size: 14px;
-  color: var(--n400);
-  margin-top: 2px;
-}
-
-.followup-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--n400);
-}
-
-.followup-meta span { display: flex; align-items: center; gap: 4px; }
-
-.followup-reason {
-  font-size: 13px;
-  color: var(--n400);
-  margin-top: 6px;
-  font-style: italic;
-}
-
-.email-link {
-  color: var(--teal);
-  font-size: 13px;
-  transition: color 0.15s;
-}
-
-.email-link:hover { color: #fff; }
-
-/* ── VIP Cards ── */
-.vip-card {
-  position: relative;
-}
-
-.vip-name {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 20px;
-  color: var(--n50);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.star-icon {
-  width: 16px; height: 16px;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.star-icon::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 0; height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 6px solid var(--amber);
-}
-
-.star-icon::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 0; height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 6px solid var(--amber);
-}
-
-.vip-title {
-  font-size: 14px;
-  color: var(--n400);
-  margin-top: 4px;
-}
-
-.vip-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 10px;
-  font-size: 13px;
-  color: var(--n400);
-}
-
-.vip-notes {
-  font-size: 13px;
-  color: var(--teal);
-  margin-top: 8px;
-  font-style: italic;
-  opacity: 0.85;
-}
-
-/* ── Suggested Intros ── */
-.intro-card {
-  position: relative;
-}
-
-.intro-header {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.intro-person {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 18px;
-  color: var(--n50);
-}
-
-.intro-connector {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(45,212,191,0.15);
-  color: var(--teal);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-.intro-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.intro-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 3px 10px;
-  border-radius: 10px;
-}
-
-.intro-status.draft {
-  background: rgba(245,158,11,0.12);
-  color: var(--amber);
-  box-shadow: 0 0 8px rgba(245,158,11,0.15);
-}
-
-.intro-status.approved {
-  background: rgba(78,203,113,0.12);
-  color: var(--green);
-  box-shadow: 0 0 8px rgba(78,203,113,0.15);
-}
-
-.intro-status.sent {
-  background: rgba(78,203,113,0.12);
-  color: var(--green);
-  box-shadow: 0 0 8px rgba(78,203,113,0.15);
-}
-
-.intro-status.declined {
-  background: rgba(148,163,184,0.12);
-  color: var(--n400);
-}
-
-.intro-id {
-  font-family: var(--font-body);
-  font-size: 11px;
-  color: var(--n400);
-  opacity: 0.6;
-}
-
-.intro-rationale {
-  font-size: 14px;
-  color: var(--n400);
-  line-height: 1.6;
-  margin-top: 12px;
-}
-
-.intro-email-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 14px;
-  padding: 6px 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  color: var(--n400);
-  font-family: var(--font-body);
-  font-size: 13px;
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-
-.intro-email-toggle:hover {
-  color: var(--n50);
-  background: rgba(255,255,255,0.06);
-}
-
-.intro-email-toggle .toggle-arrow {
-  display: inline-block;
-  transition: transform 0.2s ease;
-  font-size: 10px;
-}
-
-.intro-email-toggle.open .toggle-arrow {
-  transform: rotate(90deg);
-}
-
-.intro-email-body {
-  display: none;
-  margin-top: 12px;
-  padding: 16px 20px;
-  background: rgba(255,255,255,0.02);
-  border-left: 3px solid var(--teal);
-  border-radius: 0 2px 2px 0;
-  font-family: 'Space Grotesk', monospace;
-  font-size: 13px;
-  color: var(--n400);
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-
-.intro-email-body.open {
-  display: block;
-}
-
-.intro-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.btn-approve {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  background: rgba(78,203,113,0.15);
-  border: 1px solid rgba(78,203,113,0.3);
-  color: var(--green);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.btn-approve:hover {
-  background: rgba(78,203,113,0.25);
-  border-color: rgba(78,203,113,0.5);
-}
-
-.btn-edit {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--n400);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.btn-edit:hover {
-  color: var(--n50);
-  border-color: rgba(255,255,255,0.2);
-}
-
-.section-subtitle {
-  font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--n400);
-  margin-top: -12px;
-  margin-bottom: 20px;
-  opacity: 0.8;
-}
-
-.border-bar.draft { background: var(--amber); box-shadow: 0 0 8px rgba(245,158,11,0.3); }
-.border-bar.approved, .border-bar.sent { background: var(--green); box-shadow: 0 0 8px rgba(78,203,113,0.3); }
-.border-bar.declined { background: var(--n400); box-shadow: 0 0 4px rgba(148,163,184,0.2); }
-
-/* ── Data Health ── */
-.health-bars {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 8px;
+  gap: 2px;
 }
 
-.health-row {
+.nav-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-}
-
-.health-label {
-  font-size: 13px;
-  color: var(--n400);
-  min-width: 140px;
-  flex-shrink: 0;
-}
-
-.health-bar-track {
-  flex: 1;
-  height: 8px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.health-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.6s ease;
-}
-
-.health-bar-fill.good { background: var(--green); }
-.health-bar-fill.bad { background: var(--red); }
-
-.health-pct {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 13px;
-  min-width: 40px;
-  text-align: right;
-}
-
-.health-pct.good { color: var(--green); }
-.health-pct.bad { color: var(--red); }
-
-.health-note {
-  font-size: 13px;
-  color: var(--n400);
-  margin-top: 16px;
-  line-height: 1.6;
-  opacity: 0.8;
-}
-
-/* ── Enrichment List ── */
-.enrichment-list {
-  margin-top: 16px;
-}
-
-.enrichment-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-
-.enrichment-item:last-child { border-bottom: none; }
-
-.enrichment-name {
-  color: var(--n50);
+  gap: 12px;
+  padding: 10px 24px;
+  font-family: var(--body);
   font-weight: 500;
-}
-
-.enrichment-company {
+  font-size: 14px;
   color: var(--n400);
-  margin-left: 8px;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
 
-.enrichment-missing {
-  color: var(--n400);
-  font-size: 12px;
-  opacity: 0.7;
+.nav-item:hover { color: #fff; }
+
+.nav-item.active {
+  color: #fff;
+  border-left-color: var(--green);
+  background: rgba(78,203,113,0.08);
 }
 
-/* ── Error State ── */
-.error-state {
-  background: rgba(239,68,68,0.08);
-  border: 1px solid rgba(239,68,68,0.2);
-  border-radius: 2px;
-  padding: 40px;
-  text-align: center;
-  margin-top: 40px;
-}
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-.error-state p {
-  color: var(--red);
-  font-size: 15px;
-}
-
-.error-state .error-detail {
-  color: var(--n400);
-  font-size: 13px;
-  margin-top: 8px;
-}
-
-/* ── Loading State ── */
-.loading-state {
-  text-align: center;
-  padding: 80px 0;
-  color: var(--n400);
-  font-size: 15px;
-}
-
-.loading-dot {
-  display: inline-block;
-  width: 8px; height: 8px;
-  background: var(--green);
-  border-radius: 50%;
-  margin: 0 3px;
-  animation: loadPulse 1.2s ease-in-out infinite;
-}
-
-.loading-dot:nth-child(2) { animation-delay: 0.2s; }
-.loading-dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes loadPulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
-}
-
-/* ── Footer ── */
-.page-footer {
-  margin-top: 48px;
-  font-family: var(--font-body);
+.sidebar-version {
+  padding: 0 27px;
+  font-family: var(--body);
   font-size: 12px;
   color: var(--n400);
-}
-
-/* ── Mobile ── */
-@media (max-width: 767px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-close { display: block; }
-  .hamburger { display: block; }
-  .main { margin-left: 0; padding: 24px; padding-top: 64px; }
-  .page-title { font-size: 28px; }
-  .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .health-row { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .health-label { min-width: auto; }
-}
-
-@media (min-width: 768px) and (max-width: 1100px) {
-  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  opacity: 0.5;
 }
 
 .nav-group { display: flex; flex-direction: column; }
@@ -823,69 +141,530 @@ a { text-decoration: none; color: inherit; }
   color: var(--n400);
   transition: all 0.2s ease;
 }
-.nav-sub:hover, .nav-sub.active {
-  opacity: 1;
-  color: var(--green);
-}
+.nav-sub:hover, .nav-sub.active { opacity: 1; color: var(--green); }
 .nav-sub svg { flex-shrink: 0; }
+
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger svg { width: 20px; height: 20px; color: var(--n50); }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 90;
+}
+
+.sidebar-close {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--n400);
+}
+
+.sidebar-close svg { width: 20px; height: 20px; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 48px;
+  max-width: calc(1200px + 96px);
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--n50);
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  font-family: var(--body);
+  font-size: 16px;
+  color: var(--n400);
+  margin-bottom: 32px;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.stat-block {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px 24px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.stat-number {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--n50);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 6px;
+}
+
+.stat-loading {
+  width: 48px;
+  height: 28px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 2px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── SEARCH & FILTER ── */
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.search-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  max-width: 400px;
+  padding: 10px 16px 10px 40px;
+  font-family: var(--body);
+  font-size: 14px;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.search-input:focus { border-color: var(--green); }
+
+.search-input::placeholder { color: var(--n400); }
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--n400);
+  pointer-events: none;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--n400);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.pill:hover { color: var(--n50); border-color: var(--n400); }
+
+.pill.active {
+  background: rgba(78,203,113,0.12);
+  color: var(--green);
+  border-color: var(--green);
+}
+
+/* ── SECTION LABELS ── */
+.section-label {
+  font-family: var(--body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-label svg { width: 16px; height: 16px; color: var(--gold); }
+
+/* ── VIP ROW ── */
+.vip-section { margin-bottom: 32px; }
+
+.vip-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* ── CONTACT CARDS GRID ── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.contact-card {
+  display: block;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 24px 24px 24px 28px;
+  border-left: 4px solid var(--n400);
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.contact-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.contact-card.vip-card {
+  border-left-color: var(--gold);
+  background: rgba(251,191,36,0.03);
+}
+
+.contact-card.rel-hot { border-left-color: #22C55E; }
+.contact-card.rel-warm { border-left-color: #EAB308; }
+.contact-card.rel-cold { border-left-color: #F97316; }
+.contact-card.rel-dead { border-left-color: #EF4444; }
+.contact-card.rel-none { border-left-color: var(--n400); }
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--n50);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vip-star {
+  color: var(--gold);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.card-type-badge {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.type-founder { background: rgba(78,203,113,0.12); color: var(--green); }
+.type-investor { background: rgba(45,212,191,0.12); color: var(--teal); }
+.type-corporate { background: rgba(245,158,11,0.12); color: var(--amber); }
+.type-government { background: rgba(59,130,246,0.12); color: #60A5FA; }
+.type-advisor { background: rgba(168,85,247,0.12); color: #A855F7; }
+.type-other { background: rgba(148,163,184,0.12); color: var(--n400); }
+
+.card-company {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 4px;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.tag-pill {
+  font-family: var(--body);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  color: var(--n400);
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+}
+
+.follow-up-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.follow-up-badge.overdue {
+  background: rgba(239,68,68,0.12);
+  color: var(--coral);
+}
+
+.follow-up-badge.upcoming {
+  background: rgba(245,158,11,0.12);
+  color: var(--amber);
+}
+
+.enrichment-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.enrichment-dot.enriched { background: var(--green); }
+.enrichment-dot.pending { background: var(--amber); }
+.enrichment-dot.none { background: var(--n400); opacity: 0.4; }
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── SKELETON ── */
+.skeleton-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 24px 24px 24px 28px;
+  border-left: 4px solid rgba(255,255,255,0.04);
+}
+
+.skel-line {
+  height: 14px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 2px;
+  margin-bottom: 10px;
+}
+
+.skel-line.w60 { width: 60%; }
+.skel-line.w40 { width: 40%; }
+.skel-line.w80 { width: 80%; }
+.skel-line.w30 { width: 30%; height: 10px; }
+
+/* ── LOAD MORE ── */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.btn-load-more {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 28px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-load-more:hover {
+  background: rgba(78,203,113,0.1);
+  border-color: var(--green);
+}
+
+.btn-load-more:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ── ERROR / EMPTY STATE ── */
+.state-message {
+  text-align: center;
+  padding: 48px 24px;
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--n400);
+}
+
+.state-message .retry-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 20px;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.state-message .retry-btn:hover {
+  background: rgba(78,203,113,0.1);
+  border-color: var(--green);
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  margin-top: 48px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+}
+
+/* ── MOBILE ── */
+@media (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open { display: block; }
+  .sidebar-close.show { display: block; }
+  .hamburger { display: flex; }
+  .main {
+    margin-left: 0;
+    padding: 24px;
+    padding-top: 72px;
+  }
+  .page-header { font-size: 28px; }
+  .stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .stat-block { min-width: 0; }
+  .stat-number { font-size: 22px; }
+  .contact-grid, .vip-grid { grid-template-columns: 1fr; }
+  .search-wrap { max-width: 100%; }
+}
 </style>
 </head>
 <body>
 
 <!-- Hamburger -->
 <button class="hamburger" id="hamburger" aria-label="Open menu">
-  <span></span>
-  <span></span>
-  <span></span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
 
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" id="backdrop"></div>
 
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
-  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
   <div class="sidebar-brand">
-    <div class="sidebar-logo">
-      <h1>VSDR</h1>
-      <span class="pulse-dot"></span>
-    </div>
-    <div class="sidebar-subtitle">Sprintly Partners</div>
+    <div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div>
   </div>
+  <div class="sidebar-sub">Sprintly Partners</div>
   <nav class="sidebar-nav">
-    <a href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7"></rect>
-        <rect x="14" y="3" width="7" height="7"></rect>
-        <rect x="3" y="14" width="7" height="7"></rect>
-        <rect x="14" y="14" width="7" height="7"></rect>
-      </svg>
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       Home
     </a>
-    <a href="bmc.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-        <polyline points="2 17 12 22 22 17"></polyline>
-        <polyline points="2 12 12 17 22 12"></polyline>
-      </svg>
+    <a href="bmc.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
       Strategy
     </a>
-    <a href="goals.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <circle cx="12" cy="12" r="6"></circle>
-        <circle cx="12" cy="12" r="2"></circle>
-      </svg>
+    <a href="goals.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       Goals
     </a>
-    <a href="pipeline.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-      </svg>
+    <a href="pipeline.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Pipeline
     </a>
-    <div class="nav-group active">
-      <a href="network.html" class="active">
+    <div class="nav-group">
+      <a href="network.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Network
       </a>
       <a href="matches.html" class="nav-sub">
@@ -897,326 +676,472 @@ a { text-decoration: none; color: inherit; }
   <div class="sidebar-version">v2.0</div>
 </aside>
 
-<!-- Main -->
+<!-- Main Content -->
 <main class="main">
-  <div class="main-inner" id="app">
+  <h1 class="page-header">Network</h1>
+  <p class="page-subtitle">5,952 contacts. Live from Supabase.</p>
 
-    <!-- Loading State -->
-    <div class="loading-state" id="loadingState">
-      <span class="loading-dot"></span>
-      <span class="loading-dot"></span>
-      <span class="loading-dot"></span>
-      <br><br>
-      Loading network data...
+  <!-- Stats Bar -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-block">
+      <div class="stat-number" id="statTotal"><div class="stat-loading"></div></div>
+      <div class="stat-label">Total</div>
     </div>
-
-    <!-- Error State -->
-    <div class="error-state" id="errorState" style="display:none;">
-      <p>Failed to load network data.</p>
-      <p class="error-detail">Check that network-data.json is accessible and try refreshing.</p>
+    <div class="stat-block">
+      <div class="stat-number" id="statVips"><div class="stat-loading"></div></div>
+      <div class="stat-label">VIPs</div>
     </div>
-
-    <!-- Content (hidden until loaded) -->
-    <div id="content" style="display:none;">
-      <header>
-        <h2 class="page-title">Network</h2>
-        <p class="page-subtitle">Follow-ups, VIPs, and relationship intelligence. Synced from Airtable.</p>
-        <p class="sync-time" id="syncTime"></p>
-      </header>
-
-      <!-- Stats Bar -->
-      <div class="stats-bar" id="statsBar">
-        <div class="stat-block">
-          <div class="stat-value" id="statTotal">—</div>
-          <div class="stat-label">Total Contacts</div>
-        </div>
-        <div class="stat-block">
-          <div class="stat-value" id="statVips">—</div>
-          <div class="stat-label">VIP Contacts</div>
-        </div>
-        <div class="stat-block">
-          <div class="stat-value" id="statFollowups">—</div>
-          <div class="stat-label">Follow-ups Due</div>
-        </div>
-        <div class="stat-block">
-          <div class="stat-value" id="statEnrichment">—</div>
-          <div class="stat-label">Data Enrichment</div>
-          <div class="stat-note">Missing key fields</div>
-        </div>
-      </div>
-
-      <!-- Follow-ups Due -->
-      <div class="section" id="sectionFollowupsDue">
-        <h3 class="section-title">Follow-ups Due <span class="count-badge" id="followupsDueCount">0</span></h3>
-        <div id="followupsDueList"></div>
-      </div>
-
-      <!-- Upcoming Follow-ups -->
-      <div class="section" id="sectionFollowupsUpcoming">
-        <h3 class="section-title">Upcoming Follow-ups <span class="count-badge" id="followupsUpcomingCount">0</span></h3>
-        <div id="followupsUpcomingList"></div>
-      </div>
-
-      <!-- VIP Contacts -->
-      <div class="section" id="sectionVips">
-        <h3 class="section-title">VIP Contacts <span class="count-badge" id="vipCount">0</span></h3>
-        <div id="vipList"></div>
-      </div>
-
-      <!-- Potential Introductions -->
-      <div class="section" id="sectionIntros">
-        <h3 class="section-title">Potential Introductions <span class="count-badge" id="introsCount">0</span></h3>
-        <div id="introsList"></div>
-      </div>
-
-      <!-- Matches Banner -->
-      <div class="section" id="sectionMatchesBanner">
-        <a href="matches.html" class="glass-card" style="display:block;text-align:center;padding:32px;border-color:rgba(45,212,191,0.2);cursor:pointer;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='var(--teal)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(45,212,191,0.2)';this.style.transform='none'">
-          <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--teal);margin-bottom:8px;">View your 25 match suggestions →</div>
-          <div style="font-size:14px;color:var(--n400);">AI-matched connections ready for review. Like, dislike, or approve.</div>
-        </a>
-      </div>
-
-      <!-- Network Data Health -->
-      <div class="section" id="sectionHealth">
-        <h3 class="section-title">Network Data Health</h3>
-        <div class="glass-card" id="healthCard"></div>
-      </div>
-
-      <footer class="page-footer">
-        Last updated: March 30, 2026 · Maintained by Gaby
-      </footer>
+    <div class="stat-block">
+      <div class="stat-number" id="statFounders"><div class="stat-loading"></div></div>
+      <div class="stat-label">Founders</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" id="statInvestors"><div class="stat-loading"></div></div>
+      <div class="stat-label">Investors</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" id="statFollowups"><div class="stat-loading"></div></div>
+      <div class="stat-label">Follow-ups Due</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number" id="statEnriched"><div class="stat-loading"></div></div>
+      <div class="stat-label">Enriched</div>
     </div>
   </div>
+
+  <!-- Search & Filter -->
+  <div class="filter-bar">
+    <div class="search-row">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search name, company, or tag..." style="width:100%">
+      </div>
+    </div>
+    <div class="filter-pills" id="filterPills">
+      <button class="pill active" data-filter="all">All</button>
+      <button class="pill" data-filter="founder">Founders</button>
+      <button class="pill" data-filter="investor">Investors</button>
+      <button class="pill" data-filter="corporate">Corporate</button>
+      <button class="pill" data-filter="advisor">Advisors</button>
+      <button class="pill" data-filter="vip">VIPs</button>
+      <button class="pill" data-filter="followup">Needs Follow-up</button>
+      <button class="pill" data-filter="enrichment">Needs Enrichment</button>
+    </div>
+  </div>
+
+  <!-- VIP Pinned Section -->
+  <div class="vip-section" id="vipSection" style="display:none;">
+    <div class="section-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      VIP Contacts
+    </div>
+    <div class="vip-grid" id="vipGrid"></div>
+  </div>
+
+  <!-- Contact Grid -->
+  <div class="section-label" id="allContactsLabel">All Contacts</div>
+  <div class="contact-grid" id="contactGrid"></div>
+
+  <!-- Load More -->
+  <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+    <button class="btn-load-more" id="loadMoreBtn">Load More</button>
+  </div>
+
+  <!-- Error State -->
+  <div class="state-message" id="errorState" style="display:none;">
+    Failed to load network data. Check connection.
+    <br>
+    <button class="retry-btn" onclick="initPage()">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="state-message" id="emptyState" style="display:none;">
+    No contacts match this filter.
+  </div>
+
+  <footer class="page-footer">
+    Last updated: March 30, 2026 · Maintained by Gaby
+  </footer>
 </main>
 
 <script>
 (function() {
-  // Sidebar mobile toggle
+  // ── Sidebar toggle ──
   var hamburger = document.getElementById('hamburger');
   var sidebar = document.getElementById('sidebar');
-  var overlay = document.getElementById('sidebarOverlay');
+  var backdrop = document.getElementById('backdrop');
   var closeBtn = document.getElementById('sidebarClose');
 
-  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('open'); }
-  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
-
+  function openSidebar() {
+    sidebar.classList.add('open');
+    backdrop.classList.add('open');
+    closeBtn.classList.add('show');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('open');
+    closeBtn.classList.remove('show');
+  }
   hamburger.addEventListener('click', openSidebar);
+  backdrop.addEventListener('click', closeSidebar);
   closeBtn.addEventListener('click', closeSidebar);
-  overlay.addEventListener('click', closeSidebar);
 
-  // Fetch and render
-  fetch('network-data.json')
-    .then(function(res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    })
-    .then(function(data) {
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('content').style.display = 'block';
-      renderAll(data);
-    })
-    .catch(function(err) {
-      document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('errorState').style.display = 'block';
-      console.error('Network data load failed:', err);
-    });
+  // ── Supabase config ──
+  var SUPA = 'https://gxunrnyehltpbgdodkkm.supabase.co';
+  var KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
+  var headers = { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY };
+  var countHeaders = { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Prefer': 'count=exact', 'Range': '0-0' };
 
-  function renderAll(data) {
-    var h = data.network_health || {};
+  // ── State ──
+  var allContacts = [];
+  var vipContacts = [];
+  var currentFilter = 'all';
+  var currentOffset = 0;
+  var PAGE_SIZE = 50;
+  var totalForFilter = 0;
+  var searchTerm = '';
 
-    // Sync time
-    if (data.last_synced) {
-      var d = new Date(data.last_synced);
-      document.getElementById('syncTime').textContent = 'Last synced: ' + d.toLocaleString();
-    }
-
-    // Stats
-    document.getElementById('statTotal').textContent = h.total_estimated || '—';
-    document.getElementById('statVips').textContent = h.vip_count || 0;
-
-    var fDue = (h.followups_overdue || 0);
-    var statFu = document.getElementById('statFollowups');
-    statFu.textContent = fDue;
-    statFu.className = 'stat-value ' + (fDue > 0 ? 'red' : 'green');
-
-    // Enrichment: average of email, industry, priority
-    var avgEnrich = Math.round(((h.with_email_pct || 0) + (h.with_industry_pct || 0) + (h.with_priority_pct || 0)) / 3);
-    document.getElementById('statEnrichment').textContent = avgEnrich + '%';
-
-    // Follow-ups Due
-    renderFollowupsDue(data.followups_due || []);
-
-    // Upcoming
-    renderFollowupsUpcoming(data.followups_upcoming || []);
-
-    // VIPs
-    renderVips(data.vips || []);
-
-    // Intros
-    renderIntros(data.potential_intros || []);
-
-    // Suggested Intros
-    // Suggested intros moved to matches.html
-
-    // Health
-    renderHealth(h, data.needs_enrichment || []);
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
 
-  function renderFollowupsDue(items) {
-    var container = document.getElementById('followupsDueList');
-    document.getElementById('followupsDueCount').textContent = items.length;
-
-    if (items.length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="check-icon"></div><p>No follow-ups due. Network is clean.</p></div>';
-      return;
-    }
-
-    var html = '';
-    var today = new Date().toISOString().slice(0, 10);
-    items.forEach(function(item) {
-      var isOverdue = item.follow_up_date < today;
-      var borderClass = isOverdue ? 'overdue' : 'today';
-      html += renderFollowupCard(item, borderClass);
-    });
-    container.innerHTML = html;
-  }
-
-  function renderFollowupsUpcoming(items) {
-    var container = document.getElementById('followupsUpcomingList');
-    document.getElementById('followupsUpcomingCount').textContent = items.length;
-
-    if (items.length === 0) {
-      container.innerHTML = '<div class="empty-state"><p>No follow-ups scheduled in the next 14 days.</p></div>';
-      return;
-    }
-
-    var html = '';
-    items.forEach(function(item) {
-      html += renderFollowupCard(item, 'upcoming');
-    });
-    container.innerHTML = html;
-  }
-
-  function renderFollowupCard(item, borderClass) {
-    var emailHtml = item.email ? '<a href="mailto:' + esc(item.email) + '" class="email-link">' + esc(item.email) + '</a>' : '';
-    var reasonHtml = item.follow_up_reason ? '<div class="followup-reason">' + esc(item.follow_up_reason) + '</div>' : '';
-
-    return '<div class="glass-card"><div class="followup-card">' +
-      '<div class="border-bar ' + borderClass + '"></div>' +
-      '<div class="followup-content">' +
-        '<div class="followup-name">' + esc(item.name) + '</div>' +
-        '<div class="followup-company">' + esc(item.company || '') + (item.title ? ' · ' + esc(item.title) : '') + '</div>' +
-        '<div class="followup-meta">' +
-          (item.follow_up_date ? '<span>Due: ' + esc(item.follow_up_date) + '</span>' : '') +
-          (emailHtml ? '<span>' + emailHtml + '</span>' : '') +
-        '</div>' +
-        reasonHtml +
-      '</div>' +
-    '</div></div>';
-  }
-
-  function renderVips(items) {
-    var container = document.getElementById('vipList');
-    document.getElementById('vipCount').textContent = items.length;
-
-    if (items.length === 0) {
-      container.innerHTML = '<div class="empty-state"><p>No VIP contacts tagged.</p></div>';
-      return;
-    }
-
-    var html = '';
-    items.forEach(function(item) {
-      var emailHtml = item.email ? '<span><a href="mailto:' + esc(item.email) + '" class="email-link">' + esc(item.email) + '</a></span>' : '';
-      var lastContact = item.last_contacted ? '<span>Last contacted: ' + esc(item.last_contacted) + '</span>' : '<span>Last contacted: —</span>';
-      var noteText = item.note || '';
-
-      html += '<div class="glass-card vip-card"><div class="followup-card">' +
-        '<div class="border-bar vip"></div>' +
-        '<div class="followup-content">' +
-          '<div class="vip-name">' + esc(item.name) + '<span class="star-icon"></span></div>' +
-          '<div class="vip-title">' + esc(item.company || '') + (item.title ? ' · ' + esc(item.title) : '') + '</div>' +
-          '<div class="vip-details">' +
-            emailHtml +
-            lastContact +
-          '</div>' +
-          (noteText ? '<div class="vip-notes">' + esc(noteText) + '</div>' : '') +
-        '</div>' +
-      '</div></div>';
-    });
-    container.innerHTML = html;
-  }
-
-  function renderIntros(items) {
-    var container = document.getElementById('introsList');
-    document.getElementById('introsCount').textContent = items.length;
-
-    if (items.length === 0) {
-      container.innerHTML = '<div class="empty-state"><p>No pending introductions. Use Airtable \'Introduce To\' field to queue matches.</p></div>';
-      return;
-    }
-
-    var html = '';
-    items.forEach(function(item) {
-      html += '<div class="glass-card"><div class="followup-card">' +
-        '<div class="border-bar upcoming"></div>' +
-        '<div class="followup-content">' +
-          '<div class="followup-name">' + esc(item.person_a || '') + ' → ' + esc(item.person_b || '') + '</div>' +
-          '<div class="followup-reason">' + esc(item.context || '') + '</div>' +
-        '</div>' +
-      '</div></div>';
-    });
-    container.innerHTML = html;
-  }
-
-  function renderSuggestedIntros() { /* moved to matches.html */ }
-
-  function renderHealth(h, enrichList) {
-    var card = document.getElementById('healthCard');
-
-    var bars = [
-      { label: 'Have Company', pct: h.with_company_pct || 0, threshold: 50 },
-      { label: 'Have Email', pct: h.with_email_pct || 0, threshold: 50 },
-      { label: 'Have Industry', pct: h.with_industry_pct || 0, threshold: 50 },
-      { label: 'Have Priority', pct: h.with_priority_pct || 0, threshold: 50 }
-    ];
-
-    var html = '<div class="health-bars">';
-    bars.forEach(function(b) {
-      var cls = b.pct >= b.threshold ? 'good' : 'bad';
-      html += '<div class="health-row">' +
-        '<span class="health-label">' + b.label + '</span>' +
-        '<div class="health-bar-track"><div class="health-bar-fill ' + cls + '" style="width:' + b.pct + '%"></div></div>' +
-        '<span class="health-pct ' + cls + '">' + b.pct + '%</span>' +
-      '</div>';
-    });
-    html += '</div>';
-
-    html += '<div class="health-note">Most contacts imported from LinkedIn. Enrichment needed: email, industry, priority, region.</div>';
-
-    // Enrichment list (first 5)
-    var showList = enrichList.slice(0, 5);
-    if (showList.length > 0) {
-      html += '<div class="enrichment-list">';
-      html += '<div style="font-size:13px;color:var(--n400);margin-bottom:8px;font-weight:500;">Contacts needing enrichment:</div>';
-      showList.forEach(function(item) {
-        html += '<div class="enrichment-item">' +
-          '<span><span class="enrichment-name">' + esc(item.name) + '</span><span class="enrichment-company"> · ' + esc(item.company) + '</span></span>' +
-          '<span class="enrichment-missing">' + (item.missing_fields || []).join(', ') + '</span>' +
-        '</div>';
+  // ── Count helper ──
+  function fetchCount(queryParams) {
+    return fetch(SUPA + '/rest/v1/contacts?select=id&' + queryParams, { headers: countHeaders })
+      .then(function(r) {
+        var range = r.headers.get('content-range');
+        if (range) {
+          var parts = range.split('/');
+          return parseInt(parts[1]) || 0;
+        }
+        return 0;
       });
-      html += '</div>';
+  }
+
+  // ── Load stats ──
+  function loadStats() {
+    var totalCount = 0;
+    var enrichedCount = 0;
+
+    Promise.all([
+      fetchCount('').then(function(n) { totalCount = n; document.getElementById('statTotal').textContent = n.toLocaleString(); }),
+      fetchCount('vip=eq.true').then(function(n) { document.getElementById('statVips').textContent = n; }),
+      fetchCount('contact_type=eq.founder').then(function(n) { document.getElementById('statFounders').textContent = n; }),
+      fetchCount('contact_type=eq.investor').then(function(n) { document.getElementById('statInvestors').textContent = n; }),
+      fetchCount('follow_up_date=lte.' + today() + '&follow_up_date=not.is.null').then(function(n) { document.getElementById('statFollowups').textContent = n; }),
+      fetchCount('enrichment_status=eq.enriched').then(function(n) { enrichedCount = n; })
+    ]).then(function() {
+      var pct = totalCount > 0 ? Math.round((enrichedCount / totalCount) * 100) : 0;
+      document.getElementById('statEnriched').textContent = pct + '%';
+    }).catch(function() {
+      // Stats fail silently, cards show error
+    });
+  }
+
+  // ── Build query URL ──
+  function buildQuery(filter, limit, offset) {
+    var base = SUPA + '/rest/v1/contacts?select=*';
+    var td = today();
+
+    switch(filter) {
+      case 'founder': base += '&contact_type=eq.founder'; break;
+      case 'investor': base += '&contact_type=eq.investor'; break;
+      case 'corporate': base += '&contact_type=eq.corporate'; break;
+      case 'advisor': base += '&contact_type=eq.advisor'; break;
+      case 'vip': base += '&vip=eq.true'; break;
+      case 'followup': base += '&follow_up_date=lte.' + td + '&follow_up_date=not.is.null'; break;
+      case 'enrichment': base += '&enrichment_status=neq.enriched'; break;
     }
 
-    card.innerHTML = html;
+    base += '&order=last_name.asc.nullslast,first_name.asc.nullslast';
+    base += '&limit=' + limit + '&offset=' + offset;
+    return base;
   }
 
-  function esc(str) {
-    if (!str) return '';
-    var div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+  function buildCountQuery(filter) {
+    var params = '';
+    var td = today();
+    switch(filter) {
+      case 'founder': params = 'contact_type=eq.founder'; break;
+      case 'investor': params = 'contact_type=eq.investor'; break;
+      case 'corporate': params = 'contact_type=eq.corporate'; break;
+      case 'advisor': params = 'contact_type=eq.advisor'; break;
+      case 'vip': params = 'vip=eq.true'; break;
+      case 'followup': params = 'follow_up_date=lte.' + td + '&follow_up_date=not.is.null'; break;
+      case 'enrichment': params = 'enrichment_status=neq.enriched'; break;
+      default: params = ''; break;
+    }
+    return params;
   }
+
+  // ── Relationship class ──
+  function relClass(lastContacted) {
+    if (!lastContacted) return 'rel-none';
+    var diff = (new Date() - new Date(lastContacted)) / (1000 * 60 * 60 * 24);
+    if (diff <= 7) return 'rel-hot';
+    if (diff <= 30) return 'rel-warm';
+    if (diff <= 90) return 'rel-cold';
+    return 'rel-dead';
+  }
+
+  // ── Type badge class ──
+  function typeClass(type) {
+    if (!type) return 'type-other';
+    var t = type.toLowerCase();
+    if (t === 'founder') return 'type-founder';
+    if (t === 'investor') return 'type-investor';
+    if (t === 'corporate') return 'type-corporate';
+    if (t === 'government') return 'type-government';
+    if (t === 'advisor') return 'type-advisor';
+    return 'type-other';
+  }
+
+  // ── Render contact card HTML ──
+  function cardHTML(c, isVip) {
+    var name = ((c.first_name || '') + ' ' + (c.last_name || '')).trim() || 'Unnamed';
+    var rel = relClass(c.last_contacted);
+    var cls = 'contact-card ' + rel;
+    if (isVip || c.vip) cls += ' vip-card';
+
+    var typeBadge = '';
+    if (c.contact_type) {
+      var tCls = typeClass(c.contact_type);
+      typeBadge = '<span class="card-type-badge ' + tCls + '">' + c.contact_type + '</span>';
+    }
+
+    var star = c.vip ? '<span class="vip-star">★</span>' : '';
+
+    var company = '';
+    var parts = [];
+    if (c.company) parts.push(c.company);
+    if (c.title) parts.push(c.title);
+    if (parts.length) company = '<div class="card-company">' + escHTML(parts.join(' · ')) + '</div>';
+
+    var tags = '';
+    if (c.tags && c.tags.length) {
+      var tagItems = (Array.isArray(c.tags) ? c.tags : [c.tags]).slice(0, 5);
+      tags = '<div class="card-tags">' + tagItems.map(function(t) {
+        return '<span class="tag-pill">' + escHTML(t) + '</span>';
+      }).join('') + '</div>';
+    }
+
+    var followUp = '';
+    if (c.follow_up_date) {
+      var isOverdue = c.follow_up_date <= today();
+      var fCls = isOverdue ? 'overdue' : 'upcoming';
+      var fLabel = isOverdue ? 'Overdue: ' : 'Follow-up: ';
+      followUp = '<span class="follow-up-badge ' + fCls + '">' + fLabel + c.follow_up_date + '</span>';
+    }
+
+    var eDot = 'none';
+    if (c.enrichment_status === 'enriched') eDot = 'enriched';
+    else if (c.enrichment_status === 'pending') eDot = 'pending';
+
+    var id = c.id || '';
+
+    return '<a href="contact.html?id=' + id + '" class="' + cls + '">' +
+      '<div class="card-top">' +
+        '<div class="card-name">' + star + escHTML(name) + '</div>' +
+        typeBadge +
+      '</div>' +
+      company +
+      tags +
+      '<div class="card-footer">' +
+        '<div class="card-meta">' +
+          '<span class="enrichment-dot ' + eDot + '" title="Enrichment: ' + (c.enrichment_status || 'none') + '"></span>' +
+          followUp +
+        '</div>' +
+      '</div>' +
+    '</a>';
+  }
+
+  function escHTML(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // ── Skeleton cards ──
+  function showSkeletons(container, count) {
+    var html = '';
+    for (var i = 0; i < count; i++) {
+      html += '<div class="skeleton-card"><div class="skel-line w60"></div><div class="skel-line w40"></div><div class="skel-line w80"></div><div class="skel-line w30"></div></div>';
+    }
+    container.innerHTML = html;
+  }
+
+  // ── Load VIPs ──
+  function loadVIPs() {
+    return fetch(SUPA + '/rest/v1/contacts?select=*&vip=eq.true&order=last_name.asc.nullslast&limit=50', { headers: headers })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        vipContacts = data || [];
+        renderVIPs();
+      });
+  }
+
+  function renderVIPs() {
+    var section = document.getElementById('vipSection');
+    var grid = document.getElementById('vipGrid');
+
+    // Don't show VIP section when VIP filter is active (they're already in main grid)
+    if (currentFilter === 'vip' || vipContacts.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    var filtered = vipContacts;
+    if (searchTerm) {
+      var s = searchTerm.toLowerCase();
+      filtered = vipContacts.filter(function(c) {
+        var name = ((c.first_name || '') + ' ' + (c.last_name || '')).toLowerCase();
+        var comp = (c.company || '').toLowerCase();
+        var tags = (Array.isArray(c.tags) ? c.tags.join(' ') : (c.tags || '')).toLowerCase();
+        return name.indexOf(s) > -1 || comp.indexOf(s) > -1 || tags.indexOf(s) > -1;
+      });
+    }
+
+    if (filtered.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(function(c) { return cardHTML(c, true); }).join('');
+  }
+
+  // ── Load contacts ──
+  function loadContacts(append) {
+    if (!append) {
+      currentOffset = 0;
+      allContacts = [];
+      showSkeletons(document.getElementById('contactGrid'), 6);
+    }
+
+    document.getElementById('errorState').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+
+    var url = buildQuery(currentFilter, PAGE_SIZE, currentOffset);
+
+    // Also get count for this filter
+    var countPromise = fetchCount(buildCountQuery(currentFilter));
+
+    Promise.all([
+      fetch(url, { headers: headers }).then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }),
+      countPromise
+    ]).then(function(results) {
+      var data = results[0] || [];
+      totalForFilter = results[1];
+
+      if (append) {
+        allContacts = allContacts.concat(data);
+      } else {
+        allContacts = data;
+      }
+
+      renderContacts();
+      updateLoadMore();
+    }).catch(function(err) {
+      console.error('Load error:', err);
+      document.getElementById('contactGrid').innerHTML = '';
+      document.getElementById('errorState').style.display = 'block';
+      document.getElementById('loadMoreWrap').style.display = 'none';
+    });
+  }
+
+  function renderContacts() {
+    var grid = document.getElementById('contactGrid');
+    var contacts = allContacts;
+
+    // Client-side search
+    if (searchTerm) {
+      var s = searchTerm.toLowerCase();
+      contacts = contacts.filter(function(c) {
+        var name = ((c.first_name || '') + ' ' + (c.last_name || '')).toLowerCase();
+        var comp = (c.company || '').toLowerCase();
+        var tags = (Array.isArray(c.tags) ? c.tags.join(' ') : (c.tags || '')).toLowerCase();
+        return name.indexOf(s) > -1 || comp.indexOf(s) > -1 || tags.indexOf(s) > -1;
+      });
+    }
+
+    if (contacts.length === 0) {
+      grid.innerHTML = '';
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('emptyState').style.display = 'none';
+    grid.innerHTML = contacts.map(function(c) { return cardHTML(c, false); }).join('');
+  }
+
+  function updateLoadMore() {
+    var loaded = allContacts.length;
+    var wrap = document.getElementById('loadMoreWrap');
+    var btn = document.getElementById('loadMoreBtn');
+
+    if (loaded < totalForFilter) {
+      wrap.style.display = 'flex';
+      btn.textContent = 'Load More (' + loaded + ' / ' + totalForFilter.toLocaleString() + ')';
+      btn.disabled = false;
+    } else {
+      wrap.style.display = loaded > 0 ? 'flex' : 'none';
+      if (loaded > 0) {
+        btn.textContent = 'All ' + totalForFilter.toLocaleString() + ' loaded';
+        btn.disabled = true;
+      }
+    }
+  }
+
+  // ── Filter pills ──
+  var pills = document.querySelectorAll('.pill');
+  pills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      currentFilter = pill.getAttribute('data-filter');
+
+      // Update section label
+      var labels = {
+        all: 'All Contacts', founder: 'Founders', investor: 'Investors',
+        corporate: 'Corporate', advisor: 'Advisors', vip: 'VIP Contacts',
+        followup: 'Needs Follow-up', enrichment: 'Needs Enrichment'
+      };
+      document.getElementById('allContactsLabel').textContent = labels[currentFilter] || 'All Contacts';
+
+      loadContacts(false);
+      renderVIPs();
+    });
+  });
+
+  // ── Search ──
+  var searchTimeout;
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+      searchTerm = e.target.value.trim();
+      renderContacts();
+      renderVIPs();
+    }, 250);
+  });
+
+  // ── Load More ──
+  document.getElementById('loadMoreBtn').addEventListener('click', function() {
+    currentOffset += PAGE_SIZE;
+    loadContacts(true);
+  });
+
+  // ── Init ──
+  window.initPage = function() {
+    loadStats();
+    loadVIPs();
+    loadContacts(false);
+  };
+
+  initPage();
 })();
 </script>
 </body>
