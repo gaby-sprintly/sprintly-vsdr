@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics — VSDR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #4ECB71;
+  --charcoal: #0F1923;
+  --teal: #2DD4BF;
+  --amber: #F59E0B;
+  --coral: #EF4444;
+  --gold: #FBBF24;
+  --purple: #A855F7;
+  --blue: #3B82F6;
+  --n50: #F8FAFC;
+  --n400: #94A3B8;
+  --n800: #1E293B;
+  --surface: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.06);
+  --sidebar-w: 240px;
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'General Sans', sans-serif;
+}
+
+html { background: var(--charcoal); }
+
+body {
+  font-family: var(--body);
+  background: var(--charcoal);
+  color: var(--n50);
+  min-height: 100vh;
+  display: flex;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--charcoal);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 32px 0 24px;
+}
+
+.sidebar-brand { padding: 0 24px; margin-bottom: 8px; }
+
+.sidebar-logo {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1.0; }
+}
+
+.sidebar-sub {
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--n400);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 24px;
+  margin-top: 4px;
+}
+
+.sidebar-nav {
+  margin-top: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--n400);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.nav-item:hover { color: #fff; }
+
+.nav-item.active {
+  color: #fff;
+  border-left-color: var(--green);
+  background: rgba(78,203,113,0.08);
+}
+
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.sidebar-version {
+  padding: 0 27px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  opacity: 0.5;
+}
+
+.nav-group { display: flex; flex-direction: column; }
+.nav-sub {
+  padding-left: 44px !important;
+  font-size: 0.85em;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px 8px 44px;
+  color: var(--n400);
+  transition: all 0.2s ease;
+}
+.nav-sub:hover, .nav-sub.active { opacity: 1; color: var(--green); }
+.nav-sub svg { flex-shrink: 0; }
+
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger svg { width: 20px; height: 20px; color: var(--n50); }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 90;
+}
+
+.sidebar-close {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--n400);
+}
+
+.sidebar-close svg { width: 20px; height: 20px; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 48px;
+  max-width: calc(1400px + 96px);
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--n50);
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  font-family: var(--body);
+  font-size: 16px;
+  color: var(--n400);
+  margin-bottom: 40px;
+}
+
+/* ── METRIC CARDS ROW ── */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metric-card {
+  background: rgba(30,41,59,0.6);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 4px;
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+
+.metric-card[data-accent="white"]::before { background: rgba(255,255,255,0.3); }
+.metric-card[data-accent="gold"]::before { background: var(--gold); }
+.metric-card[data-accent="green"]::before { background: var(--green); }
+.metric-card[data-accent="red"]::before { background: var(--coral); }
+.metric-card[data-accent="teal"]::before { background: var(--teal); }
+
+.metric-number {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--n50);
+  line-height: 1;
+}
+
+.metric-label {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+
+.metric-loading {
+  width: 60px;
+  height: 36px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 2px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── CHART CARDS ── */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.chart-card {
+  background: rgba(30,41,59,0.6);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 4px;
+  padding: 28px;
+  position: relative;
+}
+
+.chart-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--n50);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-title-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.chart-center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.chart-center-number {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--n50);
+}
+
+.chart-center-text {
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.bar-chart-wrap {
+  width: 100%;
+  max-height: 360px;
+}
+
+/* ── RELATIONSHIP HEALTH ── */
+.health-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.health-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.health-label {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  min-width: 130px;
+  flex-shrink: 0;
+}
+
+.health-label strong {
+  color: var(--n50);
+  font-weight: 600;
+}
+
+.health-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.health-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 0;
+}
+
+.health-bar-fill.hot { background: #22C55E; }
+.health-bar-fill.warm { background: #EAB308; }
+.health-bar-fill.cold { background: #F97316; }
+.health-bar-fill.dead { background: #EF4444; }
+.health-bar-fill.never { background: var(--n400); opacity: 0.5; }
+
+.health-count {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--n50);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── COVERAGE GAPS ── */
+.gaps-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.gap-card {
+  background: rgba(30,41,59,0.6);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 4px;
+  padding: 24px;
+  border-left: 3px solid var(--n400);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.gap-card:hover { transform: translateY(-2px); }
+
+.gap-card.severity-critical { border-left-color: var(--coral); }
+.gap-card.severity-warning { border-left-color: var(--amber); }
+.gap-card.severity-info { border-left-color: var(--teal); }
+
+.gap-icon {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.gap-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.gap-text strong {
+  font-weight: 600;
+}
+
+.gap-suggestion {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.btn-gap-action {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--teal);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-gap-action:hover {
+  background: rgba(45,212,191,0.1);
+  border-color: var(--teal);
+}
+
+/* ── HEALTH SCORE ── */
+.score-card {
+  background: rgba(30,41,59,0.6);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 4px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.score-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--n50);
+  margin-bottom: 32px;
+}
+
+.score-circle-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 32px;
+}
+
+.score-circle-bg {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--score-color, var(--coral)) calc(var(--score-pct, 0) * 3.6deg),
+    rgba(255,255,255,0.06) calc(var(--score-pct, 0) * 3.6deg)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 1.5s ease;
+}
+
+.score-circle-inner {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: var(--charcoal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-number {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 1;
+}
+
+.score-label {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.score-recommendations {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.score-rec-title {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.score-rec-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+}
+
+.score-rec-item:last-child { border-bottom: none; }
+
+.rec-impact {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.rec-impact.high { background: rgba(78,203,113,0.12); color: var(--green); }
+.rec-impact.medium { background: rgba(245,158,11,0.12); color: var(--amber); }
+
+/* ── FOOTER ── */
+.page-footer {
+  margin-top: 48px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+}
+
+/* ── MOBILE ── */
+@media (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open { display: block; }
+  .sidebar-close.show { display: block; }
+  .hamburger { display: flex; }
+  .main {
+    margin-left: 0;
+    padding: 24px;
+    padding-top: 72px;
+  }
+  .page-header { font-size: 28px; }
+  .metrics-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .metric-number { font-size: 24px; }
+  .metric-card { padding: 16px 14px; }
+  .chart-row { grid-template-columns: 1fr; }
+  .gaps-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+}
+
+@media (max-width: 480px) {
+  .metrics-row { grid-template-columns: repeat(2, 1fr); }
+  .gaps-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hamburger -->
+<button class="hamburger" id="hamburger" aria-label="Open menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" id="backdrop"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div>
+  </div>
+  <div class="sidebar-sub">Sprintly Partners</div>
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Home
+    </a>
+    <a href="bmc.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      Strategy
+    </a>
+    <a href="goals.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Goals
+    </a>
+    <a href="pipeline.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Pipeline
+    </a>
+    <div class="nav-group">
+      <a href="network.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Network
+      </a>
+      <a href="matches.html" class="nav-sub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/><circle cx="9" cy="11" r="3"/></svg>
+        Matches
+      </a>
+    </div>
+    <a href="analytics.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      Analytics
+    </a>
+  </nav>
+  <div class="sidebar-version">v2.0</div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <h1 class="page-header">Network Analytics</h1>
+  <p class="page-subtitle">Real-time intelligence on your <span id="subtitleCount">5,952</span>-person network</p>
+
+  <!-- Row 1: Key Metrics -->
+  <div class="metrics-row">
+    <div class="metric-card" data-accent="white">
+      <div class="metric-number" id="metricTotal"><div class="metric-loading"></div></div>
+      <div class="metric-label">Total Contacts</div>
+    </div>
+    <div class="metric-card" data-accent="gold">
+      <div class="metric-number" id="metricVIP"><div class="metric-loading"></div></div>
+      <div class="metric-label">VIP Contacts</div>
+    </div>
+    <div class="metric-card" data-accent="green">
+      <div class="metric-number" id="metricFollowups"><div class="metric-loading"></div></div>
+      <div class="metric-label">Follow-ups Due</div>
+    </div>
+    <div class="metric-card" data-accent="red" id="metricEnrichCard">
+      <div class="metric-number" id="metricEnrich"><div class="metric-loading"></div></div>
+      <div class="metric-label">Enrichment Rate</div>
+    </div>
+    <div class="metric-card" data-accent="green">
+      <div class="metric-number" id="metricFounders"><div class="metric-loading"></div></div>
+      <div class="metric-label">Founders</div>
+    </div>
+    <div class="metric-card" data-accent="teal">
+      <div class="metric-number" id="metricInvestors"><div class="metric-loading"></div></div>
+      <div class="metric-label">Investors</div>
+    </div>
+  </div>
+
+  <!-- Row 2: Type + Industry -->
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="chart-title"><span class="chart-title-dot"></span> Network by Type</div>
+      <div class="chart-wrap">
+        <canvas id="typeChart"></canvas>
+        <div class="chart-center-label">
+          <div class="chart-center-number" id="typeCenterNum">—</div>
+          <div class="chart-center-text">Contacts</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><span class="chart-title-dot"></span> Network by Industry</div>
+      <div class="bar-chart-wrap">
+        <canvas id="industryChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Region + Relationship Health -->
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="chart-title"><span class="chart-title-dot"></span> Network by Region</div>
+      <div class="chart-wrap">
+        <canvas id="regionChart"></canvas>
+        <div class="chart-center-label">
+          <div class="chart-center-number" id="regionCenterNum">—</div>
+          <div class="chart-center-text">Regions</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><span class="chart-title-dot" style="background:var(--coral)"></span> Relationship Health</div>
+      <div class="health-bars" id="healthBars">
+        <div class="health-row">
+          <div class="health-label"><strong>Hot</strong> &lt;7 days</div>
+          <div class="health-bar-track"><div class="health-bar-fill hot" id="barHot"></div></div>
+          <div class="health-count" id="countHot">—</div>
+        </div>
+        <div class="health-row">
+          <div class="health-label"><strong>Warm</strong> 7-30 days</div>
+          <div class="health-bar-track"><div class="health-bar-fill warm" id="barWarm"></div></div>
+          <div class="health-count" id="countWarm">—</div>
+        </div>
+        <div class="health-row">
+          <div class="health-label"><strong>Cold</strong> 30-90 days</div>
+          <div class="health-bar-track"><div class="health-bar-fill cold" id="barCold"></div></div>
+          <div class="health-count" id="countCold">—</div>
+        </div>
+        <div class="health-row">
+          <div class="health-label"><strong>Dead</strong> 90+ days</div>
+          <div class="health-bar-track"><div class="health-bar-fill dead" id="barDead"></div></div>
+          <div class="health-count" id="countDead">—</div>
+        </div>
+        <div class="health-row">
+          <div class="health-label"><strong>Never</strong> contacted</div>
+          <div class="health-bar-track"><div class="health-bar-fill never" id="barNever"></div></div>
+          <div class="health-count" id="countNever">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Coverage Gaps -->
+  <div class="gaps-row" id="gapsRow">
+    <div class="gap-card severity-info" id="gapFoundersInvestors">
+      <div class="gap-icon">⚖️</div>
+      <div class="gap-text" id="gapFIText">Loading...</div>
+      <div class="gap-suggestion">A healthy network has roughly 1 investor per 3 founders for warm intro coverage.</div>
+      <button class="btn-gap-action">Tell Gaby to fix this</button>
+    </div>
+    <div class="gap-card severity-critical" id="gapNoEmail">
+      <div class="gap-icon">📧</div>
+      <div class="gap-text" id="gapEmailText">Loading...</div>
+      <div class="gap-suggestion">Email is the #1 channel for warm intros. Enrichment can find most missing emails.</div>
+      <button class="btn-gap-action">Tell Gaby to fix this</button>
+    </div>
+    <div class="gap-card severity-critical" id="gapEnrichment">
+      <div class="gap-icon">🔍</div>
+      <div class="gap-text" id="gapEnrichText">Loading...</div>
+      <div class="gap-suggestion">Enriched contacts are 3x more likely to result in successful introductions.</div>
+      <button class="btn-gap-action">Tell Gaby to fix this</button>
+    </div>
+    <div class="gap-card severity-warning" id="gapNoIndustry">
+      <div class="gap-icon">🏷️</div>
+      <div class="gap-text" id="gapIndustryText">Loading...</div>
+      <div class="gap-suggestion">Industry tags power the matching engine. Without them, contacts can't be matched.</div>
+      <button class="btn-gap-action">Tell Gaby to fix this</button>
+    </div>
+  </div>
+
+  <!-- Row 5: Network Health Score -->
+  <div class="score-card">
+    <div class="score-title">Network Health Score</div>
+    <div class="score-circle-wrap">
+      <div class="score-circle-bg" id="scoreCircle">
+        <div class="score-circle-inner">
+          <div class="score-number" id="scoreNumber">—</div>
+          <div class="score-label">/ 100</div>
+        </div>
+      </div>
+    </div>
+    <div class="score-recommendations" id="scoreRecs">
+      <div class="score-rec-title">What would improve this score</div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    Last updated: March 30, 2026 · Maintained by Gaby
+  </footer>
+</main>
+
+<script>
+(function() {
+  // ── Sidebar toggle ──
+  var hamburger = document.getElementById('hamburger');
+  var sidebar = document.getElementById('sidebar');
+  var backdrop = document.getElementById('backdrop');
+  var closeBtn = document.getElementById('sidebarClose');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    backdrop.classList.add('open');
+    closeBtn.classList.add('show');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('open');
+    closeBtn.classList.remove('show');
+  }
+  hamburger.addEventListener('click', openSidebar);
+  backdrop.addEventListener('click', closeSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+
+  // ── Supabase config ──
+  var SUPA = 'https://gxunrnyehltpbgdodkkm.supabase.co/rest/v1';
+  var KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
+  var H = { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY };
+  var HC = { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Prefer': 'count=exact', 'Range': '0-0' };
+
+  // ── Chart.js defaults ──
+  Chart.defaults.color = '#94A3B8';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family = "'General Sans', sans-serif";
+
+  // ── Animate count up ──
+  function animateNumber(el, target, suffix, duration) {
+    suffix = suffix || '';
+    duration = duration || 1200;
+    var start = 0;
+    var startTime = null;
+    var isFloat = String(target).indexOf('.') > -1;
+
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var current = Math.round(start + (target - start) * ease);
+      if (isFloat) {
+        current = (start + (target - start) * ease).toFixed(1);
+      }
+      el.textContent = (typeof current === 'number' ? current.toLocaleString() : current) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── Fetch count helper ──
+  function fetchCount(query) {
+    return fetch(SUPA + '/contacts?select=id&' + query, { headers: HC })
+      .then(function(r) {
+        var range = r.headers.get('content-range');
+        if (range) {
+          var parts = range.split('/');
+          return parseInt(parts[1]) || 0;
+        }
+        return 0;
+      });
+  }
+
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  // ── State for cross-section calculations ──
+  var STATE = {
+    total: 0,
+    vips: 0,
+    followups: 0,
+    enriched: 0,
+    founders: 0,
+    investors: 0,
+    noEmail: 0,
+    noIndustry: 0,
+    hasRegion: 0,
+    activeRel: 0
+  };
+
+  // ── Row 1: Metrics ──
+  function loadMetrics() {
+    var td = today();
+
+    Promise.all([
+      fetchCount(''),
+      fetchCount('vip=eq.true'),
+      fetchCount('follow_up_date=lte.' + td + '&follow_up_date=not.is.null'),
+      fetchCount('enrichment_status=eq.enriched'),
+      fetchCount('contact_type=eq.founder'),
+      fetchCount('contact_type=eq.investor')
+    ]).then(function(r) {
+      STATE.total = r[0];
+      STATE.vips = r[1];
+      STATE.followups = r[2];
+      STATE.enriched = r[3];
+      STATE.founders = r[4];
+      STATE.investors = r[5];
+
+      animateNumber(document.getElementById('metricTotal'), STATE.total, '');
+      animateNumber(document.getElementById('metricVIP'), STATE.vips, '');
+      animateNumber(document.getElementById('metricFollowups'), STATE.followups, '');
+
+      var enrichPct = STATE.total > 0 ? ((STATE.enriched / STATE.total) * 100) : 0;
+      animateNumber(document.getElementById('metricEnrich'), enrichPct, '%');
+
+      // Color enrichment card based on rate
+      var card = document.getElementById('metricEnrichCard');
+      if (enrichPct >= 50) {
+        card.setAttribute('data-accent', 'teal');
+        document.getElementById('metricEnrich').style.color = 'var(--teal)';
+      } else {
+        card.setAttribute('data-accent', 'red');
+        document.getElementById('metricEnrich').style.color = 'var(--coral)';
+      }
+
+      // Followups color
+      if (STATE.followups === 0) {
+        document.getElementById('metricFollowups').style.color = 'var(--green)';
+      } else {
+        document.getElementById('metricFollowups').style.color = 'var(--coral)';
+      }
+
+      animateNumber(document.getElementById('metricFounders'), STATE.founders, '');
+      animateNumber(document.getElementById('metricInvestors'), STATE.investors, '');
+
+      document.getElementById('subtitleCount').textContent = STATE.total.toLocaleString();
+    });
+  }
+
+  // ── Row 2: Type Donut ──
+  var typeChartInstance = null;
+  function loadTypeChart() {
+    fetch(SUPA + '/contacts?select=contact_type', { headers: H })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var counts = {};
+        var typeOrder = ['founder','investor','corporate','government','enabler','other'];
+        var typeLabels = ['Founder','Investor','Corporate','Government','Enabler','Other'];
+        var typeColors = ['#4ECB71','#2DD4BF','#F59E0B','#3B82F6','#A855F7','#64748B'];
+
+        data.forEach(function(c) {
+          var t = (c.contact_type || 'other').toLowerCase();
+          if (typeOrder.indexOf(t) === -1) t = 'other';
+          counts[t] = (counts[t] || 0) + 1;
+        });
+
+        var values = typeOrder.map(function(t) { return counts[t] || 0; });
+        var total = values.reduce(function(a,b){ return a+b; }, 0);
+        document.getElementById('typeCenterNum').textContent = total.toLocaleString();
+
+        if (typeChartInstance) typeChartInstance.destroy();
+        typeChartInstance = new Chart(document.getElementById('typeChart'), {
+          type: 'doughnut',
+          data: {
+            labels: typeLabels,
+            datasets: [{
+              data: values,
+              backgroundColor: typeColors,
+              borderWidth: 0,
+              hoverBorderWidth: 2,
+              hoverBorderColor: '#fff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { padding: 16, usePointStyle: true, pointStyleWidth: 10 }
+              }
+            },
+            cutout: '65%'
+          }
+        });
+      });
+  }
+
+  // ── Row 2: Industry Bar ──
+  var industryChartInstance = null;
+  function loadIndustryChart() {
+    fetch(SUPA + '/contacts?select=industry', { headers: H })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var counts = {};
+        var noIndustry = 0;
+        data.forEach(function(c) {
+          var ind = c.industry;
+          if (!ind || ind.trim() === '' || ind.toLowerCase() === 'null') {
+            noIndustry++;
+            return;
+          }
+          counts[ind] = (counts[ind] || 0) + 1;
+        });
+
+        STATE.noIndustry = noIndustry;
+
+        // Sort by count descending
+        var sorted = Object.keys(counts).sort(function(a,b) { return counts[b] - counts[a]; });
+        var topN = sorted.slice(0, 15);
+        var labels = topN;
+        var values = topN.map(function(k) { return counts[k]; });
+
+        if (industryChartInstance) industryChartInstance.destroy();
+        industryChartInstance = new Chart(document.getElementById('industryChart'), {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: '#2DD4BF',
+              borderRadius: 2
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { color: 'rgba(255,255,255,0.04)' },
+                ticks: { color: '#94A3B8' }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#F8FAFC', font: { size: 13 } }
+              }
+            }
+          }
+        });
+
+        // Set canvas height based on items
+        document.getElementById('industryChart').parentElement.style.height = Math.max(200, topN.length * 28) + 'px';
+      });
+  }
+
+  // ── Row 3: Region Donut ──
+  var regionChartInstance = null;
+  function loadRegionChart() {
+    fetch(SUPA + '/contacts?select=region', { headers: H })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var counts = {};
+        var hasRegion = 0;
+        data.forEach(function(c) {
+          var r = c.region;
+          if (!r || r.trim() === '' || r.toLowerCase() === 'null') {
+            counts['Unknown'] = (counts['Unknown'] || 0) + 1;
+            return;
+          }
+          hasRegion++;
+          counts[r] = (counts[r] || 0) + 1;
+        });
+
+        STATE.hasRegion = hasRegion;
+
+        var sorted = Object.keys(counts).sort(function(a,b) { return counts[b] - counts[a]; });
+        var regionColors = ['#4ECB71','#2DD4BF','#F59E0B','#3B82F6','#A855F7','#EC4899','#F97316','#06B6D4','#84CC16','#64748B','#E879F9','#FBBF24'];
+        var labels = sorted;
+        var values = sorted.map(function(k) { return counts[k]; });
+
+        document.getElementById('regionCenterNum').textContent = sorted.filter(function(k) { return k !== 'Unknown'; }).length;
+
+        if (regionChartInstance) regionChartInstance.destroy();
+        regionChartInstance = new Chart(document.getElementById('regionChart'), {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: regionColors.slice(0, labels.length),
+              borderWidth: 0,
+              hoverBorderWidth: 2,
+              hoverBorderColor: '#fff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { padding: 12, usePointStyle: true, pointStyleWidth: 10, font: { size: 11 } }
+              }
+            },
+            cutout: '65%'
+          }
+        });
+      });
+  }
+
+  // ── Row 3: Relationship Health ──
+  function loadRelationshipHealth() {
+    fetch(SUPA + '/contacts?select=last_contacted', { headers: H })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var now = new Date();
+        var hot = 0, warm = 0, cold = 0, dead = 0, never = 0;
+        var total = data.length;
+
+        data.forEach(function(c) {
+          if (!c.last_contacted) { never++; return; }
+          var diff = (now - new Date(c.last_contacted)) / (1000 * 60 * 60 * 24);
+          if (diff <= 7) hot++;
+          else if (diff <= 30) warm++;
+          else if (diff <= 90) cold++;
+          else dead++;
+        });
+
+        STATE.activeRel = hot + warm;
+
+        function setPct(id, count) {
+          var pct = total > 0 ? (count / total * 100) : 0;
+          setTimeout(function() {
+            document.getElementById(id).style.width = Math.max(pct, 0.5) + '%';
+          }, 200);
+        }
+
+        document.getElementById('countHot').textContent = hot.toLocaleString();
+        document.getElementById('countWarm').textContent = warm.toLocaleString();
+        document.getElementById('countCold').textContent = cold.toLocaleString();
+        document.getElementById('countDead').textContent = dead.toLocaleString();
+        document.getElementById('countNever').textContent = never.toLocaleString();
+
+        setPct('barHot', hot);
+        setPct('barWarm', warm);
+        setPct('barCold', cold);
+        setPct('barDead', dead);
+        setPct('barNever', never);
+      });
+  }
+
+  // ── Row 4: Coverage Gaps ──
+  function loadCoverageGaps() {
+    // Need email data
+    fetch(SUPA + '/contacts?select=email', { headers: H })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var noEmail = 0;
+        data.forEach(function(c) {
+          if (!c.email || c.email.trim() === '') noEmail++;
+        });
+        STATE.noEmail = noEmail;
+
+        // Now render all gap cards (wait a moment for other STATE to populate)
+        setTimeout(renderGaps, 500);
+      });
+  }
+
+  function renderGaps() {
+    var total = STATE.total || 1;
+
+    // Gap 1: Founders vs Investors
+    var gapFI = document.getElementById('gapFIText');
+    gapFI.innerHTML = '<strong>' + STATE.founders + ' founders</strong> but only <strong>' + STATE.investors + ' investors</strong> in your network';
+    if (STATE.investors < STATE.founders / 3) {
+      document.getElementById('gapFoundersInvestors').className = 'gap-card severity-warning';
+    }
+
+    // Gap 2: No email
+    var emailPct = Math.round((STATE.noEmail / total) * 100);
+    document.getElementById('gapEmailText').innerHTML = '<strong>' + emailPct + '%</strong> of contacts have no email (' + STATE.noEmail.toLocaleString() + ' contacts)';
+    document.getElementById('gapNoEmail').className = 'gap-card ' + (emailPct > 50 ? 'severity-critical' : 'severity-warning');
+
+    // Gap 3: Enrichment needed
+    var needEnrich = total - STATE.enriched;
+    var enrichPct = Math.round((needEnrich / total) * 100);
+    document.getElementById('gapEnrichText').innerHTML = '<strong>' + enrichPct + '%</strong> of contacts need enrichment (' + needEnrich.toLocaleString() + ' contacts)';
+
+    // Gap 4: No industry
+    var indPct = Math.round((STATE.noIndustry / total) * 100);
+    document.getElementById('gapIndustryText').innerHTML = '<strong>' + STATE.noIndustry.toLocaleString() + ' contacts</strong> have no industry tag (' + indPct + '%)';
+
+    // Calculate health score
+    calculateScore();
+  }
+
+  // ── Row 5: Health Score ──
+  function calculateScore() {
+    var total = STATE.total || 1;
+    var enrichedPct = (STATE.enriched / total) * 100;
+    var hasEmailPct = ((total - STATE.noEmail) / total) * 100;
+    var hasIndustryPct = ((total - STATE.noIndustry) / total) * 100;
+    var hasRegionPct = (STATE.hasRegion / total) * 100;
+    var activeRelPct = (STATE.activeRel / total) * 100;
+
+    var score = Math.round(
+      (enrichedPct * 0.30) +
+      (hasEmailPct * 0.25) +
+      (hasIndustryPct * 0.20) +
+      (hasRegionPct * 0.15) +
+      (activeRelPct * 0.10)
+    );
+
+    score = Math.max(0, Math.min(100, score));
+
+    var color = score < 30 ? 'var(--coral)' : score < 60 ? 'var(--amber)' : 'var(--green)';
+
+    var circle = document.getElementById('scoreCircle');
+    circle.style.setProperty('--score-pct', score);
+    circle.style.setProperty('--score-color', color);
+
+    var numEl = document.getElementById('scoreNumber');
+    numEl.style.color = color;
+    animateNumber(numEl, score, '', 2000);
+
+    // Recommendations
+    var recs = [];
+    if (enrichedPct < 50) recs.push({ text: 'Enrich contacts to add missing data (industry, email, region)', impact: '+' + Math.round((50 - enrichedPct) * 0.30) + ' pts', level: 'high' });
+    if (hasEmailPct < 80) recs.push({ text: 'Add email addresses for better intro capability', impact: '+' + Math.round((80 - hasEmailPct) * 0.25) + ' pts', level: 'high' });
+    if (hasIndustryPct < 70) recs.push({ text: 'Tag contacts with their industry for matching', impact: '+' + Math.round((70 - hasIndustryPct) * 0.20) + ' pts', level: 'medium' });
+    if (hasRegionPct < 60) recs.push({ text: 'Add region data for geographic intelligence', impact: '+' + Math.round((60 - hasRegionPct) * 0.15) + ' pts', level: 'medium' });
+    if (activeRelPct < 20) recs.push({ text: 'Re-engage dormant contacts to build active relationships', impact: '+' + Math.round((20 - activeRelPct) * 0.10) + ' pts', level: 'medium' });
+
+    recs.sort(function(a, b) {
+      return parseInt(b.impact) - parseInt(a.impact);
+    });
+
+    var recsEl = document.getElementById('scoreRecs');
+    var html = '<div class="score-rec-title">What would improve this score</div>';
+    recs.slice(0, 3).forEach(function(rec) {
+      html += '<div class="score-rec-item">' +
+        '<span class="rec-impact ' + rec.level + '">' + rec.impact + '</span>' +
+        '<span>' + rec.text + '</span>' +
+      '</div>';
+    });
+    recsEl.innerHTML = html;
+  }
+
+  // ── Init ──
+  loadMetrics();
+  loadTypeChart();
+  loadIndustryChart();
+  loadRegionChart();
+  loadRelationshipHealth();
+  loadCoverageGaps();
+})();
+</script>
+</body>
+</html>
