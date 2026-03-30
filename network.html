@@ -865,6 +865,15 @@ a { text-decoration: none; color: inherit; }
       </svg>
       Pipeline
     </a>
+    <a href="matches.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <line x1="19" y1="8" x2="19" y2="14"></line>
+        <line x1="22" y1="11" x2="16" y2="11"></line>
+      </svg>
+      Matches
+    </a>
     <a href="network.html" class="active">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -950,11 +959,12 @@ a { text-decoration: none; color: inherit; }
         <div id="introsList"></div>
       </div>
 
-      <!-- Suggested Introductions -->
-      <div class="section" id="sectionSuggestedIntros">
-        <h3 class="section-title">Suggested Introductions <span class="count-badge" id="suggestedIntrosCount">0</span></h3>
-        <p class="section-subtitle">AI-matched connections from your network. Review the draft, then tell Gaby to approve or edit.</p>
-        <div id="suggestedIntrosList"></div>
+      <!-- Matches Banner -->
+      <div class="section" id="sectionMatchesBanner">
+        <a href="matches.html" class="glass-card" style="display:block;text-align:center;padding:32px;border-color:rgba(45,212,191,0.2);cursor:pointer;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='var(--teal)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(45,212,191,0.2)';this.style.transform='none'">
+          <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--teal);margin-bottom:8px;">View your 25 match suggestions →</div>
+          <div style="font-size:14px;color:var(--n400);">AI-matched connections ready for review. Like, dislike, or approve.</div>
+        </a>
       </div>
 
       <!-- Network Data Health -->
@@ -1037,7 +1047,7 @@ a { text-decoration: none; color: inherit; }
     renderIntros(data.potential_intros || []);
 
     // Suggested Intros
-    renderSuggestedIntros(data.suggested_intros || []);
+    // Suggested intros moved to matches.html
 
     // Health
     renderHealth(h, data.needs_enrichment || []);
@@ -1149,54 +1159,7 @@ a { text-decoration: none; color: inherit; }
     container.innerHTML = html;
   }
 
-  function renderSuggestedIntros(items) {
-    var container = document.getElementById('suggestedIntrosList');
-    document.getElementById('suggestedIntrosCount').textContent = items.length;
-
-    if (items.length === 0) {
-      container.innerHTML = '<div class="empty-state"><p>No suggested introductions yet. Gaby will match connections from your network.</p></div>';
-      return;
-    }
-
-    var html = '';
-    items.forEach(function(item) {
-      var statusClass = (item.status || 'draft').toLowerCase();
-      var statusLabel = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
-      var statusIcon = statusClass === 'sent' ? ' ✓' : '';
-      var borderClass = statusClass;
-
-      var personALabel = esc(item.person_a.name) + ' (' + esc(item.person_a.company) + ')';
-      var personBLabel = esc(item.person_b.name) + ' (' + esc(item.person_b.company) + ')';
-
-      var toggleId = 'email-toggle-' + esc(item.id);
-      var bodyId = 'email-body-' + esc(item.id);
-
-      html += '<div class="glass-card intro-card"><div class="followup-card">' +
-        '<div class="border-bar ' + borderClass + '"></div>' +
-        '<div class="followup-content">' +
-          '<div class="intro-header">' +
-            '<span class="intro-person">' + personALabel + '</span>' +
-            '<span class="intro-connector">×</span>' +
-            '<span class="intro-person">' + personBLabel + '</span>' +
-          '</div>' +
-          '<div class="intro-meta-row">' +
-            '<span class="intro-status ' + statusClass + '">' + statusLabel + statusIcon + '</span>' +
-            '<span class="intro-id">' + esc(item.id) + '</span>' +
-          '</div>' +
-          '<div class="intro-rationale">' + esc(item.rationale) + '</div>' +
-          '<button class="intro-email-toggle" id="' + toggleId + '" onclick="(function(e){var b=document.getElementById(\'' + bodyId + '\');var t=document.getElementById(\'' + toggleId + '\');b.classList.toggle(\'open\');t.classList.toggle(\'open\')})()">' +
-            '<span class="toggle-arrow">▶</span> View Draft Email' +
-          '</button>' +
-          '<div class="intro-email-body" id="' + bodyId + '">' + esc(item.draft_email) + '</div>' +
-          '<div class="intro-actions">' +
-            '<button class="btn-approve">✓ Approve</button>' +
-            '<button class="btn-edit">✎ Edit</button>' +
-          '</div>' +
-        '</div>' +
-      '</div></div>';
-    });
-    container.innerHTML = html;
-  }
+  function renderSuggestedIntros() { /* moved to matches.html */ }
 
   function renderHealth(h, enrichList) {
     var card = document.getElementById('healthCard');

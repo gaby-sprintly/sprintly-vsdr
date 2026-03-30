@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matches & Introductions — VSDR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #4ECB71;
+  --charcoal: #0F1923;
+  --teal: #2DD4BF;
+  --amber: #F59E0B;
+  --red: #EF4444;
+  --n50: #F8FAFC;
+  --n400: #94A3B8;
+  --n800: #1E293B;
+  --surface: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.06);
+  --sidebar-w: 240px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'General Sans', sans-serif;
+}
+
+html, body {
+  height: 100%;
+  background: var(--charcoal);
+  color: var(--n50);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100%;
+  background: var(--charcoal);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.25s ease;
+}
+
+.sidebar-brand { padding: 32px 24px 0; }
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-logo h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.pulse-dot {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1.0; }
+}
+
+.sidebar-subtitle {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--n400);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-variant: small-caps;
+  margin-top: 6px;
+}
+
+.sidebar-nav { margin-top: 40px; flex: 1; }
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--n400);
+  border-left: 3px solid transparent;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar-nav a:hover { color: #fff; }
+
+.sidebar-nav a.active {
+  color: #fff;
+  border-left-color: var(--green);
+  background: rgba(78,203,113,0.06);
+}
+
+.sidebar-nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.sidebar-version { padding: 24px; font-size: 12px; color: var(--n400); }
+
+.sidebar-close {
+  display: none;
+  position: absolute;
+  top: 20px; right: 16px;
+  background: none; border: none;
+  color: var(--n400);
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  font-family: var(--font-body);
+}
+
+/* ── Hamburger ── */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 90;
+  background: none; border: none;
+  cursor: pointer; padding: 4px;
+}
+
+.hamburger span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--n400);
+  margin: 5px 0;
+  transition: background 0.15s ease;
+}
+
+.hamburger:hover span { background: #fff; }
+
+/* ── Overlay ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 99;
+}
+
+.sidebar-overlay.open { display: block; }
+
+/* ── Main ── */
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100%;
+  padding: 48px;
+}
+
+.main-inner { max-width: 1200px; }
+
+/* ── Header ── */
+.page-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--n50);
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--n400);
+  margin-top: 8px;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-top: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--n400);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover { color: var(--n50); }
+
+.tab-btn.active {
+  color: var(--n50);
+  border-bottom-color: var(--teal);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Stats Bar ── */
+.stats-bar {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--n400);
+}
+
+.stat-pill .stat-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--n50);
+}
+
+.stat-pill .stat-num.amber { color: var(--amber); }
+.stat-pill .stat-num.green { color: var(--green); }
+.stat-pill .stat-num.teal { color: var(--teal); }
+.stat-pill .stat-num.gray { color: var(--n400); }
+
+/* ── Filter Pills ── */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-bar::-webkit-scrollbar { height: 4px; }
+.filter-bar::-webkit-scrollbar-track { background: transparent; }
+.filter-bar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.filter-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--n400);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.filter-pill:hover {
+  color: var(--n50);
+  background: rgba(255,255,255,0.06);
+}
+
+.filter-pill.active {
+  color: var(--teal);
+  background: rgba(45,212,191,0.1);
+  border-color: rgba(45,212,191,0.3);
+}
+
+/* ── Match Cards Grid ── */
+.match-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 24px;
+}
+
+/* ── Match Card ── */
+.match-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border-radius: 2px;
+  padding: 24px;
+  transition: border-color 0.2s ease, transform 0.2s ease, border-left-color 0.3s ease;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+
+.match-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.match-card.status-approved { border-left-color: var(--green); }
+.match-card.status-liked { border-left-color: var(--teal); }
+.match-card.status-disliked { border-left-color: var(--red); opacity: 0.7; }
+.match-card.status-sent { border-left-color: var(--green); }
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 10px;
+  background: rgba(45,212,191,0.1);
+  color: var(--teal);
+  border: 1px solid rgba(45,212,191,0.2);
+}
+
+.match-id {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--n400);
+  opacity: 0.6;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.status-badge.pending {
+  background: rgba(245,158,11,0.12);
+  color: var(--amber);
+  box-shadow: 0 0 8px rgba(245,158,11,0.15);
+}
+
+.status-badge.approved {
+  background: rgba(78,203,113,0.12);
+  color: var(--green);
+  box-shadow: 0 0 8px rgba(78,203,113,0.15);
+}
+
+.status-badge.sent {
+  background: rgba(78,203,113,0.12);
+  color: var(--green);
+  box-shadow: 0 0 8px rgba(78,203,113,0.15);
+}
+
+.status-badge.liked {
+  background: rgba(45,212,191,0.12);
+  color: var(--teal);
+  box-shadow: 0 0 8px rgba(45,212,191,0.15);
+}
+
+.status-badge.disliked {
+  background: rgba(239,68,68,0.12);
+  color: var(--red);
+  box-shadow: 0 0 8px rgba(239,68,68,0.15);
+}
+
+.status-badge.declined {
+  background: rgba(148,163,184,0.12);
+  color: var(--n400);
+}
+
+/* Person display */
+.persons-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.person-block { flex: 1; min-width: 120px; }
+
+.person-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--n50);
+  line-height: 1.2;
+}
+
+.person-detail {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 2px;
+}
+
+.connector {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(45,212,191,0.15);
+  color: var(--teal);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.match-rationale {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--n400);
+  line-height: 1.6;
+  margin-top: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Draft Email Toggle */
+.draft-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n400);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.draft-toggle:hover {
+  color: var(--n50);
+  background: rgba(255,255,255,0.06);
+}
+
+.draft-toggle .arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-size: 10px;
+}
+
+.draft-toggle.open .arrow {
+  transform: rotate(90deg);
+}
+
+.draft-body {
+  display: none;
+  margin-top: 12px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.02);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 2px 2px 0;
+  font-family: var(--font-display), monospace;
+  font-size: 13px;
+  color: var(--n400);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.draft-body.open { display: block; }
+
+/* Action Buttons */
+.match-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+  border: 1px solid;
+}
+
+.btn-action:active { transform: scale(0.97); }
+
+.btn-approve {
+  background: rgba(78,203,113,0.15);
+  border-color: rgba(78,203,113,0.3);
+  color: var(--green);
+}
+
+.btn-approve:hover {
+  background: rgba(78,203,113,0.25);
+  border-color: rgba(78,203,113,0.5);
+}
+
+.btn-approve.active {
+  background: rgba(78,203,113,0.3);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.btn-like {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--n400);
+}
+
+.btn-like:hover {
+  color: var(--green);
+  border-color: rgba(78,203,113,0.3);
+}
+
+.btn-like.active {
+  background: rgba(78,203,113,0.1);
+  border-color: rgba(78,203,113,0.3);
+  color: var(--green);
+}
+
+.btn-dislike {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--n400);
+}
+
+.btn-dislike:hover {
+  color: var(--red);
+  border-color: rgba(239,68,68,0.3);
+}
+
+.btn-dislike.active {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.3);
+  color: var(--red);
+}
+
+/* Feedback Area */
+.feedback-area {
+  display: none;
+  margin-top: 12px;
+  padding: 16px;
+  background: rgba(239,68,68,0.04);
+  border: 1px solid rgba(239,68,68,0.1);
+  border-radius: 2px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.feedback-area.open { display: block; }
+
+.feedback-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--n400);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.reason-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.reason-pill {
+  padding: 5px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--n400);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.reason-pill:hover {
+  color: var(--n50);
+  background: rgba(255,255,255,0.06);
+}
+
+.reason-pill.selected {
+  color: var(--red);
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.3);
+}
+
+.feedback-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--font-body);
+  font-size: 13px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.feedback-input:focus { border-color: rgba(239,68,68,0.3); }
+.feedback-input::placeholder { color: var(--n400); opacity: 0.5; }
+
+.btn-submit-feedback {
+  padding: 8px 18px;
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: var(--red);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-submit-feedback:hover {
+  background: rgba(239,68,68,0.25);
+}
+
+/* ── Match Diary ── */
+.diary-empty {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 48px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.diary-empty p {
+  color: var(--n400);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.diary-list {
+  margin-top: 24px;
+}
+
+.diary-entry {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.diary-entry:last-child { border-bottom: none; }
+
+.diary-date {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--n400);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.diary-people {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--n50);
+  flex: 1;
+}
+
+.diary-reason {
+  font-size: 12px;
+  color: var(--n400);
+  opacity: 0.7;
+  margin-left: 8px;
+}
+
+/* ── Learning Card ── */
+.learning-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border-radius: 2px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.learning-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--n50);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.learning-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.learning-stat {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--n400);
+}
+
+.learning-stat strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--n50);
+}
+
+.learning-note {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--n400);
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+/* ── Footer ── */
+.page-footer {
+  margin-top: 48px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--n400);
+}
+
+/* ── Loading ── */
+.loading-state {
+  text-align: center;
+  padding: 80px 0;
+  color: var(--n400);
+  font-size: 15px;
+}
+
+.loading-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  margin: 0 3px;
+  animation: loadPulse 1.2s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes loadPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-close { display: block; }
+  .hamburger { display: block; }
+  .main { margin-left: 0; padding: 24px; padding-top: 64px; }
+  .page-title { font-size: 28px; }
+  .match-grid { grid-template-columns: 1fr; }
+  .stats-bar { flex-direction: column; }
+  .persons-row { flex-direction: column; align-items: flex-start; }
+  .connector { align-self: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hamburger -->
+<button class="hamburger" id="hamburger" aria-label="Open menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<!-- Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">
+      <h1>VSDR</h1>
+      <span class="pulse-dot"></span>
+    </div>
+    <div class="sidebar-subtitle">Sprintly Partners</div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+      </svg>
+      Home
+    </a>
+    <a href="bmc.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+      Strategy
+    </a>
+    <a href="goals.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <circle cx="12" cy="12" r="6"></circle>
+        <circle cx="12" cy="12" r="2"></circle>
+      </svg>
+      Goals
+    </a>
+    <a href="pipeline.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+      </svg>
+      Pipeline
+    </a>
+    <a href="matches.html" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <line x1="19" y1="8" x2="19" y2="14"></line>
+        <line x1="22" y1="11" x2="16" y2="11"></line>
+      </svg>
+      Matches
+    </a>
+    <a href="network.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+      Network
+    </a>
+  </nav>
+  <div class="sidebar-version">v2.0</div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="main-inner">
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+      <span class="loading-dot"></span>
+      <br><br>Loading matches...
+    </div>
+
+    <!-- Content -->
+    <div id="content" style="display:none;">
+      <header>
+        <h2 class="page-title">Matches & Introductions</h2>
+        <p class="page-subtitle">AI-matched connections. Review, approve, or decline. Gaby learns from your feedback.</p>
+      </header>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="active">Active Matches</button>
+        <button class="tab-btn" data-tab="diary">Match Diary</button>
+      </div>
+
+      <!-- Active Matches Tab -->
+      <div class="tab-content active" id="tab-active">
+        <div class="stats-bar" id="statsBar"></div>
+        <div class="filter-bar" id="filterBar"></div>
+        <div class="match-grid" id="matchGrid"></div>
+
+        <!-- Learning Card -->
+        <div class="learning-card" id="learningCard"></div>
+      </div>
+
+      <!-- Match Diary Tab -->
+      <div class="tab-content" id="tab-diary">
+        <div id="diaryContent"></div>
+      </div>
+
+      <footer class="page-footer">
+        Last updated: March 30, 2026 · Maintained by Gaby
+      </footer>
+    </div>
+  </div>
+</main>
+
+<script>
+(function() {
+  // Sidebar
+  var hamburger = document.getElementById('hamburger');
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var closeBtn = document.getElementById('sidebarClose');
+
+  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('open'); }
+  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+
+  hamburger.addEventListener('click', openSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', closeSidebar);
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // State
+  var STORAGE_KEY = 'vsdr_matches_state';
+  var matchData = [];
+  var matchRules = {};
+  var matchHistory = [];
+  var localState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  var activeFilter = 'All';
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(localState));
+  }
+
+  function getMatchState(id) {
+    return localState[id] || { status: 'pending', liked: false, disliked: false, feedback: null };
+  }
+
+  function setMatchState(id, updates) {
+    if (!localState[id]) localState[id] = { status: 'pending', liked: false, disliked: false, feedback: null };
+    Object.keys(updates).forEach(function(k) { localState[id][k] = updates[k]; });
+    saveState();
+  }
+
+  // Fetch
+  fetch('network-data.json')
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      matchData = data.suggested_intros || [];
+      matchRules = data.matching_rules || {};
+      matchHistory = data.match_history || [];
+      renderAll();
+    })
+    .catch(function(err) {
+      document.getElementById('loadingState').innerHTML = '<p style="color:var(--red);">Failed to load data.</p>';
+      console.error(err);
+    });
+
+  function renderAll() {
+    renderStats();
+    renderFilters();
+    renderCards();
+    renderLearning();
+    renderDiary();
+  }
+
+  function getComputedStats() {
+    var pending = 0, approved = 0, sent = 0, declined = 0, liked = 0, disliked = 0;
+    matchData.forEach(function(m) {
+      var s = getMatchState(m.id);
+      if (s.status === 'approved') approved++;
+      else if (s.status === 'sent') sent++;
+      else if (s.status === 'declined') declined++;
+      else pending++;
+      if (s.liked) liked++;
+      if (s.disliked) disliked++;
+    });
+    return { pending: pending, approved: approved, sent: sent, declined: declined, liked: liked, disliked: disliked };
+  }
+
+  function renderStats() {
+    var s = getComputedStats();
+    document.getElementById('statsBar').innerHTML =
+      '<div class="stat-pill"><span class="stat-num amber">' + s.pending + '</span> Pending</div>' +
+      '<div class="stat-pill"><span class="stat-num green">' + s.approved + '</span> Approved</div>' +
+      '<div class="stat-pill"><span class="stat-num teal">' + s.sent + '</span> Sent</div>' +
+      '<div class="stat-pill"><span class="stat-num gray">' + s.declined + '</span> Declined</div>';
+  }
+
+  function renderFilters() {
+    var cats = ['All', 'Founder x Investor', 'Founder x Ecosystem', 'Founder x Corporate', 'Founder x Founder', 'Ecosystem x Ecosystem', 'Ecosystem x Corporate', 'Ecosystem x Investor'];
+    var html = '';
+    cats.forEach(function(c) {
+      html += '<button class="filter-pill' + (activeFilter === c ? ' active' : '') + '" data-cat="' + c + '">' + c + '</button>';
+    });
+    var bar = document.getElementById('filterBar');
+    bar.innerHTML = html;
+    bar.querySelectorAll('.filter-pill').forEach(function(pill) {
+      pill.addEventListener('click', function() {
+        activeFilter = pill.dataset.cat;
+        renderFilters();
+        renderCards();
+      });
+    });
+  }
+
+  function renderCards() {
+    var grid = document.getElementById('matchGrid');
+    var filtered = matchData.filter(function(m) {
+      if (activeFilter === 'All') return true;
+      return m.category === activeFilter;
+    });
+
+    // Sort: disliked to bottom
+    filtered.sort(function(a, b) {
+      var sa = getMatchState(a.id);
+      var sb = getMatchState(b.id);
+      if (sa.disliked && !sb.disliked) return 1;
+      if (!sa.disliked && sb.disliked) return -1;
+      return 0;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--n400);">No matches in this category.</div>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function(m) {
+      var st = getMatchState(m.id);
+      var statusClass = st.disliked ? 'disliked' : (st.status !== 'pending' ? st.status : (st.liked ? 'liked' : ''));
+      var cardClass = statusClass ? ' status-' + statusClass : '';
+
+      var statusBadgeClass = st.disliked ? 'disliked' : (st.status !== 'pending' ? st.status : (st.liked ? 'liked' : 'pending'));
+      var statusLabel = statusBadgeClass.charAt(0).toUpperCase() + statusBadgeClass.slice(1);
+      var statusIcon = statusBadgeClass === 'sent' ? ' ✓' : '';
+
+      var draftId = 'draft-' + m.id;
+      var toggleId = 'toggle-' + m.id;
+      var feedbackId = 'feedback-' + m.id;
+
+      html += '<div class="match-card' + cardClass + '" id="card-' + m.id + '">' +
+        '<div class="card-top-row">' +
+          '<span class="category-badge">' + esc(m.category) + '</span>' +
+          '<span class="status-badge ' + statusBadgeClass + '">' + statusLabel + statusIcon + '</span>' +
+        '</div>' +
+        '<div class="match-id">' + esc(m.id) + '</div>' +
+        '<div class="persons-row">' +
+          '<div class="person-block">' +
+            '<div class="person-name">' + esc(m.person_a.name) + '</div>' +
+            '<div class="person-detail">' + esc(m.person_a.company) + '</div>' +
+            '<div class="person-detail">' + esc(m.person_a.title) + '</div>' +
+          '</div>' +
+          '<div class="connector">×</div>' +
+          '<div class="person-block">' +
+            '<div class="person-name">' + esc(m.person_b.name) + '</div>' +
+            '<div class="person-detail">' + esc(m.person_b.company) + '</div>' +
+            '<div class="person-detail">' + esc(m.person_b.title) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="match-rationale">' + esc(m.rationale) + '</div>' +
+        '<button class="draft-toggle" id="' + toggleId + '" data-draft="' + draftId + '">' +
+          '<span class="arrow">▶</span> View Draft' +
+        '</button>' +
+        '<div class="draft-body" id="' + draftId + '">' + esc(m.draft_email_gaby || '') + '</div>' +
+        '<div class="match-actions">' +
+          '<button class="btn-action btn-approve' + (st.status === 'approved' ? ' active' : '') + '" data-id="' + m.id + '" data-action="approve">✓ Approve</button>' +
+          '<button class="btn-action btn-like' + (st.liked ? ' active' : '') + '" data-id="' + m.id + '" data-action="like">👍 Like</button>' +
+          '<button class="btn-action btn-dislike' + (st.disliked ? ' active' : '') + '" data-id="' + m.id + '" data-action="dislike">👎 Dislike</button>' +
+        '</div>' +
+        '<div class="feedback-area' + (st.disliked && !st.feedback ? ' open' : '') + '" id="' + feedbackId + '">' +
+          '<div class="feedback-label">Why doesn\'t this match work?</div>' +
+          '<div class="reason-pills">' +
+            '<button class="reason-pill" data-reason="Wrong industry fit">Wrong industry fit</button>' +
+            '<button class="reason-pill" data-reason="People don\'t overlap">People don\'t overlap</button>' +
+            '<button class="reason-pill" data-reason="Too junior/senior mismatch">Too junior/senior mismatch</button>' +
+            '<button class="reason-pill" data-reason="Already connected">Already connected</button>' +
+            '<button class="reason-pill" data-reason="Bad timing">Bad timing</button>' +
+            '<button class="reason-pill" data-reason="Other">Other</button>' +
+          '</div>' +
+          '<input type="text" class="feedback-input" placeholder="Custom reason (optional)">' +
+          '<button class="btn-submit-feedback" data-id="' + m.id + '">Submit Feedback</button>' +
+        '</div>' +
+      '</div>';
+    });
+    grid.innerHTML = html;
+
+    // Bind events
+    grid.querySelectorAll('.draft-toggle').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var body = document.getElementById(btn.dataset.draft);
+        body.classList.toggle('open');
+        btn.classList.toggle('open');
+      });
+    });
+
+    grid.querySelectorAll('.btn-action').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = btn.dataset.id;
+        var action = btn.dataset.action;
+        handleAction(id, action);
+      });
+    });
+
+    grid.querySelectorAll('.reason-pill').forEach(function(pill) {
+      pill.addEventListener('click', function() {
+        var area = pill.closest('.feedback-area');
+        area.querySelectorAll('.reason-pill').forEach(function(p) { p.classList.remove('selected'); });
+        pill.classList.add('selected');
+      });
+    });
+
+    grid.querySelectorAll('.btn-submit-feedback').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = btn.dataset.id;
+        var area = document.getElementById('feedback-' + id);
+        var selectedPill = area.querySelector('.reason-pill.selected');
+        var customInput = area.querySelector('.feedback-input');
+        var reason = selectedPill ? selectedPill.dataset.reason : '';
+        if (customInput.value.trim()) reason = reason ? reason + ' — ' + customInput.value.trim() : customInput.value.trim();
+        if (!reason) reason = 'No reason given';
+
+        setMatchState(id, { disliked: true, status: 'declined', feedback: reason });
+        area.classList.remove('open');
+        renderAll();
+      });
+    });
+  }
+
+  function handleAction(id, action) {
+    var st = getMatchState(id);
+
+    if (action === 'approve') {
+      if (st.status === 'approved') {
+        setMatchState(id, { status: 'pending' });
+      } else {
+        setMatchState(id, { status: 'approved', disliked: false, feedback: null });
+      }
+    } else if (action === 'like') {
+      if (st.liked) {
+        setMatchState(id, { liked: false });
+      } else {
+        setMatchState(id, { liked: true, disliked: false, feedback: null });
+      }
+    } else if (action === 'dislike') {
+      if (st.disliked) {
+        setMatchState(id, { disliked: false, status: 'pending', feedback: null });
+      } else {
+        setMatchState(id, { disliked: true, liked: false, status: 'pending' });
+        // Show feedback area
+        renderAll();
+        var area = document.getElementById('feedback-' + id);
+        if (area) area.classList.add('open');
+        return;
+      }
+    }
+
+    renderAll();
+  }
+
+  function renderLearning() {
+    var s = getComputedStats();
+    var total = matchData.length;
+    var acted = s.approved + s.liked + s.disliked;
+    var approvalRate = total > 0 ? Math.round((s.approved / total) * 100) : 0;
+    var patterns = s.disliked; // each dislike teaches a pattern
+
+    document.getElementById('learningCard').innerHTML =
+      '<div class="learning-title">🧠 Gaby\'s Matching Intelligence</div>' +
+      '<div class="learning-stats">' +
+        '<div class="learning-stat">Matches generated: <strong>' + total + '</strong></div>' +
+        '<div class="learning-stat">Approval rate: <strong>' + approvalRate + '%</strong></div>' +
+        '<div class="learning-stat">Patterns learned: <strong>' + patterns + '</strong></div>' +
+      '</div>' +
+      '<div class="learning-note">Every like, dislike, and reason you give helps me make better matches. The more feedback, the smarter I get.</div>';
+  }
+
+  function renderDiary() {
+    var diary = document.getElementById('diaryContent');
+
+    // Combine JSON history + localStorage acted matches
+    var entries = [];
+
+    // From JSON match_history
+    matchHistory.forEach(function(h) {
+      entries.push({
+        date: h.date || h.created || '',
+        personA: h.person_a_name || '',
+        personB: h.person_b_name || '',
+        status: h.status || '',
+        reason: h.feedback_reason || ''
+      });
+    });
+
+    // From localStorage
+    matchData.forEach(function(m) {
+      var st = getMatchState(m.id);
+      if (st.status !== 'pending' || st.liked || st.disliked) {
+        var status = st.disliked ? 'Disliked' : (st.status === 'approved' ? 'Approved' : (st.liked ? 'Liked' : st.status));
+        entries.push({
+          date: m.created || new Date().toISOString().slice(0, 10),
+          personA: m.person_a.name,
+          personB: m.person_b.name,
+          status: status.charAt(0).toUpperCase() + status.slice(1),
+          reason: st.feedback || ''
+        });
+      }
+    });
+
+    if (entries.length === 0) {
+      diary.innerHTML = '<div class="diary-empty"><p>No matches acted on yet. Start reviewing the Active Matches tab.</p></div>';
+      return;
+    }
+
+    var html = '<div class="diary-list">';
+    entries.forEach(function(e) {
+      var badgeClass = e.status.toLowerCase();
+      html += '<div class="diary-entry">' +
+        '<span class="diary-date">' + esc(e.date) + '</span>' +
+        '<span class="diary-people">' + esc(e.personA) + ' × ' + esc(e.personB) + '</span>' +
+        '<span class="status-badge ' + badgeClass + '">' + esc(e.status) + '</span>' +
+        (e.reason ? '<span class="diary-reason">' + esc(e.reason) + '</span>' : '') +
+      '</div>';
+    });
+    html += '</div>';
+    diary.innerHTML = html;
+  }
+
+  function esc(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+})();
+</script>
+</body>
+</html>
