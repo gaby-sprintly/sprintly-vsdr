@@ -13,171 +13,194 @@
 body { display: flex; }
 .main { padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* ── Top Bar — always dark ── */
-.top-bar { display: flex; align-items: center; gap: 12px; padding: 16px 32px; border-bottom: 1px solid rgba(255,255,255,0.06); background: #0F1923 !important; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; }
-.btn-back { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 2px; color: #94A3B8; cursor: pointer; padding: 6px 12px; font-size: 13px; transition: all 0.15s; display: flex; align-items: center; gap: 6px; text-decoration: none; }
-.btn-back:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
-.btn-back svg { width: 16px; height: 16px; }
-.top-index { font-family: var(--display); font-size: 11px; font-weight: 600; color: #94A3B8; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 2px; }
-.top-title { font-family: var(--display); font-weight: 700; font-size: 20px; color: #F8FAFC; flex: 1; min-width: 150px; border: none; background: none; outline: none; }
+/* ══ TOP BAR — always dark ══ */
+.top-bar { display: flex; align-items: center; gap: 12px; padding: 14px 28px; border-bottom: 1px solid rgba(255,255,255,0.06); background: #0F1923; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; }
+.btn-back { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #94A3B8; cursor: pointer; padding: 6px 14px; font-size: 13px; transition: all 0.15s; display: flex; align-items: center; gap: 6px; text-decoration: none; font-family: var(--body); }
+.btn-back:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
+.btn-back svg { width: 14px; height: 14px; }
+.top-index { font-family: var(--display); font-size: 11px; font-weight: 600; color: #64748B; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 4px; }
+.top-title { font-family: var(--display); font-weight: 700; font-size: 18px; color: #F8FAFC; flex: 1; min-width: 120px; border: none; background: none; outline: none; }
 .top-title:focus { border-bottom: 2px solid #4ECB71; }
-.top-client { font-size: 13px; color: #94A3B8; background: rgba(255,255,255,0.04); padding: 4px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.08); }
-.top-status select { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #F8FAFC; font-family: var(--body); font-size: 13px; padding: 6px 10px; border-radius: 2px; outline: none; cursor: pointer; }
+.top-client { font-size: 12px; color: #94A3B8; background: rgba(255,255,255,0.04); padding: 4px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.08); }
+.top-status select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #F8FAFC; font-family: var(--body); font-size: 12px; padding: 6px 10px; border-radius: 4px; outline: none; cursor: pointer; }
 .top-status select option { background: #162030; }
-.top-actions { display: flex; gap: 8px; align-items: center; }
-.save-indicator { font-size: 12px; color: #4ECB71; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
-.save-indicator.show { opacity: 1; }
-.save-indicator.offline { color: #F59E0B; }
+.top-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.save-ind { font-size: 11px; color: #4ECB71; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+.save-ind.show { opacity: 1; }
+.save-ind.offline { color: #F59E0B; }
+.top-btn { padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: var(--body); cursor: pointer; transition: all 0.15s; border: 1px solid rgba(255,255,255,0.1); background: none; color: #94A3B8; }
+.top-btn:hover { color: #F8FAFC; border-color: rgba(255,255,255,0.25); }
+.top-btn.primary { background: #4ECB71; border-color: #4ECB71; color: #0F1923; }
+.top-btn.primary:hover { opacity: 0.9; }
 
-.editor-body { display: flex; flex: 1; overflow: hidden; }
+/* ══ EDITOR BODY ══ */
+.editor-body { display: flex; flex: 1; position: relative; }
 
-/* ── Section Navigator ── */
-.sec-nav { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--charcoal); overflow-y: auto; padding: 16px 0; position: sticky; top: 60px; height: calc(100vh - 60px); }
-.sec-nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--n400); padding: 0 16px 12px; }
+/* Left nav */
+.sec-nav { width: 200px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--charcoal); overflow-y: auto; padding: 16px 0; position: sticky; top: 56px; height: calc(100vh - 56px); }
+.sec-nav-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748B; padding: 0 16px 12px; font-weight: 600; }
 .sec-nav-list { list-style: none; }
-.sec-nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; color: var(--n400); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
-.sec-nav-item:hover { color: var(--n50); background: rgba(255,255,255,0.03); }
-.sec-nav-status { font-size: 10px; }
-.sec-nav-add { display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: 13px; color: var(--green); cursor: pointer; border-top: 1px solid var(--border); margin-top: 8px; transition: all 0.15s; }
+.sec-nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 16px; font-size: 12px; color: #94A3B8; cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+.sec-nav-item:hover { color: #F8FAFC; background: rgba(255,255,255,0.03); }
+.sec-nav-item.active { color: #4ECB71; border-left-color: #4ECB71; background: rgba(78,203,113,0.06); }
+.sec-nav-add { display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: 12px; color: #4ECB71; cursor: pointer; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 8px; transition: all 0.15s; font-weight: 600; }
 .sec-nav-add:hover { background: rgba(78,203,113,0.06); }
 
-/* ── WYSIWYG Preview Area (light background like client view) ── */
-.editor-content { flex: 1; padding: 0; overflow-y: auto; background: #F8FAFC; }
-.preview-wrapper { max-width: 900px; margin: 0 auto; padding: 32px; }
+/* ══ WYSIWYG PREVIEW — uses exact client-view CSS ══ */
+.editor-preview { flex: 1; overflow-y: auto; background: #F8FAFC; transition: margin-right 0.3s; }
+.editor-preview.panel-open { margin-right: 420px; }
+.preview-inner { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
 
-/* ── Section Card (wraps preview + controls) ── */
-.section-card { margin-bottom: 8px; position: relative; border: 2px solid transparent; border-radius: 8px; transition: border-color 0.2s; }
-.section-card:hover { border-color: rgba(78,203,113,0.3); }
-.section-card.active { border-color: #4ECB71; }
-.section-card.change-requested { border-color: #F59E0B; }
+/* Section wrapper (clickable) */
+.sec-wrap { position: relative; cursor: pointer; border-radius: 8px; transition: box-shadow 0.2s; margin-bottom: 8px; }
+.sec-wrap:hover { box-shadow: 0 0 0 2px rgba(78,203,113,0.4); }
+.sec-wrap.active { box-shadow: 0 0 0 2px #4ECB71; }
 
-/* ── Section toolbar overlay ── */
-.sec-toolbar { display: none; position: absolute; top: 8px; right: 8px; z-index: 10; background: #0F1923; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 4px; gap: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-.section-card:hover .sec-toolbar { display: flex; }
-.sec-tb-btn { background: none; border: none; color: #94A3B8; cursor: pointer; padding: 6px 10px; font-size: 11px; font-family: var(--body); border-radius: 4px; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
-.sec-tb-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
-.sec-tb-btn.approve { color: #4ECB71; }
-.sec-tb-btn.approve:hover { background: rgba(78,203,113,0.15); }
-.sec-tb-btn.delete { color: #EF4444; }
-.sec-tb-btn.delete:hover { background: rgba(239,68,68,0.15); }
-.sec-tb-btn.edit-btn { color: #2DD4BF; }
+/* Status strip at bottom of section */
+.sec-strip { height: 3px; border-radius: 0 0 8px 8px; }
+.sec-strip.pending { background: #94A3B8; opacity: 0.3; }
+.sec-strip.approved { background: #4ECB71; }
+.sec-strip.change_requested { background: #F59E0B; }
+.sec-strip.edited { background: #A78BFA; }
 
-/* ── Edit panel (slides open below preview) ── */
-.edit-panel { display: none; background: #0F1923; border-top: 1px solid rgba(255,255,255,0.06); padding: 20px 24px; border-radius: 0 0 8px 8px; }
-.edit-panel.open { display: block; }
-.edit-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.edit-panel-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; }
-.edit-panel-close { background: none; border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; cursor: pointer; padding: 4px 12px; font-size: 12px; border-radius: 4px; font-family: var(--body); }
-.edit-panel-close:hover { color: #fff; }
+/* ── Client-view section CSS (copied exactly from proposal-view.html) ── */
+.cover-page { background: linear-gradient(135deg, #0F1923 0%, #162030 50%, #1a2942 100%); border-radius: 12px; padding: 80px 60px; min-height: 500px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; margin-bottom: 48px; }
+.cover-brand { margin-bottom: 48px; }
+.cover-logo { font-family: var(--display); font-weight: 700; font-size: 14px; color: #4ECB71; letter-spacing: 4px; text-transform: uppercase; }
+.cover-logo span { color: #94A3B8; font-weight: 400; margin-left: 4px; }
+.cover-title { font-family: var(--display); font-weight: 700; font-size: 48px; color: #fff; line-height: 1.15; margin-bottom: 16px; max-width: 650px; }
+.cover-subtitle { font-size: 20px; color: #94A3B8; margin-bottom: 40px; }
+.cover-meta { display: flex; gap: 40px; flex-wrap: wrap; }
+.cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.cover-meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #64748B; }
+.cover-meta-item span:last-child { font-size: 15px; color: #F8FAFC; font-weight: 500; }
+.cover-accent-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #4ECB71, #2DD4BF, #F59E0B); }
 
-.sec-editable { outline: none; min-height: 60px; font-size: 15px; line-height: 1.8; color: #F8FAFC; cursor: text; white-space: pre-wrap; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; padding: 16px; }
-.sec-editable:empty::before { content: 'Click to edit...'; color: #64748B; font-style: italic; }
-.sec-editable:focus { border-color: #4ECB71; background: rgba(78,203,113,0.03); }
-
-.sec-table-edit { width: 100%; border-collapse: collapse; }
-.sec-table-edit th, .sec-table-edit td { padding: 10px 14px; border: 1px solid rgba(255,255,255,0.08); font-size: 14px; color: #F8FAFC; }
-.sec-table-edit th { background: rgba(255,255,255,0.04); font-weight: 600; }
-.sec-table-edit td:focus { outline: 2px solid #4ECB71; outline-offset: -2px; background: rgba(78,203,113,0.05); }
-.sec-table-edit .rec-col { background: rgba(78,203,113,0.06); }
-
-.json-editor textarea { width: 100%; min-height: 200px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #4ECB71; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; padding: 16px; outline: none; resize: vertical; }
-.json-editor textarea:focus { border-color: #4ECB71; }
-.json-editor-actions { display: flex; gap: 8px; margin-top: 8px; }
-
-.image-upload-zone { border: 2px dashed rgba(255,255,255,0.1); border-radius: 4px; padding: 32px; text-align: center; color: #94A3B8; cursor: pointer; transition: all 0.2s; }
-.image-upload-zone:hover { border-color: #4ECB71; color: #F8FAFC; }
-.image-preview { max-width: 100%; border-radius: 4px; margin-bottom: 12px; }
-.image-actions { display: flex; gap: 8px; margin-top: 8px; }
-
-/* ── Preview section styling (light, matches client view) ── */
-.sec-preview { cursor: pointer; }
 .section-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
-.section-num { font-family: var(--display); font-weight: 700; font-size: 14px; color: #4ECB71; background: rgba(78,203,113,0.1); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.section-title-display { font-family: var(--display); font-weight: 700; font-size: 28px; color: #0F172A; }
+.section-num { font-family: var(--display); font-weight: 700; font-size: 14px; color: #4ECB71; background: rgba(78,203,113,0.1); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.section-title-text { font-family: var(--display); font-weight: 700; font-size: 28px; color: #0F172A; }
 
-/* Light overrides for preview area */
-.preview-wrapper .sec-text p { font-size: 16px; line-height: 1.9; color: #334155; margin-bottom: 16px; }
-.preview-wrapper .sec-text p:last-child { margin-bottom: 0; }
-.preview-wrapper .sec-callout-inline { border-left: 3px solid #F59E0B; padding: 16px 20px; margin: 24px 0; background: rgba(245,158,11,0.06); border-radius: 0 4px 4px 0; }
-.preview-wrapper .sec-callout-inline p { font-style: italic; color: #334155; margin: 0; }
-.preview-wrapper .sec-callout-inline cite { color: #64748B; }
-.preview-wrapper .sec-table-wrap { border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); overflow: hidden; }
-.preview-wrapper .sec-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.preview-wrapper .sec-table th { padding: 14px 18px; background: #F8FAFC; text-align: left; font-weight: 600; color: #0F172A; border-bottom: 1px solid rgba(0,0,0,0.08); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-.preview-wrapper .sec-table td { padding: 12px 18px; border-bottom: 1px solid rgba(0,0,0,0.04); color: #475569; }
-.preview-wrapper .sec-table tr:last-child td { border-bottom: none; }
-.preview-wrapper .sec-table .rec-col { background: rgba(78,203,113,0.08); }
-.preview-wrapper .sec-table th.rec-col { color: #16a34a; }
-.preview-wrapper .rec-badge { background: #4ECB71; color: #fff; }
-.preview-wrapper .sec-pricing .price-row td { font-weight: 700; font-size: 16px; color: #0F172A; font-family: var(--display); }
-.preview-wrapper .sec-metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-.preview-wrapper .metric-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 24px; border-top: 3px solid var(--accent, #4ECB71); }
-.preview-wrapper .metric-icon svg { width: 28px; height: 28px; }
-.preview-wrapper .metric-value { font-family: var(--display); font-weight: 700; font-size: 36px; color: #0F172A; }
-.preview-wrapper .metric-label { color: #64748B; }
-.preview-wrapper .metric-sub { color: #94A3B8; }
-.preview-wrapper .sec-roi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
-.preview-wrapper .roi-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 20px; text-align: center; }
-.preview-wrapper .roi-value { font-family: var(--display); font-weight: 700; font-size: 28px; color: #4ECB71; }
-.preview-wrapper .roi-conservative .roi-value { color: #64748B; }
-.preview-wrapper .roi-stretch .roi-value { color: #F59E0B; }
-.preview-wrapper .sec-gantt { padding: 20px 0; }
-.preview-wrapper .gantt-header span { color: #64748B; }
-.preview-wrapper .gantt-label { color: #0F172A; }
-.preview-wrapper .gantt-track { background: rgba(0,0,0,0.03); }
-.preview-wrapper .gantt-marker { color: #94A3B8; }
-.preview-wrapper .sec-callout { border-left: 4px solid #F59E0B; padding: 28px 32px; background: rgba(245,158,11,0.04); border-radius: 0 8px 8px 0; }
-.preview-wrapper .sec-callout p { font-size: 20px; color: #334155; }
-.preview-wrapper .sec-callout cite { color: #64748B; }
-.preview-wrapper .callout-mark { color: rgba(245,158,11,0.15); }
-.preview-wrapper .sec-divider .divider-line { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), rgba(78,203,113,0.2), rgba(0,0,0,0.06), transparent); }
+.sec-text p { font-size: 16px; line-height: 1.9; color: #334155; margin-bottom: 16px; }
+.sec-text p:last-child { margin-bottom: 0; }
+.sec-callout-inline { border-left: 3px solid #F59E0B; padding: 16px 20px; margin: 24px 0; background: rgba(245,158,11,0.06); border-radius: 0 4px 4px 0; }
+.sec-callout-inline p { font-style: italic; color: #334155; margin: 0; }
+.sec-callout-inline cite { color: #64748B; }
+.sec-table-wrap { border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); overflow: hidden; }
+.sec-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.sec-table th { padding: 14px 18px; background: #F8FAFC; text-align: left; font-weight: 600; color: #0F172A; border-bottom: 1px solid rgba(0,0,0,0.08); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+.sec-table td { padding: 12px 18px; border-bottom: 1px solid rgba(0,0,0,0.04); color: #475569; }
+.sec-table tr:last-child td { border-bottom: none; }
+.sec-table .rec-col { background: rgba(78,203,113,0.08); }
+.sec-table th.rec-col { color: #16a34a; }
+.rec-badge { font-size: 9px; background: #4ECB71; color: #fff; padding: 2px 6px; border-radius: 2px; margin-left: 6px; }
+.sec-pricing .price-row td { font-weight: 700; font-size: 16px; color: #0F172A; font-family: var(--display); }
+.sec-metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.metric-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 24px; border-top: 3px solid var(--accent, #4ECB71); }
+.metric-icon { color: var(--accent, #4ECB71); margin-bottom: 12px; }
+.metric-icon svg { width: 28px; height: 28px; }
+.metric-value { font-family: var(--display); font-weight: 700; font-size: 36px; color: #0F172A; line-height: 1; margin-bottom: 4px; }
+.metric-label { font-size: 13px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-sub { font-size: 12px; color: #94A3B8; margin-top: 8px; line-height: 1.5; }
+.sec-roi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+.roi-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 20px; text-align: center; }
+.roi-label { font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.roi-value { font-family: var(--display); font-weight: 700; font-size: 28px; color: #4ECB71; }
+.roi-conservative .roi-value { color: #64748B; }
+.roi-stretch .roi-value { color: #F59E0B; }
+.sec-gantt { padding: 20px 0; }
+.gantt-header { display: flex; padding: 0 0 12px; border-bottom: 1px solid rgba(0,0,0,0.06); margin-bottom: 12px; }
+.gantt-header span { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748B; }
+.gantt-header span:first-child { width: 140px; flex-shrink: 0; }
+.gantt-header span:last-child { flex: 1; }
+.gantt-row { display: flex; align-items: center; padding: 8px 0; }
+.gantt-label { width: 140px; flex-shrink: 0; font-size: 14px; font-weight: 500; color: #0F172A; }
+.gantt-track { flex: 1; height: 36px; background: rgba(0,0,0,0.03); border-radius: 6px; position: relative; overflow: hidden; }
+.gantt-bar { position: absolute; top: 3px; bottom: 3px; border-radius: 4px; display: flex; align-items: center; justify-content: center; min-width: 40px; }
+.gantt-bar-label { font-size: 11px; font-weight: 600; color: rgba(0,0,0,0.7); white-space: nowrap; }
+.gantt-markers { display: flex; position: relative; margin-top: 8px; padding-left: 140px; height: 20px; }
+.gantt-marker { position: absolute; font-size: 10px; color: #94A3B8; transform: translateX(-50%); }
+.sec-callout { border-left: 4px solid #F59E0B; padding: 28px 32px; background: rgba(245,158,11,0.04); border-radius: 0 8px 8px 0; position: relative; }
+.callout-mark { font-family: Georgia, serif; font-size: 72px; color: rgba(245,158,11,0.15); position: absolute; top: -12px; left: 16px; line-height: 1; }
+.sec-callout p { font-size: 20px; font-style: italic; line-height: 1.7; color: #334155; margin: 0; position: relative; z-index: 1; }
+.sec-callout cite { display: block; margin-top: 16px; font-size: 15px; color: #64748B; font-style: normal; position: relative; z-index: 1; }
+.sec-image img { width: 100%; height: auto; border-radius: 8px; }
+.sec-image figcaption { font-size: 13px; color: #94A3B8; margin-top: 8px; text-align: center; }
+.sec-image-empty { border: 2px dashed rgba(0,0,0,0.1); border-radius: 8px; padding: 48px; text-align: center; color: #94A3B8; }
+.sec-divider { padding: 24px 0; }
+.divider-line { height: 2px; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), rgba(78,203,113,0.2), rgba(0,0,0,0.06), transparent); }
+.sec-empty { padding: 24px; text-align: center; color: #94A3B8; font-style: italic; }
 
-/* ── Chat (dark themed, below edit panel) ── */
-.sec-chat { background: #0F1923; border-top: 1px solid rgba(255,255,255,0.06); border-radius: 0 0 8px 8px; }
-.chat-toggle { display: flex; align-items: center; gap: 8px; padding: 10px 20px; width: 100%; background: none; border: none; cursor: pointer; color: #94A3B8; font-size: 13px; font-family: var(--body); transition: all 0.15s; text-align: left; }
-.chat-toggle:hover { color: #F8FAFC; background: rgba(255,255,255,0.02); }
-.chat-count { font-size: 12px; }
-.chat-status-dot { width: 6px; height: 6px; border-radius: 50%; }
-.chat-status-dot.has-open { background: #F59E0B; }
-.chat-status-dot.all-resolved { background: #4ECB71; }
-.chat-thread { display: none; padding: 0 20px 16px; }
-.chat-thread.open { display: block; }
-.chat-messages { max-height: 300px; overflow-y: auto; margin-bottom: 12px; }
-.chat-msg { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
-.chat-msg:last-child { border-bottom: none; }
-.chat-author { font-size: 12px; font-weight: 600; color: #F8FAFC; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
-.chat-time { font-weight: 400; color: #94A3B8; font-size: 11px; }
-.chat-bubble { font-size: 14px; line-height: 1.6; color: #94A3B8; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 4px; }
-.chat-msg-gaby .chat-bubble { background: rgba(78,203,113,0.06); border-left: 2px solid #4ECB71; }
-.chat-resolved-badge { font-size: 10px; color: #4ECB71; background: rgba(78,203,113,0.15); padding: 2px 8px; border-radius: 2px; margin-top: 6px; display: inline-block; }
-.chat-input-row { display: flex; gap: 8px; }
-.chat-input { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #F8FAFC; font-family: var(--body); font-size: 14px; outline: none; }
-.chat-input:focus { border-color: #4ECB71; }
-.chat-input::placeholder { color: rgba(148,163,184,0.5); }
-.chat-send-btn { padding: 10px 16px; background: #4ECB71; border: none; border-radius: 4px; color: #0F1923; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; }
-.chat-send-btn:hover { opacity: 0.9; }
+/* ══ RIGHT SIDE PANEL ══ */
+.side-panel { position: fixed; top: 56px; right: 0; width: 420px; height: calc(100vh - 56px); background: #0F1923; border-left: 1px solid rgba(255,255,255,0.06); z-index: 40; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; display: flex; flex-direction: column; }
+.side-panel.open { transform: translateX(0); }
+.sp-header { padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.sp-title { font-family: var(--display); font-size: 16px; font-weight: 700; color: #F8FAFC; }
+.sp-close { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: #94A3B8; cursor: pointer; padding: 4px 12px; font-size: 12px; font-family: var(--body); }
+.sp-close:hover { color: #fff; }
+.sp-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.sp-section { margin-bottom: 20px; }
+.sp-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748B; margin-bottom: 8px; font-weight: 600; display: block; }
+.sp-input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #F8FAFC; font-family: var(--body); font-size: 14px; outline: none; }
+.sp-input:focus { border-color: #4ECB71; }
+.sp-textarea { width: 100%; min-height: 180px; padding: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #F8FAFC; font-family: var(--body); font-size: 14px; outline: none; resize: vertical; line-height: 1.7; }
+.sp-textarea:focus { border-color: #4ECB71; }
+.sp-json { width: 100%; min-height: 200px; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #4ECB71; font-family: 'SF Mono','Fira Code',monospace; font-size: 13px; outline: none; resize: vertical; }
+.sp-json:focus { border-color: #4ECB71; }
+.sp-actions { display: flex; gap: 8px; margin-top: 12px; }
+.sp-btn { padding: 8px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: var(--body); cursor: pointer; transition: all 0.15s; border: none; }
+.sp-btn.save { background: #4ECB71; color: #0F1923; }
+.sp-btn.save:hover { opacity: 0.9; }
+.sp-btn.approve { background: none; border: 1px solid rgba(78,203,113,0.3); color: #4ECB71; }
+.sp-btn.approve:hover { background: rgba(78,203,113,0.1); }
+.sp-btn.delete { background: none; border: 1px solid rgba(239,68,68,0.2); color: #EF4444; }
+.sp-btn.delete:hover { background: rgba(239,68,68,0.1); }
+.sp-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0; }
 
-/* ── Add Section Modal ── */
+/* Chat in panel */
+.sp-chat-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748B; margin-bottom: 12px; font-weight: 600; }
+.sp-chat-msgs { max-height: 250px; overflow-y: auto; margin-bottom: 12px; }
+.sp-msg { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.sp-msg:last-child { border-bottom: none; }
+.sp-msg-author { font-size: 11px; font-weight: 600; color: #F8FAFC; margin-bottom: 3px; }
+.sp-msg-time { font-weight: 400; color: #64748B; margin-left: 8px; }
+.sp-msg-text { font-size: 13px; color: #94A3B8; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 4px; line-height: 1.5; }
+.sp-msg.gaby .sp-msg-text { background: rgba(78,203,113,0.06); border-left: 2px solid #4ECB71; }
+.sp-msg-resolved { font-size: 10px; color: #4ECB71; background: rgba(78,203,113,0.15); padding: 2px 8px; border-radius: 2px; margin-top: 4px; display: inline-block; }
+.sp-chat-input { display: flex; gap: 8px; }
+.sp-chat-input input { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #F8FAFC; font-family: var(--body); font-size: 13px; outline: none; }
+.sp-chat-input input:focus { border-color: #4ECB71; }
+.sp-chat-input input::placeholder { color: rgba(148,163,184,0.5); }
+.sp-chat-input button { padding: 10px 16px; background: #4ECB71; border: none; border-radius: 4px; color: #0F1923; font-weight: 600; font-size: 12px; cursor: pointer; }
+
+/* Image upload in panel */
+.sp-img-zone { border: 2px dashed rgba(255,255,255,0.1); border-radius: 4px; padding: 24px; text-align: center; color: #94A3B8; cursor: pointer; transition: all 0.2s; }
+.sp-img-zone:hover { border-color: #4ECB71; color: #F8FAFC; }
+
+/* Table edit in panel */
+.sp-table-edit { width: 100%; border-collapse: collapse; }
+.sp-table-edit th, .sp-table-edit td { padding: 8px 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 13px; color: #F8FAFC; }
+.sp-table-edit th { background: rgba(255,255,255,0.04); font-weight: 600; }
+.sp-table-edit td:focus { outline: 2px solid #4ECB71; outline-offset: -2px; }
+
+/* Modals */
 .add-sec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .add-sec-option { padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; text-align: center; transition: all 0.15s; }
 .add-sec-option:hover { border-color: var(--green); background: rgba(78,203,113,0.05); }
 .add-sec-icon { font-size: 24px; margin-bottom: 6px; }
 .add-sec-label { font-size: 13px; font-weight: 600; color: var(--n50); }
 .add-sec-desc { font-size: 11px; color: var(--n400); margin-top: 2px; }
-.modal-card.sm { max-width: 400px; }
-
-/* ── Status indicator on section ── */
-.sec-status-bar { display: flex; align-items: center; gap: 8px; padding: 6px 16px; font-size: 11px; background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.04); }
-.sec-status-bar .status-badge { font-size: 10px; padding: 2px 8px; }
 
 @media (max-width: 1024px) { .sec-nav { display: none; } }
 @media (max-width: 768px) {
-  .top-bar { padding: 12px 16px; gap: 8px; }
-  .top-title { font-size: 16px; }
-  .preview-wrapper { padding: 16px; }
+  .top-bar { padding: 10px 16px; gap: 6px; }
+  .top-title { font-size: 15px; }
+  .side-panel { width: 100%; }
+  .editor-preview.panel-open { margin-right: 0; }
   .add-sec-grid { grid-template-columns: repeat(2, 1fr); }
-  .section-title-display { font-size: 22px; }
-  .preview-wrapper .sec-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .cover-page { padding: 40px 24px; min-height: 300px; }
+  .cover-title { font-size: 32px; }
+  .section-title-text { font-size: 22px; }
+  .sec-metrics-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -185,27 +208,16 @@ body { display: flex; }
 
 <main class="main">
   <div class="top-bar">
-    <a href="proposals.html" class="btn-back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
-    </a>
+    <a href="proposals.html" class="btn-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</a>
     <span class="top-index" id="topIndex">...</span>
     <input class="top-title" id="topTitle" value="Loading..." />
-    <span class="top-client" id="topClient">—</span>
-    <div class="top-status">
-      <select id="topStatus" onchange="changeProposalStatus(this.value)">
-        <option value="draft">Draft</option>
-        <option value="in_review">In Review</option>
-        <option value="approved">Approved</option>
-        <option value="sent">Sent</option>
-        <option value="archived">Archived</option>
-      </select>
-    </div>
+    <span class="top-client" id="topClient"></span>
+    <div class="top-status"><select id="topStatus" onchange="changeStatus(this.value)"><option value="draft">Draft</option><option value="in_review">In Review</option><option value="approved">Approved</option><option value="sent">Sent</option><option value="archived">Archived</option></select></div>
     <div class="top-actions">
-      <span class="save-indicator" id="saveIndicator">Saved ✓</span>
-      <button class="btn-sync" onclick="refreshProposal()">&#8635; Refresh</button>
-      <button class="btn-secondary" onclick="exportPDF()" style="font-size:12px;color:#F8FAFC;border-color:rgba(255,255,255,0.15)">Export PDF</button>
-      <button class="btn-primary" onclick="generateShareLink()" style="font-size:12px;padding:8px 14px">Share Link</button>
+      <span class="save-ind" id="saveInd">Saved ✓</span>
+      <button class="top-btn" onclick="refreshProposal()">↻ Refresh</button>
+      <button class="top-btn" onclick="exportPDF()">Export PDF</button>
+      <button class="top-btn primary" onclick="generateShareLink()">Share Link</button>
     </div>
   </div>
 
@@ -213,35 +225,34 @@ body { display: flex; }
     <div class="sec-nav">
       <div class="sec-nav-title">Sections</div>
       <ul class="sec-nav-list" id="secNavList"></ul>
-      <div class="sec-nav-add" onclick="openAddSectionModal()">+ Add Section</div>
+      <div class="sec-nav-add" onclick="openAddModal()">+ Add Section</div>
     </div>
-    <div class="editor-content" id="editorContent">
-      <div class="preview-wrapper" style="text-align:center;padding:80px 0;color:#94A3B8">Loading proposal...</div>
+    <div class="editor-preview" id="editorPreview">
+      <div class="preview-inner" id="previewInner" style="text-align:center;padding:80px 0;color:#94A3B8">Loading...</div>
     </div>
   </div>
 </main>
 
-<div class="modal-overlay" id="addSectionModal">
-  <div class="modal-card" style="max-width:560px">
-    <h3 class="modal-title">Add Section</h3>
-    <div class="add-sec-grid" id="addSecGrid"></div>
-    <div class="modal-actions"><button class="btn-secondary" onclick="closeAddSectionModal()">Cancel</button></div>
+<!-- Right Side Panel -->
+<div class="side-panel" id="sidePanel">
+  <div class="sp-header">
+    <span class="sp-title" id="spTitle">Edit Section</span>
+    <button class="sp-close" onclick="closePanel()">Close ✕</button>
   </div>
+  <div class="sp-body" id="spBody"></div>
 </div>
 
-<div class="modal-overlay" id="delSecModal">
-  <div class="modal-card sm">
-    <h3 class="modal-title">Delete Section</h3>
-    <p style="color:var(--n400);font-size:14px;line-height:1.6">Are you sure? This cannot be undone.</p>
-    <div class="modal-actions" style="margin-top:20px">
-      <button class="btn-secondary" onclick="closeDelSecModal()">Cancel</button>
-      <button class="btn-danger" id="btnDelSec" onclick="confirmDeleteSection()">Delete</button>
-    </div>
+<!-- Add Section Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-card" style="max-width:560px">
+    <h3 class="modal-title">Add Section</h3>
+    <div class="add-sec-grid" id="addGrid"></div>
+    <div class="modal-actions"><button class="btn-secondary" onclick="closeAddModal()">Cancel</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-<div id="pdfContainer" style="position:absolute;left:-9999px;top:0;width:900px;"></div>
+<div id="pdfBox" style="position:absolute;left:-9999px;top:0;width:900px"></div>
 
 <script src="js/supabase-client.js"></script>
 <script src="js/proposal-data.js"></script>
@@ -250,423 +261,299 @@ body { display: flex; }
 <script>
 initSidebar('proposals');
 
-let proposal = null;
-let sections = [];
-let changeRequests = [];
-let saveQueue = new Map();
-let saveTimeout = null;
-let delSectionId = null;
-let editingSection = null;
+var P = null, secs = [], crs = [], activeSecId = null;
+var saveQ = new Map(), saveTmr = null;
+var proposalId = new URLSearchParams(location.search).get('id');
+if (!proposalId) location.href = 'proposals.html';
 
-const proposalId = new URLSearchParams(location.search).get('id');
-if (!proposalId) { window.location.href = 'proposals.html'; }
-
-// ════════════════════════
-// Data
-// ════════════════════════
-
-async function loadProposal() {
+// ═══ Data ═══
+async function load() {
   try {
-    const data = await fetchProposal(proposalId);
-    if (!data) { showToast('Proposal not found', 'error'); return; }
-    proposal = data;
-    sections = data.sections || [];
-    changeRequests = data.change_requests || [];
+    var d = await fetchProposal(proposalId);
+    if (!d) { showToast('Proposal not found','error'); return; }
+    P = d; secs = d.sections || []; crs = d.change_requests || [];
     renderAll();
-  } catch (e) { console.error(e); showToast('Failed to load: ' + e.message, 'error'); }
+  } catch(e) { console.error(e); showToast('Load failed','error'); }
 }
-
 async function refreshProposal() {
-  showToast('Refreshing...', 'success');
-  await loadProposal();
-  document.querySelectorAll('.section-card').forEach(el => {
-    el.style.borderColor = '#4ECB71';
-    setTimeout(() => el.style.borderColor = '', 1500);
-  });
+  showToast('Refreshing...','success'); await load();
 }
 
-// ════════════════════════
-// Rendering — WYSIWYG
-// ════════════════════════
-
-function renderAll() {
-  renderTopBar();
-  renderSecNav();
-  renderSections();
-}
+// ═══ Render ═══
+function renderAll() { renderTopBar(); renderNav(); renderPreview(); }
 
 function renderTopBar() {
-  document.getElementById('topIndex').textContent = proposal.proposal_index || '';
-  document.getElementById('topTitle').value = proposal.title || 'Untitled';
-  document.getElementById('topClient').textContent = proposal.client_name || '—';
-  document.getElementById('topStatus').value = proposal.status || 'draft';
-  document.title = (proposal.title || 'Proposal') + ' — VSDR';
+  document.getElementById('topIndex').textContent = P.proposal_index || '';
+  document.getElementById('topTitle').value = P.title || 'Untitled';
+  document.getElementById('topClient').textContent = P.client_name || '';
+  document.getElementById('topStatus').value = P.status || 'draft';
+  document.title = (P.title || 'Proposal') + ' — VSDR';
 }
 
-const STATUS_ICONS = { pending: '⏳', edited: '✏️', change_requested: '🔴', approved: '✅' };
-const STATUS_LABELS = { pending: 'Pending', edited: 'Edited', change_requested: 'Changes Requested', approved: 'Approved' };
+var SI = { pending:'⏳', edited:'✏️', change_requested:'🔴', approved:'✅' };
 
-function renderSecNav() {
-  document.getElementById('secNavList').innerHTML = sections.map((s, i) =>
-    '<li class="sec-nav-item" onclick="scrollToSection(\'' + s.id + '\')">' +
-      '<span class="sec-nav-status">' + (STATUS_ICONS[s.status] || '⏳') + '</span>' +
-      '<span>' + (i + 1) + '. ' + escH(s.title || 'Untitled') + '</span>' +
-    '</li>'
-  ).join('');
-}
-
-function renderSections() {
-  const container = document.getElementById('editorContent');
-  if (!sections.length) {
-    container.innerHTML = '<div class="preview-wrapper" style="text-align:center;padding:80px 0"><div style="font-size:48px;opacity:0.3;margin-bottom:16px">📝</div><div style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px">No sections yet</div><p style="color:#64748B">Add a section to start building your proposal.</p><button class="btn-primary" onclick="openAddSectionModal()" style="margin-top:16px">+ Add Section</button></div>';
-    return;
-  }
-
-  let html = '<div class="preview-wrapper">';
-  let secNum = 0;
-
-  sections.forEach((s, i) => {
-    const sectionCRs = changeRequests.filter(cr => cr.section_id === s.id);
-    const openCRs = sectionCRs.filter(cr => cr.status === 'open' || cr.status === 'in_progress');
-    const statusCls = s.status === 'change_requested' ? ' change-requested' : '';
-
-    html += '<div class="section-card' + statusCls + '" id="sec-' + s.id + '">';
-
-    // Toolbar overlay
-    html += '<div class="sec-toolbar">' +
-      '<button class="sec-tb-btn edit-btn" onclick="toggleEditPanel(\'' + s.id + '\')">✏️ Edit</button>' +
-      (s.status !== 'approved' ? '<button class="sec-tb-btn approve" onclick="approveSection(\'' + s.id + '\')">✅ Approve</button>' : '') +
-      '<button class="sec-tb-btn delete" onclick="openDelSecModal(\'' + s.id + '\')">🗑 Delete</button>' +
-    '</div>';
-
-    // Status bar
-    html += '<div class="sec-status-bar">' +
-      '<span class="status-badge status-' + s.status + '">' + (STATUS_LABELS[s.status] || s.status) + '</span>' +
-      '<span style="color:#94A3B8;font-size:11px">' + escH(s.content_type) + '</span>' +
-    '</div>';
-
-    // WYSIWYG Preview (exactly like client view)
-    html += '<div class="sec-preview" onclick="toggleEditPanel(\'' + s.id + '\')">';
-    if (s.content_type === 'cover') {
-      html += renderSectionContent(s, proposal);
-    } else if (s.content_type === 'divider') {
-      html += '<div style="padding:24px 16px">' + renderDivider() + '</div>';
-    } else {
-      secNum++;
-      html += '<div style="padding:24px">';
-      html += '<div class="section-heading">';
-      html += '<div class="section-num">' + String(secNum).padStart(2, '0') + '</div>';
-      html += '<h2 class="section-title-display">' + escH(s.title || 'Untitled') + '</h2>';
-      html += '</div>';
-      html += renderSectionContent(s, proposal);
-      html += '</div>';
-    }
-    html += '</div>';
-
-    // Edit panel (dark, collapsible)
-    html += '<div class="edit-panel" id="editPanel-' + s.id + '">';
-    html += '<div class="edit-panel-header">';
-    html += '<span class="edit-panel-title">Edit: ' + escH(s.title) + '</span>';
-    html += '<button class="edit-panel-close" onclick="closeEditPanel(\'' + s.id + '\')">Close</button>';
-    html += '</div>';
-    html += renderEditControls(s);
-    html += '</div>';
-
-    // Chat
-    html += renderChatArea(s, sectionCRs, openCRs);
-
-    html += '</div>';
-  });
-
-  html += '</div>';
-  container.innerHTML = html;
-}
-
-function renderEditControls(section) {
-  const sid = section.id;
-  let html = '';
-
-  // Title edit
-  html += '<div style="margin-bottom:12px"><label style="font-size:11px;color:#64748B;display:block;margin-bottom:4px">Section Title</label>';
-  html += '<input class="form-input" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:#F8FAFC" value="' + escAttr(section.title || '') + '" onchange="saveSectionTitle(\'' + sid + '\', this.value)" /></div>';
-
-  if (section.content_type === 'text' || section.content_type === 'callout') {
-    html += '<div class="sec-editable" contenteditable="true" data-section-id="' + sid + '" onblur="handleTextBlur(this)">' +
-      escH(section.content || '').replace(/\n/g, '<br>') + '</div>';
-  } else if (section.content_type === 'table' || section.content_type === 'pricing') {
-    html += renderEditableTable(section);
-  } else if (section.content_type === 'image') {
-    html += renderEditableImage(section);
-  } else if (section.content_type === 'cover' || section.content_type === 'divider') {
-    html += '<p style="color:#64748B;font-size:13px">This section type is auto-generated from proposal metadata.</p>';
-  } else {
-    // metrics, timeline — JSON editor
-    const data = section.metrics_data || section.timeline_data || section.table_data || section.content_json || {};
-    html += '<textarea id="jsonTa-' + sid + '" style="width:100%;min-height:200px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:4px;color:#4ECB71;font-family:SF Mono,Fira Code,monospace;font-size:13px;padding:16px;outline:none;resize:vertical">' + escH(JSON.stringify(data, null, 2)) + '</textarea>';
-    html += '<div style="display:flex;gap:8px;margin-top:8px">';
-    html += '<button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="saveJsonData(\'' + sid + '\', \'' + section.content_type + '\')">Apply Changes</button>';
-    html += '</div>';
-  }
-  return html;
-}
-
-function renderEditableTable(section) {
-  const td = section.table_data || section.content_json || {};
-  const headers = td.headers || []; const rows = td.rows || [];
-  const rec = td.recommended || ''; const recIdx = rec ? headers.indexOf(rec) : -1;
-  let html = '<div style="overflow-x:auto"><table class="sec-table-edit" data-section-id="' + section.id + '">';
-  if (headers.length) {
-    html += '<thead><tr>';
-    headers.forEach((h, i) => { html += '<th' + (i === recIdx ? ' class="rec-col"' : '') + ' contenteditable="true">' + escH(h) + '</th>'; });
-    html += '</tr></thead>';
-  }
-  html += '<tbody>';
-  rows.forEach(row => {
-    html += '<tr>';
-    (Array.isArray(row) ? row : [row]).forEach((cell, ci) => {
-      html += '<td' + (ci === recIdx ? ' class="rec-col"' : '') + ' contenteditable="true">' + escH(cell) + '</td>';
-    });
-    html += '</tr>';
-  });
-  html += '</tbody></table></div>';
-  return html;
-}
-
-function renderEditableImage(section) {
-  const sid = section.id;
-  if (section.image_url) {
-    return '<img src="' + section.image_url + '" class="image-preview" alt="">' +
-      '<div class="image-actions"><button class="btn-secondary" style="font-size:12px;color:#F8FAFC;border-color:rgba(255,255,255,0.15)" onclick="triggerImageUpload(\'' + sid + '\')">Replace</button>' +
-      '<button class="btn-danger" style="font-size:12px" onclick="removeImage(\'' + sid + '\')">Remove</button></div>' +
-      '<input type="file" accept="image/*" style="display:none" id="imgInput-' + sid + '" onchange="handleImageUpload(\'' + sid + '\', this)">';
-  }
-  return '<div class="image-upload-zone" onclick="triggerImageUpload(\'' + sid + '\')">🖼️ Drag & drop or click to upload</div>' +
-    '<input type="file" accept="image/*" style="display:none" id="imgInput-' + sid + '" onchange="handleImageUpload(\'' + sid + '\', this)">';
-}
-
-function renderChatArea(section, crs, openCRs) {
-  const count = crs.length;
-  const hasOpen = openCRs.length > 0;
-  const dotCls = count === 0 ? '' : (hasOpen ? 'has-open' : 'all-resolved');
-  let msgsHtml = crs.map(cr => {
-    const isGaby = (cr.author || '').toLowerCase() === 'gaby';
-    const time = cr.created_at ? new Date(cr.created_at).toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
-    let h = '<div class="chat-msg' + (isGaby ? ' chat-msg-gaby' : '') + '"><div class="chat-author">' + escH(cr.author) + ' <span class="chat-time">' + time + '</span></div><div class="chat-bubble">' + escH(cr.message) + '</div>';
-    if (cr.status === 'resolved') { h += '<span class="chat-resolved-badge">Resolved</span>'; if (cr.response) h += '<div class="chat-bubble" style="margin-top:6px;font-size:13px;color:#4ECB71">' + escH(cr.response) + '</div>'; }
-    return h + '</div>';
+function renderNav() {
+  document.getElementById('secNavList').innerHTML = secs.map(function(s,i) {
+    return '<li class="sec-nav-item' + (s.id===activeSecId?' active':'') + '" onclick="selectSection(\''+s.id+'\')">' +
+      '<span style="font-size:10px">'+(SI[s.status]||'⏳')+'</span>' +
+      '<span>'+(i+1)+'. '+esc(s.title||'Untitled')+'</span></li>';
   }).join('');
-  return '<div class="sec-chat"><button class="chat-toggle" onclick="toggleChat(\'' + section.id + '\')"><span>💬</span><span class="chat-count">' + count + ' message' + (count !== 1 ? 's' : '') + '</span>' + (dotCls ? '<span class="chat-status-dot ' + dotCls + '"></span>' : '') + '</button><div class="chat-thread" id="chat-' + section.id + '"><div class="chat-messages">' + msgsHtml + '</div><div class="chat-input-row"><input class="chat-input" id="chatIn-' + section.id + '" placeholder="Tell Gaby what to change..." onkeydown="if(event.key===\'Enter\')sendCR(\'' + section.id + '\')" /><button class="chat-send-btn" onclick="sendCR(\'' + section.id + '\')">Send</button></div></div></div>';
 }
 
-// ════════════════════════
-// Interactions
-// ════════════════════════
+function renderPreview() {
+  var h = '', num = 0;
+  secs.forEach(function(s) {
+    h += '<div class="sec-wrap'+(s.id===activeSecId?' active':'')+'" data-id="'+s.id+'" onclick="selectSection(\''+s.id+'\')">';
+    if (s.content_type === 'cover') {
+      h += renderSectionContent(s, P);
+    } else if (s.content_type === 'divider') {
+      h += '<div style="padding:16px 0">' + renderDivider() + '</div>';
+    } else {
+      num++;
+      h += '<div style="padding:28px 24px">';
+      h += '<div class="section-heading"><div class="section-num">'+String(num).padStart(2,'0')+'</div>';
+      h += '<h2 class="section-title-text">'+esc(s.title||'')+'</h2></div>';
+      h += renderSectionContent(s, P);
+      h += '</div>';
+    }
+    h += '<div class="sec-strip '+s.status+'"></div></div>';
+  });
+  if (!secs.length) h = '<div style="text-align:center;padding:80px 0"><div style="font-size:48px;opacity:0.3">📝</div><p style="color:#64748B;margin:16px 0">No sections yet.</p><button class="sp-btn save" onclick="openAddModal()">+ Add Section</button></div>';
+  document.getElementById('previewInner').innerHTML = h;
+}
 
-function escH(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
-function escAttr(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;') : ''; }
-function scrollToSection(id) { var el = document.getElementById('sec-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-function toggleChat(id) { document.getElementById('chat-' + id).classList.toggle('open'); }
+// ═══ Side Panel ═══
+function selectSection(id) {
+  activeSecId = id;
+  renderNav(); renderPreview(); openPanel(id);
+}
 
-function toggleEditPanel(id) {
-  var panel = document.getElementById('editPanel-' + id);
-  if (!panel) return;
-  var wasOpen = panel.classList.contains('open');
-  // Close all
-  document.querySelectorAll('.edit-panel.open').forEach(p => p.classList.remove('open'));
-  document.querySelectorAll('.section-card.active').forEach(c => c.classList.remove('active'));
-  if (!wasOpen) {
-    panel.classList.add('open');
-    document.getElementById('sec-' + id).classList.add('active');
+function openPanel(id) {
+  var s = secs.find(function(x){return x.id===id;});
+  if (!s) return;
+  var panel = document.getElementById('sidePanel');
+  document.getElementById('spTitle').textContent = esc(s.title || 'Edit Section');
+  document.getElementById('spBody').innerHTML = buildPanelContent(s);
+  panel.classList.add('open');
+  document.getElementById('editorPreview').classList.add('panel-open');
+}
+
+function closePanel() {
+  activeSecId = null;
+  document.getElementById('sidePanel').classList.remove('open');
+  document.getElementById('editorPreview').classList.remove('panel-open');
+  renderNav(); renderPreview();
+}
+
+function buildPanelContent(s) {
+  var id = s.id, h = '';
+  // Title
+  h += '<div class="sp-section"><span class="sp-label">Section Title</span>';
+  h += '<input class="sp-input" value="'+escA(s.title||'')+'" onchange="saveSTitle(\''+id+'\',this.value)" /></div>';
+  // Type badge
+  h += '<div class="sp-section"><span class="sp-label">Type</span><span style="color:#A78BFA;font-size:13px;text-transform:uppercase;letter-spacing:0.5px">'+esc(s.content_type)+'</span></div>';
+  // Content editor
+  h += '<div class="sp-section"><span class="sp-label">Content</span>';
+  if (s.content_type==='text'||s.content_type==='callout') {
+    h += '<textarea class="sp-textarea" id="spText-'+id+'" onblur="saveText(\''+id+'\')">'+esc(s.content||'')+'</textarea>';
+  } else if (s.content_type==='table'||s.content_type==='pricing') {
+    h += buildTableEditor(s);
+  } else if (s.content_type==='image') {
+    h += buildImageEditor(s);
+  } else if (s.content_type==='cover'||s.content_type==='divider') {
+    h += '<p style="color:#64748B;font-size:13px">Auto-generated from proposal metadata.</p>';
+  } else {
+    var data = s.metrics_data||s.timeline_data||s.table_data||s.content_json||{};
+    h += '<textarea class="sp-json" id="spJson-'+id+'">'+esc(JSON.stringify(data,null,2))+'</textarea>';
+    h += '<div class="sp-actions"><button class="sp-btn save" onclick="saveJson(\''+id+'\',\''+s.content_type+'\')">Apply Changes</button></div>';
   }
+  h += '</div>';
+  // Status actions
+  h += '<div class="sp-divider"></div>';
+  h += '<div class="sp-section"><span class="sp-label">Status</span><div class="sp-actions">';
+  if (s.status!=='approved') h += '<button class="sp-btn approve" onclick="approveSec(\''+id+'\')">✅ Approve Section</button>';
+  else h += '<span style="color:#4ECB71;font-size:13px">✅ Approved</span>';
+  h += '</div></div>';
+  // Chat
+  h += '<div class="sp-divider"></div>';
+  h += buildChatPanel(s);
+  // Delete
+  h += '<div class="sp-divider"></div>';
+  h += '<div class="sp-section"><button class="sp-btn delete" onclick="delSec(\''+id+'\')">Delete Section</button></div>';
+  return h;
 }
 
-function closeEditPanel(id) {
-  document.getElementById('editPanel-' + id).classList.remove('open');
-  document.getElementById('sec-' + id).classList.remove('active');
+function buildTableEditor(s) {
+  var td = s.table_data||s.content_json||{}, headers=td.headers||[], rows=td.rows||[], rec=td.recommended||'';
+  var recIdx = rec ? headers.indexOf(rec) : -1;
+  var h = '<div style="overflow-x:auto"><table class="sp-table-edit" data-sid="'+s.id+'">';
+  if (headers.length) { h+='<thead><tr>'; headers.forEach(function(c){h+='<th contenteditable="true">'+esc(c)+'</th>';}); h+='</tr></thead>'; }
+  h+='<tbody>';
+  rows.forEach(function(row){ h+='<tr>'; (Array.isArray(row)?row:[row]).forEach(function(c){h+='<td contenteditable="true">'+esc(c)+'</td>';}); h+='</tr>'; });
+  h+='</tbody></table></div>';
+  h+='<div class="sp-actions" style="margin-top:8px"><button class="sp-btn save" onclick="saveTable(\''+s.id+'\')">Save Table</button></div>';
+  return h;
 }
 
-// ── Saves ──
-document.getElementById('topTitle').addEventListener('change', async function() {
-  if (!proposal) return;
-  try { await updateProposal(proposal.id, { title: this.value }); proposal.title = this.value; showSaved(); } catch (e) { showToast('Save failed', 'error'); }
+function buildImageEditor(s) {
+  var h='';
+  if (s.image_url) {
+    h+='<img src="'+s.image_url+'" style="max-width:100%;border-radius:4px;margin-bottom:8px">';
+    h+='<div class="sp-actions"><button class="sp-btn save" onclick="trigImg(\''+s.id+'\')">Replace</button><button class="sp-btn delete" onclick="rmImg(\''+s.id+'\')">Remove</button></div>';
+  } else {
+    h+='<div class="sp-img-zone" onclick="trigImg(\''+s.id+'\')">🖼️ Click to upload image</div>';
+  }
+  h+='<input type="file" accept="image/*" style="display:none" id="imgIn-'+s.id+'" onchange="doImg(\''+s.id+'\',this)">';
+  return h;
+}
+
+function buildChatPanel(s) {
+  var myCrs = crs.filter(function(c){return c.section_id===s.id;});
+  var h = '<div class="sp-section"><span class="sp-chat-title">💬 Change Requests ('+myCrs.length+')</span>';
+  h += '<div class="sp-chat-msgs">';
+  myCrs.forEach(function(cr) {
+    var isG = (cr.author||'').toLowerCase()==='gaby';
+    var t = cr.created_at ? new Date(cr.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    h += '<div class="sp-msg'+(isG?' gaby':'')+'">';
+    h += '<div class="sp-msg-author">'+esc(cr.author)+'<span class="sp-msg-time">'+t+'</span></div>';
+    h += '<div class="sp-msg-text">'+esc(cr.message)+'</div>';
+    if (cr.status==='resolved') { h+='<span class="sp-msg-resolved">Resolved</span>'; if(cr.response) h+='<div class="sp-msg-text" style="margin-top:4px;color:#4ECB71;font-size:12px">'+esc(cr.response)+'</div>'; }
+    h += '</div>';
+  });
+  h += '</div>';
+  h += '<div class="sp-chat-input"><input id="crIn-'+s.id+'" placeholder="Tell Gaby what to change..." onkeydown="if(event.key===\'Enter\')sendCR(\''+s.id+'\')" /><button onclick="sendCR(\''+s.id+'\')">Send</button></div>';
+  h += '</div>';
+  return h;
+}
+
+// ═══ Save operations ═══
+function esc(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):'';}
+function escA(s){return s?String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'):'';}
+function scrollToSection(id){ var el=document.querySelector('[data-id="'+id+'"]'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }
+
+document.getElementById('topTitle').addEventListener('change',async function(){
+  if(!P)return; try{await updateProposal(P.id,{title:this.value});P.title=this.value;saved();}catch(e){showToast('Failed','error');}
 });
 
-async function saveSectionTitle(sid, value) {
-  try { await updateSection(sid, { title: value }); var s = sections.find(x => x.id === sid); if (s) s.title = value; renderSecNav(); renderSections(); showSaved(); } catch (e) { showToast('Save failed', 'error'); }
+async function saveSTitle(id,v){
+  try{await updateSection(id,{title:v});var s=secs.find(function(x){return x.id===id;});if(s)s.title=v;renderNav();renderPreview();saved();}catch(e){showToast('Failed','error');}
 }
 
-function handleTextBlur(el) { queueSave(el.dataset.sectionId, { content: el.innerText }); }
-
-document.addEventListener('blur', function(e) {
-  var table = e.target.closest('.sec-table-edit');
-  if (!table || !e.target.matches('th, td')) return;
-  var sid = table.dataset.sectionId;
-  var headers = [], rows = [];
-  table.querySelectorAll('thead th').forEach(th => headers.push(th.textContent.trim()));
-  table.querySelectorAll('tbody tr').forEach(tr => { var row = []; tr.querySelectorAll('td').forEach(td => row.push(td.textContent.trim())); rows.push(row); });
-  var sec = sections.find(s => s.id === sid);
-  var existing = sec ? (sec.table_data || sec.content_json || {}) : {};
-  var td = { headers, rows, recommended: existing.recommended || '' };
-  queueSave(sid, { table_data: td, content_json: td });
-}, true);
-
-async function saveJsonData(sid, contentType) {
-  var ta = document.getElementById('jsonTa-' + sid);
-  if (!ta) return;
-  try {
-    var data = JSON.parse(ta.value);
-    var fields = { content_json: data };
-    if (contentType === 'metrics') fields.metrics_data = data;
-    else if (contentType === 'timeline') fields.timeline_data = data;
-    else if (contentType === 'table' || contentType === 'pricing') fields.table_data = data;
-    await updateSection(sid, fields);
-    var sec = sections.find(s => s.id === sid); if (sec) Object.assign(sec, fields);
-    closeEditPanel(sid); renderSections(); showSaved();
-  } catch (e) { showToast('Invalid JSON: ' + e.message, 'error'); }
+function saveText(id){
+  var ta=document.getElementById('spText-'+id); if(!ta)return;
+  var s=secs.find(function(x){return x.id===id;}); if(s)s.content=ta.value;
+  qSave(id,{content:ta.value});
+  renderPreview();
 }
 
-function triggerImageUpload(sid) { document.getElementById('imgInput-' + sid).click(); }
-function handleImageUpload(sid, input) { if (input.files[0]) readImageFile(input.files[0], sid); }
-function readImageFile(file, sid) {
-  var reader = new FileReader();
-  reader.onload = function(e) { queueSave(sid, { image_url: e.target.result }); var sec = sections.find(s => s.id === sid); if (sec) sec.image_url = e.target.result; renderSections(); };
-  reader.readAsDataURL(file);
-}
-function removeImage(sid) { queueSave(sid, { image_url: null }); var sec = sections.find(s => s.id === sid); if (sec) sec.image_url = null; renderSections(); }
-
-async function approveSection(sid) {
-  try { await updateSection(sid, { status: 'approved' }); var sec = sections.find(s => s.id === sid); if (sec) sec.status = 'approved'; renderSections(); renderSecNav(); showToast('Section approved', 'success'); } catch (e) { showToast('Failed', 'error'); }
-}
-
-async function changeProposalStatus(v) {
-  try { await updateProposal(proposal.id, { status: v }); proposal.status = v; showSaved(); } catch (e) { showToast('Failed', 'error'); }
+async function saveJson(id,type){
+  var ta=document.getElementById('spJson-'+id); if(!ta)return;
+  try{
+    var data=JSON.parse(ta.value), fields={content_json:data};
+    if(type==='metrics')fields.metrics_data=data;
+    else if(type==='timeline')fields.timeline_data=data;
+    else if(type==='table'||type==='pricing')fields.table_data=data;
+    await updateSection(id,fields);
+    var s=secs.find(function(x){return x.id===id;}); if(s)Object.assign(s,fields);
+    renderPreview(); saved();
+  }catch(e){showToast('Invalid JSON: '+e.message,'error');}
 }
 
-async function sendCR(sid) {
-  var input = document.getElementById('chatIn-' + sid); var msg = input.value.trim(); if (!msg) return;
-  input.disabled = true;
-  try { var cr = await createChangeRequest(sid, proposal.id, msg, 'Yousra'); changeRequests.push(cr); var sec = sections.find(s => s.id === sid); if (sec) sec.status = 'change_requested'; input.value = ''; renderSections(); renderSecNav(); showToast('Change request sent to Gaby', 'success'); }
-  catch (e) { showToast('Failed: ' + e.message, 'error'); } finally { input.disabled = false; }
+function saveTable(id){
+  var tbl=document.querySelector('.sp-table-edit[data-sid="'+id+'"]'); if(!tbl)return;
+  var headers=[],rows=[];
+  tbl.querySelectorAll('thead th').forEach(function(th){headers.push(th.textContent.trim());});
+  tbl.querySelectorAll('tbody tr').forEach(function(tr){var r=[];tr.querySelectorAll('td').forEach(function(td){r.push(td.textContent.trim());});rows.push(r);});
+  var s=secs.find(function(x){return x.id===id;}); var old=s?(s.table_data||s.content_json||{}):{};
+  var td={headers:headers,rows:rows,recommended:old.recommended||''};
+  if(s){s.table_data=td;s.content_json=td;}
+  qSave(id,{table_data:td,content_json:td});
+  renderPreview(); saved();
 }
 
-// ── Add/Delete Section ──
-function openAddSectionModal() {
-  document.getElementById('addSecGrid').innerHTML = SECTION_TYPES.map(t =>
-    '<div class="add-sec-option" onclick="addSection(\'' + t.type + '\')"><div class="add-sec-icon">' + t.icon + '</div><div class="add-sec-label">' + t.label + '</div><div class="add-sec-desc">' + t.desc + '</div></div>'
-  ).join('');
-  document.getElementById('addSectionModal').classList.add('open');
-}
-function closeAddSectionModal() { document.getElementById('addSectionModal').classList.remove('open'); }
-document.getElementById('addSectionModal').addEventListener('click', e => { if (e.target.id === 'addSectionModal') closeAddSectionModal(); });
+function trigImg(id){document.getElementById('imgIn-'+id).click();}
+function doImg(id,input){if(input.files[0]){var r=new FileReader();r.onload=function(e){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=e.target.result;qSave(id,{image_url:e.target.result});renderPreview();openPanel(id);};r.readAsDataURL(input.files[0]);}}
+function rmImg(id){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=null;qSave(id,{image_url:null});renderPreview();openPanel(id);}
 
-async function addSection(type) {
-  closeAddSectionModal();
-  var info = SECTION_TYPES.find(t => t.type === type) || {};
-  try {
-    var sec = await createSection(proposal.id, { sort_order: sections.length + 1, title: info.label || type, content_type: type, content: type === 'text' || type === 'callout' ? '' : null, content_json: {}, status: 'pending' });
-    if (sec) { sections.push(sec); renderSections(); renderSecNav(); scrollToSection(sec.id); showToast('Section added', 'success'); }
-  } catch (e) { showToast('Failed', 'error'); }
+async function approveSec(id){
+  try{await updateSection(id,{status:'approved'});var s=secs.find(function(x){return x.id===id;});if(s)s.status='approved';renderAll();openPanel(id);showToast('Approved','success');}catch(e){showToast('Failed','error');}
 }
 
-function openDelSecModal(id) { delSectionId = id; document.getElementById('delSecModal').classList.add('open'); }
-function closeDelSecModal() { delSectionId = null; document.getElementById('delSecModal').classList.remove('open'); }
-document.getElementById('delSecModal').addEventListener('click', e => { if (e.target.id === 'delSecModal') closeDelSecModal(); });
-async function confirmDeleteSection() {
-  if (!delSectionId) return;
-  try { await deleteSection(delSectionId); sections = sections.filter(s => s.id !== delSectionId); changeRequests = changeRequests.filter(cr => cr.section_id !== delSectionId); closeDelSecModal(); renderSections(); renderSecNav(); showToast('Deleted', 'success'); } catch (e) { showToast('Failed', 'error'); }
+async function changeStatus(v){
+  try{await updateProposal(P.id,{status:v});P.status=v;saved();}catch(e){showToast('Failed','error');}
 }
 
-// ── Auto-save ──
-function queueSave(sid, fields) {
-  saveQueue.set(sid, { ...(saveQueue.get(sid) || {}), ...fields }); showSaving();
-  clearTimeout(saveTimeout); saveTimeout = setTimeout(flushSaveQueue, 2000);
+async function sendCR(id){
+  var input=document.getElementById('crIn-'+id);var msg=input.value.trim();if(!msg)return;
+  try{var cr=await createChangeRequest(id,P.id,msg,'Yousra');crs.push(cr);var s=secs.find(function(x){return x.id===id;});if(s)s.status='change_requested';renderAll();openPanel(id);showToast('Sent to Gaby','success');}catch(e){showToast('Failed','error');}
 }
-async function flushSaveQueue() {
-  for (var [sid, fields] of saveQueue) {
-    try { await updateSection(sid, fields); var sec = sections.find(s => s.id === sid); if (sec) Object.assign(sec, fields); }
-    catch (e) { console.error(e); showSavedOffline(); return; }
-  }
-  saveQueue.clear(); showSaved();
-  // Re-render preview to reflect saved changes
-  renderSections();
+
+// Add/Delete
+function openAddModal(){
+  document.getElementById('addGrid').innerHTML=SECTION_TYPES.map(function(t){return '<div class="add-sec-option" onclick="addSec(\''+t.type+'\')"><div class="add-sec-icon">'+t.icon+'</div><div class="add-sec-label">'+t.label+'</div><div class="add-sec-desc">'+t.desc+'</div></div>';}).join('');
+  document.getElementById('addModal').classList.add('open');
 }
-function showSaved() { var el = document.getElementById('saveIndicator'); el.textContent = 'Saved ✓'; el.className = 'save-indicator show'; setTimeout(() => el.classList.remove('show'), 2000); }
-function showSaving() { var el = document.getElementById('saveIndicator'); el.textContent = 'Saving...'; el.className = 'save-indicator show'; }
-function showSavedOffline() { var el = document.getElementById('saveIndicator'); el.textContent = 'Offline'; el.className = 'save-indicator show offline'; }
+function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
+document.getElementById('addModal').addEventListener('click',function(e){if(e.target.id==='addModal')closeAddModal();});
 
-// ── PDF (matches client view exactly) ──
-async function exportPDF() {
-  showToast('Generating PDF...', 'success');
-  var container = document.getElementById('pdfContainer');
-  // Build HTML identical to proposal-view.html
-  var html = '<div style="font-family:General Sans,Helvetica Neue,Arial,sans-serif;color:#0F172A;max-width:800px;margin:0 auto;">';
+async function addSec(type){
+  closeAddModal();var info=SECTION_TYPES.find(function(t){return t.type===type;})||{};
+  try{
+    var s=await createSection(P.id,{sort_order:secs.length+1,title:info.label||type,content_type:type,content:type==='text'||type==='callout'?'':null,content_json:{},status:'pending'});
+    if(s){secs.push(s);renderAll();selectSection(s.id);showToast('Added','success');}
+  }catch(e){showToast('Failed','error');}
+}
 
+async function delSec(id){
+  if(!confirm('Delete this section?'))return;
+  try{await deleteSection(id);secs=secs.filter(function(s){return s.id!==id;});crs=crs.filter(function(c){return c.section_id!==id;});closePanel();renderAll();showToast('Deleted','success');}catch(e){showToast('Failed','error');}
+}
+
+// Auto-save queue
+function qSave(id,fields){saveQ.set(id,Object.assign(saveQ.get(id)||{},fields));saving();clearTimeout(saveTmr);saveTmr=setTimeout(flushQ,2000);}
+async function flushQ(){
+  for(var pair of saveQ){try{await updateSection(pair[0],pair[1]);var s=secs.find(function(x){return x.id===pair[0];});if(s)Object.assign(s,pair[1]);}catch(e){offlineSaved();return;}}
+  saveQ.clear();saved();
+}
+function saved(){var el=document.getElementById('saveInd');el.textContent='Saved ✓';el.className='save-ind show';setTimeout(function(){el.classList.remove('show');},2000);}
+function saving(){var el=document.getElementById('saveInd');el.textContent='Saving...';el.className='save-ind show';}
+function offlineSaved(){var el=document.getElementById('saveInd');el.textContent='Offline';el.className='save-ind show offline';}
+
+// PDF — exact same as client view
+async function exportPDF(){
+  showToast('Generating PDF...','success');
+  var c=document.getElementById('pdfBox');
+  var css='<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:General Sans,Helvetica Neue,Arial,sans-serif;color:#0F172A}.cover-page{background:linear-gradient(135deg,#0F1923,#162030,#1a2942);border-radius:12px;padding:80px 60px;min-height:500px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}.cover-brand{margin-bottom:48px}.cover-logo{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;letter-spacing:4px;text-transform:uppercase}.cover-logo span{color:#94A3B8;font-weight:400;margin-left:4px}.cover-title{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:48px;color:#fff;line-height:1.15;margin-bottom:16px;max-width:650px}.cover-subtitle{font-size:20px;color:#94A3B8;margin-bottom:40px}.cover-meta{display:flex;gap:40px;flex-wrap:wrap}.cover-meta-item{display:flex;flex-direction:column;gap:4px}.cover-meta-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#64748B}.cover-meta-item span:last-child{font-size:15px;color:#F8FAFC;font-weight:500}.cover-accent-bar{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4ECB71,#2DD4BF,#F59E0B)}.sec-text p{font-size:16px;line-height:1.9;color:#334155;margin-bottom:16px}.sec-callout-inline{border-left:3px solid #F59E0B;padding:16px 20px;margin:24px 0;background:rgba(245,158,11,0.06);border-radius:0 4px 4px 0}.sec-callout-inline p{font-style:italic;color:#334155;margin:0}.sec-callout-inline cite{color:#64748B}.sec-table-wrap{border-radius:8px;border:1px solid rgba(0,0,0,0.08);overflow:hidden}.sec-table{width:100%;border-collapse:collapse;font-size:14px}.sec-table th{padding:14px 18px;background:#F8FAFC;text-align:left;font-weight:600;color:#0F172A;border-bottom:1px solid rgba(0,0,0,0.08);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}.sec-table td{padding:12px 18px;border-bottom:1px solid rgba(0,0,0,0.04);color:#475569}.sec-table tr:last-child td{border-bottom:none}.sec-table .rec-col{background:rgba(78,203,113,0.08)}.sec-table th.rec-col{color:#16a34a}.rec-badge{font-size:9px;background:#4ECB71;color:#fff;padding:2px 6px;border-radius:2px;margin-left:6px}.sec-pricing .price-row td{font-weight:700;font-size:16px;color:#0F172A;font-family:Space Grotesk,sans-serif}.sec-metrics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.metric-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:24px;border-top:3px solid var(--accent,#4ECB71);-webkit-print-color-adjust:exact;print-color-adjust:exact}.metric-icon svg{width:28px;height:28px}.metric-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:36px;color:#0F172A;line-height:1;margin-bottom:4px}.metric-label{font-size:13px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:0.5px}.metric-sub{font-size:12px;color:#94A3B8;margin-top:8px;line-height:1.5}.sec-roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.roi-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:20px;text-align:center}.roi-label{font-size:12px;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}.roi-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#4ECB71}.roi-conservative .roi-value{color:#64748B}.roi-stretch .roi-value{color:#F59E0B}.sec-gantt{padding:20px 0}.gantt-header{display:flex;padding:0 0 12px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:12px}.gantt-header span{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748B}.gantt-header span:first-child{width:140px;flex-shrink:0}.gantt-row{display:flex;align-items:center;padding:8px 0}.gantt-label{width:140px;flex-shrink:0;font-size:14px;font-weight:500;color:#0F172A}.gantt-track{flex:1;height:36px;background:rgba(0,0,0,0.03);border-radius:6px;position:relative;overflow:hidden}.gantt-bar{position:absolute;top:3px;bottom:3px;border-radius:4px;display:flex;align-items:center;justify-content:center;min-width:40px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.gantt-bar-label{font-size:11px;font-weight:600;color:rgba(0,0,0,0.7)}.gantt-markers{display:flex;position:relative;margin-top:8px;padding-left:140px;height:20px}.gantt-marker{position:absolute;font-size:10px;color:#94A3B8;transform:translateX(-50%)}.sec-callout{border-left:4px solid #F59E0B;padding:28px 32px;background:rgba(245,158,11,0.04);border-radius:0 8px 8px 0;position:relative}.callout-mark{font-family:Georgia,serif;font-size:72px;color:rgba(245,158,11,0.15);position:absolute;top:-12px;left:16px;line-height:1}.sec-callout p{font-size:20px;font-style:italic;line-height:1.7;color:#334155;margin:0;position:relative;z-index:1}.sec-callout cite{display:block;margin-top:16px;font-size:15px;color:#64748B;font-style:normal;position:relative;z-index:1}.sec-image img{width:100%;height:auto;border-radius:8px}.sec-divider{padding:24px 0}.divider-line{height:2px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.06),rgba(78,203,113,0.2),rgba(0,0,0,0.06),transparent)}.sec-empty{display:none}</style>';
+
+  var html=css+'<div style="max-width:800px;margin:0 auto">';
   // Cover
-  var coverSec = sections.find(s => s.content_type === 'cover');
-  if (coverSec) {
-    html += '<div style="page-break-after:always">' + renderCoverPage(proposal, coverSec) + '</div>';
-  } else {
-    html += '<div style="page-break-after:always">' + renderCoverPage(proposal, { content_json: { tagline: proposal.title, subtitle: 'Prepared for ' + (proposal.client_name || 'Client') } }) + '</div>';
-  }
-
-  // TOC
-  var contentSecs = sections.filter(s => s.content_type !== 'cover' && s.content_type !== 'divider');
-  if (contentSecs.length > 1) {
-    html += '<div style="margin-bottom:48px;padding:32px;background:#fff;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">';
-    html += '<div style="font-family:Space Grotesk,sans-serif;font-size:20px;font-weight:700;color:#0F172A;margin-bottom:20px">Contents</div>';
-    html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">';
-    contentSecs.forEach((s, i) => {
-      html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 16px"><span style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;width:28px">' + String(i+1).padStart(2,'0') + '</span><span style="font-size:14px;font-weight:500;color:#334155">' + escH(s.title) + '</span></div>';
-    });
-    html += '</div></div>';
-  }
-
+  var cover=secs.find(function(s){return s.content_type==='cover';});
+  html+='<div style="page-break-after:always">'+(cover?renderCoverPage(P,cover):renderCoverPage(P,{content_json:{tagline:P.title,subtitle:'Prepared for '+(P.client_name||'Client')}}))+'</div>';
   // Sections
-  var secNum = 0;
-  sections.forEach(s => {
-    if (s.content_type === 'cover') return;
-    if (s.content_type === 'divider') { html += '<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.08),rgba(78,203,113,0.2),rgba(0,0,0,0.08),transparent);margin:32px 0"></div>'; return; }
-    secNum++;
-    html += '<div style="margin-bottom:48px;page-break-inside:avoid">';
-    html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px"><div style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;background:rgba(78,203,113,0.1);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center">' + String(secNum).padStart(2,'0') + '</div><h2 style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#0F172A">' + escH(s.title) + '</h2></div>';
-    html += renderSectionContent(s, proposal);
-    html += '</div>';
+  var num=0;
+  secs.forEach(function(s){
+    if(s.content_type==='cover')return;
+    if(s.content_type==='divider'){html+='<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.08),rgba(78,203,113,0.2),rgba(0,0,0,0.08),transparent);margin:32px 0"></div>';return;}
+    num++;
+    html+='<div style="margin-bottom:48px;page-break-inside:avoid">';
+    html+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px"><div style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;background:rgba(78,203,113,0.1);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center">'+String(num).padStart(2,'0')+'</div><h2 style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#0F172A">'+esc(s.title)+'</h2></div>';
+    html+=renderSectionContent(s,P)+'</div>';
   });
+  html+='<div style="text-align:center;padding:40px 0;color:#94A3B8;font-size:13px;border-top:1px solid rgba(0,0,0,0.06)"><p>Prepared by <strong style="color:#0F172A">Sprintly Partners</strong></p></div></div>';
 
-  // Footer
-  html += '<div style="text-align:center;padding:40px 0;color:#94A3B8;font-size:13px;border-top:1px solid rgba(0,0,0,0.06)"><p>Prepared by <strong style="color:#0F172A">Sprintly Partners</strong></p><p style="margin-top:4px">' + escH(proposal.proposal_index || '') + '</p></div>';
-  html += '</div>';
-
-  // Inject client-view CSS for the PDF
-  var style = '<style>.sec-text p{font-size:16px;line-height:1.9;color:#334155;margin-bottom:16px}.sec-callout-inline{border-left:3px solid #F59E0B;padding:16px 20px;margin:24px 0;background:rgba(245,158,11,0.06);border-radius:0 4px 4px 0}.sec-callout-inline p{font-style:italic;color:#334155;margin:0}.sec-callout-inline cite{color:#64748B}.sec-table-wrap{border-radius:8px;border:1px solid rgba(0,0,0,0.08);overflow:hidden}.sec-table{width:100%;border-collapse:collapse;font-size:14px}.sec-table th{padding:14px 18px;background:#F8FAFC;text-align:left;font-weight:600;color:#0F172A;border-bottom:1px solid rgba(0,0,0,0.08);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}.sec-table td{padding:12px 18px;border-bottom:1px solid rgba(0,0,0,0.04);color:#475569}.sec-table tr:last-child td{border-bottom:none}.sec-table .rec-col{background:rgba(78,203,113,0.08)}.sec-table th.rec-col{color:#16a34a}.rec-badge{font-size:9px;background:#4ECB71;color:#fff;padding:2px 6px;border-radius:2px;margin-left:6px}.sec-pricing .price-row td{font-weight:700;font-size:16px;color:#0F172A;font-family:Space Grotesk,sans-serif}.sec-metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}.metric-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:24px;border-top:3px solid var(--accent,#4ECB71)}.metric-icon svg{width:28px;height:28px}.metric-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:36px;color:#0F172A;line-height:1;margin-bottom:4px}.metric-label{font-size:13px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:0.5px}.metric-sub{font-size:12px;color:#94A3B8;margin-top:8px;line-height:1.5}.sec-roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.roi-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:20px;text-align:center}.roi-label{font-size:12px;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}.roi-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#4ECB71}.roi-conservative .roi-value{color:#64748B}.roi-stretch .roi-value{color:#F59E0B}.sec-gantt{padding:20px 0}.gantt-header{display:flex;padding:0 0 12px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:12px}.gantt-header span{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748B}.gantt-header span:first-child{width:140px;flex-shrink:0}.gantt-row{display:flex;align-items:center;padding:8px 0}.gantt-label{width:140px;flex-shrink:0;font-size:14px;font-weight:500;color:#0F172A}.gantt-track{flex:1;height:36px;background:rgba(0,0,0,0.03);border-radius:6px;position:relative;overflow:hidden}.gantt-bar{position:absolute;top:3px;bottom:3px;border-radius:4px;display:flex;align-items:center;justify-content:center;min-width:40px}.gantt-bar-label{font-size:11px;font-weight:600;color:rgba(0,0,0,0.7);white-space:nowrap}.gantt-markers{display:flex;position:relative;margin-top:8px;padding-left:140px;height:20px}.gantt-marker{position:absolute;font-size:10px;color:#94A3B8;transform:translateX(-50%)}.sec-callout{border-left:4px solid #F59E0B;padding:28px 32px;background:rgba(245,158,11,0.04);border-radius:0 8px 8px 0;position:relative}.callout-mark{font-family:Georgia,serif;font-size:72px;color:rgba(245,158,11,0.15);position:absolute;top:-12px;left:16px;line-height:1}.sec-callout p{font-size:20px;font-style:italic;line-height:1.7;color:#334155;margin:0;position:relative;z-index:1}.sec-callout cite{display:block;margin-top:16px;font-size:15px;color:#64748B;font-style:normal;position:relative;z-index:1}.sec-image img{width:100%;height:auto;border-radius:8px}.sec-divider{padding:24px 0}.divider-line{height:2px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.06),rgba(78,203,113,0.2),rgba(0,0,0,0.06),transparent)}.cover-page{background:linear-gradient(135deg,#0F1923 0%,#162030 50%,#1a2942 100%);border-radius:12px;padding:80px 60px;min-height:500px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}.cover-brand{margin-bottom:48px}.cover-logo{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;letter-spacing:4px;text-transform:uppercase}.cover-logo span{color:#94A3B8;font-weight:400;margin-left:4px}.cover-title{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:48px;color:#fff;line-height:1.15;margin-bottom:16px;max-width:650px}.cover-subtitle{font-size:20px;color:#94A3B8;margin-bottom:40px}.cover-meta{display:flex;gap:40px;flex-wrap:wrap}.cover-meta-item{display:flex;flex-direction:column;gap:4px}.cover-meta-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#64748B}.cover-meta-item span:last-child{font-size:15px;color:#F8FAFC;font-weight:500}.cover-accent-bar{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4ECB71,#2DD4BF,#F59E0B)}.sec-empty{display:none}</style>';
-
-  container.innerHTML = style + html;
-  container.style.display = 'block';
-
-  try {
-    await html2pdf().set({ margin: [10, 10], filename: (proposal.slug || 'proposal') + '.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } }).from(container).save();
-    showToast('PDF exported!', 'success');
-  } catch (e) { showToast('PDF failed', 'error'); }
-  finally { container.style.display = 'none'; }
+  c.innerHTML=html;c.style.display='block';
+  try{await html2pdf().set({margin:[10,10],filename:(P.slug||'proposal')+'.pdf',image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,useCORS:true,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['avoid-all','css','legacy']}}).from(c).save();showToast('PDF exported!','success');}catch(e){showToast('PDF failed','error');}
+  finally{c.style.display='none';}
 }
 
-// ── Share Link ──
-async function generateShareLink() {
-  try {
-    var token = proposal.share_token;
-    if (!token) { token = crypto.randomUUID(); await updateProposal(proposal.id, { share_token: token }); proposal.share_token = token; }
-    await navigator.clipboard.writeText(location.origin + '/proposal-view.html?token=' + token);
-    showToast('Share link copied!', 'success');
-  } catch (e) { showToast('Failed', 'error'); }
+async function generateShareLink(){
+  try{var t=P.share_token;if(!t){t=crypto.randomUUID();await updateProposal(P.id,{share_token:t});P.share_token=t;}
+  await navigator.clipboard.writeText(location.origin+'/proposal-view.html?token='+t);showToast('Share link copied!','success');}catch(e){showToast('Failed','error');}
 }
 
-function showToast(msg, type) {
-  var t = document.getElementById('toast'); t.textContent = msg;
-  t.className = 'toast ' + (type || 'success') + ' show';
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+function showToast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast '+(t||'success')+' show';setTimeout(function(){el.classList.remove('show');},3000);}
 
-loadProposal();
+load();
 </script>
 </body>
 </html>
