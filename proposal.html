@@ -10,152 +10,180 @@
 <link rel="stylesheet" href="css/design-system.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-/* ── Editor Layout ── */
 body { display: flex; }
 .main { padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* Top Bar */
-.top-bar { display: flex; align-items: center; gap: 12px; padding: 16px 32px; border-bottom: 1px solid var(--border); background: var(--charcoal); position: sticky; top: 0; z-index: 50; flex-wrap: wrap; }
-.btn-back { background: none; border: 1px solid var(--border); border-radius: 2px; color: var(--n400); cursor: pointer; padding: 6px 12px; font-size: 13px; transition: all 0.15s; display: flex; align-items: center; gap: 6px; text-decoration: none; }
-.btn-back:hover { color: #fff; border-color: rgba(255,255,255,0.15); }
+/* ── Top Bar — always dark ── */
+.top-bar { display: flex; align-items: center; gap: 12px; padding: 16px 32px; border-bottom: 1px solid rgba(255,255,255,0.06); background: #0F1923 !important; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; }
+.btn-back { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 2px; color: #94A3B8; cursor: pointer; padding: 6px 12px; font-size: 13px; transition: all 0.15s; display: flex; align-items: center; gap: 6px; text-decoration: none; }
+.btn-back:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
 .btn-back svg { width: 16px; height: 16px; }
-.top-index { font-family: var(--display); font-size: 11px; font-weight: 600; color: var(--n400); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 4px 10px; border-radius: 2px; }
-.top-title { font-family: var(--display); font-weight: 700; font-size: 20px; color: var(--n50); flex: 1; min-width: 150px; border: none; background: none; outline: none; }
-.top-title:focus { border-bottom: 2px solid var(--green); }
-.top-client { font-size: 13px; color: var(--n400); background: rgba(255,255,255,0.04); padding: 4px 12px; border-radius: 100px; border: 1px solid var(--border); }
-.top-status select { background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--n50); font-family: var(--body); font-size: 13px; padding: 6px 10px; border-radius: 2px; outline: none; cursor: pointer; }
+.top-index { font-family: var(--display); font-size: 11px; font-weight: 600; color: #94A3B8; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 2px; }
+.top-title { font-family: var(--display); font-weight: 700; font-size: 20px; color: #F8FAFC; flex: 1; min-width: 150px; border: none; background: none; outline: none; }
+.top-title:focus { border-bottom: 2px solid #4ECB71; }
+.top-client { font-size: 13px; color: #94A3B8; background: rgba(255,255,255,0.04); padding: 4px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.08); }
+.top-status select { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #F8FAFC; font-family: var(--body); font-size: 13px; padding: 6px 10px; border-radius: 2px; outline: none; cursor: pointer; }
 .top-status select option { background: #162030; }
 .top-actions { display: flex; gap: 8px; align-items: center; }
-.save-indicator { font-size: 12px; color: var(--green); opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
+.save-indicator { font-size: 12px; color: #4ECB71; opacity: 0; transition: opacity 0.3s; white-space: nowrap; }
 .save-indicator.show { opacity: 1; }
-.save-indicator.offline { color: var(--amber); }
+.save-indicator.offline { color: #F59E0B; }
 
-/* Editor body */
 .editor-body { display: flex; flex: 1; overflow: hidden; }
 
-/* Section Navigator */
+/* ── Section Navigator ── */
 .sec-nav { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--charcoal); overflow-y: auto; padding: 16px 0; position: sticky; top: 60px; height: calc(100vh - 60px); }
 .sec-nav-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--n400); padding: 0 16px 12px; }
 .sec-nav-list { list-style: none; }
 .sec-nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; color: var(--n400); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
 .sec-nav-item:hover { color: var(--n50); background: rgba(255,255,255,0.03); }
-.sec-nav-item.active { color: var(--green); border-left-color: var(--green); background: rgba(78,203,113,0.06); }
 .sec-nav-status { font-size: 10px; }
 .sec-nav-add { display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: 13px; color: var(--green); cursor: pointer; border-top: 1px solid var(--border); margin-top: 8px; transition: all 0.15s; }
 .sec-nav-add:hover { background: rgba(78,203,113,0.06); }
 
-/* Editor Content */
-.editor-content { flex: 1; padding: 32px; overflow-y: auto; max-width: 900px; margin: 0 auto; width: 100%; }
+/* ── WYSIWYG Preview Area (light background like client view) ── */
+.editor-content { flex: 1; padding: 0; overflow-y: auto; background: #F8FAFC; }
+.preview-wrapper { max-width: 900px; margin: 0 auto; padding: 32px; }
 
-/* Section Card */
-.section-card { background: var(--n800); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 24px; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s; }
-.section-card.flash { border-color: var(--green); box-shadow: 0 0 20px rgba(78,203,113,0.1); }
-.section-card.change-requested { border-left: 3px solid var(--amber); }
-.section-card.approved { border-left: 3px solid var(--green); }
+/* ── Section Card (wraps preview + controls) ── */
+.section-card { margin-bottom: 8px; position: relative; border: 2px solid transparent; border-radius: 8px; transition: border-color 0.2s; }
+.section-card:hover { border-color: rgba(78,203,113,0.3); }
+.section-card.active { border-color: #4ECB71; }
+.section-card.change-requested { border-color: #F59E0B; }
 
-/* Section Header */
-.sec-header { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-.sec-number { font-family: var(--display); font-size: 11px; font-weight: 700; color: var(--n400); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 2px 8px; border-radius: 2px; }
-.sec-type-pill { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 2px; background: rgba(167,139,250,0.15); color: var(--purple); }
-.sec-title-input { font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--n50); background: none; border: none; outline: none; flex: 1; min-width: 100px; }
-.sec-title-input:focus { border-bottom: 1px solid var(--green); }
-.sec-status-icon { font-size: 14px; }
-.sec-actions { display: flex; gap: 6px; margin-left: auto; }
-.sec-action-btn { background: none; border: 1px solid var(--border); border-radius: 2px; color: var(--n400); font-size: 11px; padding: 4px 10px; cursor: pointer; transition: all 0.15s; font-family: var(--body); }
-.sec-action-btn:hover { color: var(--n50); border-color: rgba(255,255,255,0.15); }
-.sec-action-btn.approve { border-color: rgba(78,203,113,0.3); color: var(--green); }
-.sec-action-btn.approve:hover { background: rgba(78,203,113,0.1); }
-.sec-action-btn.delete { border-color: rgba(239,68,68,0.2); color: var(--coral); }
-.sec-action-btn.delete:hover { background: rgba(239,68,68,0.1); }
+/* ── Section toolbar overlay ── */
+.sec-toolbar { display: none; position: absolute; top: 8px; right: 8px; z-index: 10; background: #0F1923; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 4px; gap: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+.section-card:hover .sec-toolbar { display: flex; }
+.sec-tb-btn { background: none; border: none; color: #94A3B8; cursor: pointer; padding: 6px 10px; font-size: 11px; font-family: var(--body); border-radius: 4px; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+.sec-tb-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.sec-tb-btn.approve { color: #4ECB71; }
+.sec-tb-btn.approve:hover { background: rgba(78,203,113,0.15); }
+.sec-tb-btn.delete { color: #EF4444; }
+.sec-tb-btn.delete:hover { background: rgba(239,68,68,0.15); }
+.sec-tb-btn.edit-btn { color: #2DD4BF; }
 
-/* Section Body */
-.sec-body { padding: 20px; }
+/* ── Edit panel (slides open below preview) ── */
+.edit-panel { display: none; background: #0F1923; border-top: 1px solid rgba(255,255,255,0.06); padding: 20px 24px; border-radius: 0 0 8px 8px; }
+.edit-panel.open { display: block; }
+.edit-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.edit-panel-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; }
+.edit-panel-close { background: none; border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; cursor: pointer; padding: 4px 12px; font-size: 12px; border-radius: 4px; font-family: var(--body); }
+.edit-panel-close:hover { color: #fff; }
 
-/* Editable text */
-.sec-editable { outline: none; min-height: 60px; font-size: 15px; line-height: 1.8; color: var(--n50); cursor: text; white-space: pre-wrap; }
-.sec-editable:empty::before { content: 'Click to edit...'; color: var(--n400); font-style: italic; }
-.sec-editable:focus { background: rgba(255,255,255,0.02); border-radius: 4px; padding: 12px; margin: -12px; }
+.sec-editable { outline: none; min-height: 60px; font-size: 15px; line-height: 1.8; color: #F8FAFC; cursor: text; white-space: pre-wrap; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; padding: 16px; }
+.sec-editable:empty::before { content: 'Click to edit...'; color: #64748B; font-style: italic; }
+.sec-editable:focus { border-color: #4ECB71; background: rgba(78,203,113,0.03); }
 
-/* Editable table */
 .sec-table-edit { width: 100%; border-collapse: collapse; }
-.sec-table-edit th, .sec-table-edit td { padding: 10px 14px; border: 1px solid var(--border); font-size: 14px; color: var(--n50); }
-.sec-table-edit th { background: rgba(255,255,255,0.04); font-weight: 600; font-size: 13px; }
-.sec-table-edit td { cursor: text; }
-.sec-table-edit td:focus { outline: 2px solid var(--green); outline-offset: -2px; background: rgba(78,203,113,0.05); }
+.sec-table-edit th, .sec-table-edit td { padding: 10px 14px; border: 1px solid rgba(255,255,255,0.08); font-size: 14px; color: #F8FAFC; }
+.sec-table-edit th { background: rgba(255,255,255,0.04); font-weight: 600; }
+.sec-table-edit td:focus { outline: 2px solid #4ECB71; outline-offset: -2px; background: rgba(78,203,113,0.05); }
 .sec-table-edit .rec-col { background: rgba(78,203,113,0.06); }
 
-/* JSON editor for metrics/timeline */
-.json-editor-toggle { font-size: 12px; color: var(--teal); cursor: pointer; margin-top: 12px; display: inline-flex; align-items: center; gap: 4px; }
-.json-editor-toggle:hover { text-decoration: underline; }
-.json-editor { display: none; margin-top: 12px; }
-.json-editor.open { display: block; }
-.json-editor textarea { width: 100%; min-height: 200px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 4px; color: var(--green); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; padding: 16px; outline: none; resize: vertical; }
-.json-editor textarea:focus { border-color: var(--green); }
+.json-editor textarea { width: 100%; min-height: 200px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #4ECB71; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; padding: 16px; outline: none; resize: vertical; }
+.json-editor textarea:focus { border-color: #4ECB71; }
 .json-editor-actions { display: flex; gap: 8px; margin-top: 8px; }
 
-/* Image upload zone */
-.image-upload-zone { border: 2px dashed var(--border); border-radius: 4px; padding: 32px; text-align: center; color: var(--n400); cursor: pointer; transition: all 0.2s; }
-.image-upload-zone:hover { border-color: var(--green); color: var(--n50); }
-.image-upload-zone.dragover { border-color: var(--green); background: rgba(78,203,113,0.05); }
+.image-upload-zone { border: 2px dashed rgba(255,255,255,0.1); border-radius: 4px; padding: 32px; text-align: center; color: #94A3B8; cursor: pointer; transition: all 0.2s; }
+.image-upload-zone:hover { border-color: #4ECB71; color: #F8FAFC; }
 .image-preview { max-width: 100%; border-radius: 4px; margin-bottom: 12px; }
 .image-actions { display: flex; gap: 8px; margin-top: 8px; }
 
-/* ── Chat per Section ── */
-.sec-chat { border-top: 1px solid var(--border); }
-.chat-toggle { display: flex; align-items: center; gap: 8px; padding: 10px 20px; width: 100%; background: none; border: none; cursor: pointer; color: var(--n400); font-size: 13px; font-family: var(--body); transition: all 0.15s; text-align: left; }
-.chat-toggle:hover { color: var(--n50); background: rgba(255,255,255,0.02); }
+/* ── Preview section styling (light, matches client view) ── */
+.sec-preview { cursor: pointer; }
+.section-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.section-num { font-family: var(--display); font-weight: 700; font-size: 14px; color: #4ECB71; background: rgba(78,203,113,0.1); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.section-title-display { font-family: var(--display); font-weight: 700; font-size: 28px; color: #0F172A; }
+
+/* Light overrides for preview area */
+.preview-wrapper .sec-text p { font-size: 16px; line-height: 1.9; color: #334155; margin-bottom: 16px; }
+.preview-wrapper .sec-text p:last-child { margin-bottom: 0; }
+.preview-wrapper .sec-callout-inline { border-left: 3px solid #F59E0B; padding: 16px 20px; margin: 24px 0; background: rgba(245,158,11,0.06); border-radius: 0 4px 4px 0; }
+.preview-wrapper .sec-callout-inline p { font-style: italic; color: #334155; margin: 0; }
+.preview-wrapper .sec-callout-inline cite { color: #64748B; }
+.preview-wrapper .sec-table-wrap { border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); overflow: hidden; }
+.preview-wrapper .sec-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.preview-wrapper .sec-table th { padding: 14px 18px; background: #F8FAFC; text-align: left; font-weight: 600; color: #0F172A; border-bottom: 1px solid rgba(0,0,0,0.08); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+.preview-wrapper .sec-table td { padding: 12px 18px; border-bottom: 1px solid rgba(0,0,0,0.04); color: #475569; }
+.preview-wrapper .sec-table tr:last-child td { border-bottom: none; }
+.preview-wrapper .sec-table .rec-col { background: rgba(78,203,113,0.08); }
+.preview-wrapper .sec-table th.rec-col { color: #16a34a; }
+.preview-wrapper .rec-badge { background: #4ECB71; color: #fff; }
+.preview-wrapper .sec-pricing .price-row td { font-weight: 700; font-size: 16px; color: #0F172A; font-family: var(--display); }
+.preview-wrapper .sec-metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.preview-wrapper .metric-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 24px; border-top: 3px solid var(--accent, #4ECB71); }
+.preview-wrapper .metric-icon svg { width: 28px; height: 28px; }
+.preview-wrapper .metric-value { font-family: var(--display); font-weight: 700; font-size: 36px; color: #0F172A; }
+.preview-wrapper .metric-label { color: #64748B; }
+.preview-wrapper .metric-sub { color: #94A3B8; }
+.preview-wrapper .sec-roi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+.preview-wrapper .roi-card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; padding: 20px; text-align: center; }
+.preview-wrapper .roi-value { font-family: var(--display); font-weight: 700; font-size: 28px; color: #4ECB71; }
+.preview-wrapper .roi-conservative .roi-value { color: #64748B; }
+.preview-wrapper .roi-stretch .roi-value { color: #F59E0B; }
+.preview-wrapper .sec-gantt { padding: 20px 0; }
+.preview-wrapper .gantt-header span { color: #64748B; }
+.preview-wrapper .gantt-label { color: #0F172A; }
+.preview-wrapper .gantt-track { background: rgba(0,0,0,0.03); }
+.preview-wrapper .gantt-marker { color: #94A3B8; }
+.preview-wrapper .sec-callout { border-left: 4px solid #F59E0B; padding: 28px 32px; background: rgba(245,158,11,0.04); border-radius: 0 8px 8px 0; }
+.preview-wrapper .sec-callout p { font-size: 20px; color: #334155; }
+.preview-wrapper .sec-callout cite { color: #64748B; }
+.preview-wrapper .callout-mark { color: rgba(245,158,11,0.15); }
+.preview-wrapper .sec-divider .divider-line { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), rgba(78,203,113,0.2), rgba(0,0,0,0.06), transparent); }
+
+/* ── Chat (dark themed, below edit panel) ── */
+.sec-chat { background: #0F1923; border-top: 1px solid rgba(255,255,255,0.06); border-radius: 0 0 8px 8px; }
+.chat-toggle { display: flex; align-items: center; gap: 8px; padding: 10px 20px; width: 100%; background: none; border: none; cursor: pointer; color: #94A3B8; font-size: 13px; font-family: var(--body); transition: all 0.15s; text-align: left; }
+.chat-toggle:hover { color: #F8FAFC; background: rgba(255,255,255,0.02); }
 .chat-count { font-size: 12px; }
 .chat-status-dot { width: 6px; height: 6px; border-radius: 50%; }
-.chat-status-dot.has-open { background: var(--amber); }
-.chat-status-dot.all-resolved { background: var(--green); }
-
+.chat-status-dot.has-open { background: #F59E0B; }
+.chat-status-dot.all-resolved { background: #4ECB71; }
 .chat-thread { display: none; padding: 0 20px 16px; }
 .chat-thread.open { display: block; }
-
 .chat-messages { max-height: 300px; overflow-y: auto; margin-bottom: 12px; }
 .chat-msg { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
 .chat-msg:last-child { border-bottom: none; }
-.chat-author { font-size: 12px; font-weight: 600; color: var(--n50); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
-.chat-time { font-weight: 400; color: var(--n400); font-size: 11px; }
-.chat-bubble { font-size: 14px; line-height: 1.6; color: var(--n400); padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 4px; }
-.chat-msg-gaby .chat-bubble { background: rgba(78,203,113,0.06); border-left: 2px solid var(--green); }
-.chat-resolved-badge { font-size: 10px; color: var(--green); background: rgba(78,203,113,0.15); padding: 2px 8px; border-radius: 2px; margin-top: 6px; display: inline-block; }
-
+.chat-author { font-size: 12px; font-weight: 600; color: #F8FAFC; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.chat-time { font-weight: 400; color: #94A3B8; font-size: 11px; }
+.chat-bubble { font-size: 14px; line-height: 1.6; color: #94A3B8; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 4px; }
+.chat-msg-gaby .chat-bubble { background: rgba(78,203,113,0.06); border-left: 2px solid #4ECB71; }
+.chat-resolved-badge { font-size: 10px; color: #4ECB71; background: rgba(78,203,113,0.15); padding: 2px 8px; border-radius: 2px; margin-top: 6px; display: inline-block; }
 .chat-input-row { display: flex; gap: 8px; }
-.chat-input { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 4px; color: var(--n50); font-family: var(--body); font-size: 14px; outline: none; }
-.chat-input:focus { border-color: var(--green); }
+.chat-input { flex: 1; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; color: #F8FAFC; font-family: var(--body); font-size: 14px; outline: none; }
+.chat-input:focus { border-color: #4ECB71; }
 .chat-input::placeholder { color: rgba(148,163,184,0.5); }
-.chat-send-btn { padding: 10px 16px; background: var(--green); border: none; border-radius: 4px; color: #0F1923; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
+.chat-send-btn { padding: 10px 16px; background: #4ECB71; border: none; border-radius: 4px; color: #0F1923; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; }
 .chat-send-btn:hover { opacity: 0.9; }
-.chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Add Section Modal */
+/* ── Add Section Modal ── */
 .add-sec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .add-sec-option { padding: 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; text-align: center; transition: all 0.15s; }
 .add-sec-option:hover { border-color: var(--green); background: rgba(78,203,113,0.05); }
 .add-sec-icon { font-size: 24px; margin-bottom: 6px; }
 .add-sec-label { font-size: 13px; font-weight: 600; color: var(--n50); }
 .add-sec-desc { font-size: 11px; color: var(--n400); margin-top: 2px; }
-
 .modal-card.sm { max-width: 400px; }
 
-@media (max-width: 1024px) {
-  .sec-nav { display: none; }
-}
+/* ── Status indicator on section ── */
+.sec-status-bar { display: flex; align-items: center; gap: 8px; padding: 6px 16px; font-size: 11px; background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.04); }
+.sec-status-bar .status-badge { font-size: 10px; padding: 2px 8px; }
+
+@media (max-width: 1024px) { .sec-nav { display: none; } }
 @media (max-width: 768px) {
   .top-bar { padding: 12px 16px; gap: 8px; }
   .top-title { font-size: 16px; }
-  .editor-content { padding: 16px; }
+  .preview-wrapper { padding: 16px; }
   .add-sec-grid { grid-template-columns: repeat(2, 1fr); }
-  .sec-header { padding: 12px 16px; }
-  .sec-body { padding: 16px; }
+  .section-title-display { font-size: 22px; }
+  .preview-wrapper .sec-metrics-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
 <body>
 
 <main class="main">
-  <!-- Top Bar -->
   <div class="top-bar">
     <a href="proposals.html" class="btn-back">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -176,42 +204,35 @@ body { display: flex; }
     <div class="top-actions">
       <span class="save-indicator" id="saveIndicator">Saved ✓</span>
       <button class="btn-sync" onclick="refreshProposal()">&#8635; Refresh</button>
-      <button class="btn-secondary" onclick="exportPDF()" style="font-size:12px">PDF</button>
-      <button class="btn-primary" onclick="generateShareLink()" style="font-size:12px;padding:8px 14px">Share</button>
+      <button class="btn-secondary" onclick="exportPDF()" style="font-size:12px;color:#F8FAFC;border-color:rgba(255,255,255,0.15)">Export PDF</button>
+      <button class="btn-primary" onclick="generateShareLink()" style="font-size:12px;padding:8px 14px">Share Link</button>
     </div>
   </div>
 
   <div class="editor-body">
-    <!-- Section Navigator -->
     <div class="sec-nav">
       <div class="sec-nav-title">Sections</div>
       <ul class="sec-nav-list" id="secNavList"></ul>
       <div class="sec-nav-add" onclick="openAddSectionModal()">+ Add Section</div>
     </div>
-
-    <!-- Editor Content -->
     <div class="editor-content" id="editorContent">
-      <div style="text-align:center;padding:80px 0;color:var(--n400)">Loading proposal...</div>
+      <div class="preview-wrapper" style="text-align:center;padding:80px 0;color:#94A3B8">Loading proposal...</div>
     </div>
   </div>
 </main>
 
-<!-- Add Section Modal -->
 <div class="modal-overlay" id="addSectionModal">
   <div class="modal-card" style="max-width:560px">
     <h3 class="modal-title">Add Section</h3>
     <div class="add-sec-grid" id="addSecGrid"></div>
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeAddSectionModal()">Cancel</button>
-    </div>
+    <div class="modal-actions"><button class="btn-secondary" onclick="closeAddSectionModal()">Cancel</button></div>
   </div>
 </div>
 
-<!-- Delete Section Confirm -->
 <div class="modal-overlay" id="delSecModal">
   <div class="modal-card sm">
     <h3 class="modal-title">Delete Section</h3>
-    <p style="color:var(--n400);font-size:14px;line-height:1.6">Are you sure you want to delete this section? This cannot be undone.</p>
+    <p style="color:var(--n400);font-size:14px;line-height:1.6">Are you sure? This cannot be undone.</p>
     <div class="modal-actions" style="margin-top:20px">
       <button class="btn-secondary" onclick="closeDelSecModal()">Cancel</button>
       <button class="btn-danger" id="btnDelSec" onclick="confirmDeleteSection()">Delete</button>
@@ -220,7 +241,7 @@ body { display: flex; }
 </div>
 
 <div class="toast" id="toast"></div>
-<div id="pdfContainer" style="display:none"></div>
+<div id="pdfContainer" style="position:absolute;left:-9999px;top:0;width:900px;"></div>
 
 <script src="js/supabase-client.js"></script>
 <script src="js/proposal-data.js"></script>
@@ -235,12 +256,13 @@ let changeRequests = [];
 let saveQueue = new Map();
 let saveTimeout = null;
 let delSectionId = null;
+let editingSection = null;
 
 const proposalId = new URLSearchParams(location.search).get('id');
 if (!proposalId) { window.location.href = 'proposals.html'; }
 
 // ════════════════════════
-// Data loading
+// Data
 // ════════════════════════
 
 async function loadProposal() {
@@ -251,23 +273,20 @@ async function loadProposal() {
     sections = data.sections || [];
     changeRequests = data.change_requests || [];
     renderAll();
-  } catch (e) {
-    console.error('Load failed:', e);
-    showToast('Failed to load: ' + e.message, 'error');
-  }
+  } catch (e) { console.error(e); showToast('Failed to load: ' + e.message, 'error'); }
 }
 
 async function refreshProposal() {
   showToast('Refreshing...', 'success');
   await loadProposal();
   document.querySelectorAll('.section-card').forEach(el => {
-    el.classList.add('flash');
-    setTimeout(() => el.classList.remove('flash'), 1500);
+    el.style.borderColor = '#4ECB71';
+    setTimeout(() => el.style.borderColor = '', 1500);
   });
 }
 
 // ════════════════════════
-// Rendering
+// Rendering — WYSIWYG
 // ════════════════════════
 
 function renderAll() {
@@ -285,10 +304,11 @@ function renderTopBar() {
 }
 
 const STATUS_ICONS = { pending: '⏳', edited: '✏️', change_requested: '🔴', approved: '✅' };
+const STATUS_LABELS = { pending: 'Pending', edited: 'Edited', change_requested: 'Changes Requested', approved: 'Approved' };
 
 function renderSecNav() {
   document.getElementById('secNavList').innerHTML = sections.map((s, i) =>
-    '<li class="sec-nav-item" data-id="' + s.id + '" onclick="scrollToSection(\'' + s.id + '\')">' +
+    '<li class="sec-nav-item" onclick="scrollToSection(\'' + s.id + '\')">' +
       '<span class="sec-nav-status">' + (STATUS_ICONS[s.status] || '⏳') + '</span>' +
       '<span>' + (i + 1) + '. ' + escH(s.title || 'Untitled') + '</span>' +
     '</li>'
@@ -298,61 +318,103 @@ function renderSecNav() {
 function renderSections() {
   const container = document.getElementById('editorContent');
   if (!sections.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">No sections yet</div><p style="color:var(--n400)">Add a section to start building your proposal.</p><button class="btn-primary" onclick="openAddSectionModal()" style="margin-top:16px">+ Add Section</button></div>';
+    container.innerHTML = '<div class="preview-wrapper" style="text-align:center;padding:80px 0"><div style="font-size:48px;opacity:0.3;margin-bottom:16px">📝</div><div style="font-size:20px;font-weight:700;color:#0F172A;margin-bottom:8px">No sections yet</div><p style="color:#64748B">Add a section to start building your proposal.</p><button class="btn-primary" onclick="openAddSectionModal()" style="margin-top:16px">+ Add Section</button></div>';
     return;
   }
-  container.innerHTML = sections.map((s, i) => renderSectionCard(s, i)).join('');
+
+  let html = '<div class="preview-wrapper">';
+  let secNum = 0;
+
+  sections.forEach((s, i) => {
+    const sectionCRs = changeRequests.filter(cr => cr.section_id === s.id);
+    const openCRs = sectionCRs.filter(cr => cr.status === 'open' || cr.status === 'in_progress');
+    const statusCls = s.status === 'change_requested' ? ' change-requested' : '';
+
+    html += '<div class="section-card' + statusCls + '" id="sec-' + s.id + '">';
+
+    // Toolbar overlay
+    html += '<div class="sec-toolbar">' +
+      '<button class="sec-tb-btn edit-btn" onclick="toggleEditPanel(\'' + s.id + '\')">✏️ Edit</button>' +
+      (s.status !== 'approved' ? '<button class="sec-tb-btn approve" onclick="approveSection(\'' + s.id + '\')">✅ Approve</button>' : '') +
+      '<button class="sec-tb-btn delete" onclick="openDelSecModal(\'' + s.id + '\')">🗑 Delete</button>' +
+    '</div>';
+
+    // Status bar
+    html += '<div class="sec-status-bar">' +
+      '<span class="status-badge status-' + s.status + '">' + (STATUS_LABELS[s.status] || s.status) + '</span>' +
+      '<span style="color:#94A3B8;font-size:11px">' + escH(s.content_type) + '</span>' +
+    '</div>';
+
+    // WYSIWYG Preview (exactly like client view)
+    html += '<div class="sec-preview" onclick="toggleEditPanel(\'' + s.id + '\')">';
+    if (s.content_type === 'cover') {
+      html += renderSectionContent(s, proposal);
+    } else if (s.content_type === 'divider') {
+      html += '<div style="padding:24px 16px">' + renderDivider() + '</div>';
+    } else {
+      secNum++;
+      html += '<div style="padding:24px">';
+      html += '<div class="section-heading">';
+      html += '<div class="section-num">' + String(secNum).padStart(2, '0') + '</div>';
+      html += '<h2 class="section-title-display">' + escH(s.title || 'Untitled') + '</h2>';
+      html += '</div>';
+      html += renderSectionContent(s, proposal);
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Edit panel (dark, collapsible)
+    html += '<div class="edit-panel" id="editPanel-' + s.id + '">';
+    html += '<div class="edit-panel-header">';
+    html += '<span class="edit-panel-title">Edit: ' + escH(s.title) + '</span>';
+    html += '<button class="edit-panel-close" onclick="closeEditPanel(\'' + s.id + '\')">Close</button>';
+    html += '</div>';
+    html += renderEditControls(s);
+    html += '</div>';
+
+    // Chat
+    html += renderChatArea(s, sectionCRs, openCRs);
+
+    html += '</div>';
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
 }
 
-function renderSectionCard(section, index) {
-  const sectionCRs = changeRequests.filter(cr => cr.section_id === section.id);
-  const openCRs = sectionCRs.filter(cr => cr.status === 'open' || cr.status === 'in_progress');
-  const statusCls = section.status === 'approved' ? ' approved' : section.status === 'change_requested' ? ' change-requested' : '';
+function renderEditControls(section) {
+  const sid = section.id;
+  let html = '';
 
-  let bodyHtml = '';
+  // Title edit
+  html += '<div style="margin-bottom:12px"><label style="font-size:11px;color:#64748B;display:block;margin-bottom:4px">Section Title</label>';
+  html += '<input class="form-input" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:#F8FAFC" value="' + escAttr(section.title || '') + '" onchange="saveSectionTitle(\'' + sid + '\', this.value)" /></div>';
+
   if (section.content_type === 'text' || section.content_type === 'callout') {
-    bodyHtml = renderEditableText(section);
+    html += '<div class="sec-editable" contenteditable="true" data-section-id="' + sid + '" onblur="handleTextBlur(this)">' +
+      escH(section.content || '').replace(/\n/g, '<br>') + '</div>';
   } else if (section.content_type === 'table' || section.content_type === 'pricing') {
-    bodyHtml = renderEditableTable(section);
+    html += renderEditableTable(section);
   } else if (section.content_type === 'image') {
-    bodyHtml = renderEditableImage(section);
-  } else if (section.content_type === 'cover') {
-    bodyHtml = renderSectionContent(section, proposal);
-  } else if (section.content_type === 'divider') {
-    bodyHtml = renderDivider();
+    html += renderEditableImage(section);
+  } else if (section.content_type === 'cover' || section.content_type === 'divider') {
+    html += '<p style="color:#64748B;font-size:13px">This section type is auto-generated from proposal metadata.</p>';
   } else {
-    bodyHtml = renderSectionContent(section, proposal) + renderJsonEditor(section);
+    // metrics, timeline — JSON editor
+    const data = section.metrics_data || section.timeline_data || section.table_data || section.content_json || {};
+    html += '<textarea id="jsonTa-' + sid + '" style="width:100%;min-height:200px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:4px;color:#4ECB71;font-family:SF Mono,Fira Code,monospace;font-size:13px;padding:16px;outline:none;resize:vertical">' + escH(JSON.stringify(data, null, 2)) + '</textarea>';
+    html += '<div style="display:flex;gap:8px;margin-top:8px">';
+    html += '<button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="saveJsonData(\'' + sid + '\', \'' + section.content_type + '\')">Apply Changes</button>';
+    html += '</div>';
   }
-
-  return '<div class="section-card' + statusCls + '" id="sec-' + section.id + '" data-id="' + section.id + '">' +
-    '<div class="sec-header">' +
-      '<span class="sec-number">' + String(index + 1).padStart(2, '0') + '</span>' +
-      '<span class="sec-type-pill">' + escH(section.content_type) + '</span>' +
-      '<input class="sec-title-input" value="' + escAttr(section.title || '') + '" onchange="saveSectionTitle(\'' + section.id + '\', this.value)" />' +
-      '<span class="sec-status-icon">' + (STATUS_ICONS[section.status] || '⏳') + '</span>' +
-      '<div class="sec-actions">' +
-        (section.status !== 'approved' ? '<button class="sec-action-btn approve" onclick="approveSection(\'' + section.id + '\')">Approve</button>' : '') +
-        '<button class="sec-action-btn delete" onclick="openDelSecModal(\'' + section.id + '\')">Delete</button>' +
-      '</div>' +
-    '</div>' +
-    '<div class="sec-body">' + bodyHtml + '</div>' +
-    renderChatArea(section, sectionCRs, openCRs) +
-  '</div>';
-}
-
-function renderEditableText(section) {
-  return '<div class="sec-editable" contenteditable="true" data-section-id="' + section.id + '" data-field="content" onblur="handleTextBlur(this)">' +
-    escH(section.content || '').replace(/\n/g, '<br>') + '</div>';
+  return html;
 }
 
 function renderEditableTable(section) {
   const td = section.table_data || section.content_json || {};
-  const headers = td.headers || [];
-  const rows = td.rows || [];
-  const rec = td.recommended || '';
-  const recIdx = rec ? headers.indexOf(rec) : -1;
-
-  let html = '<div class="sec-table-wrap"><table class="sec-table-edit" data-section-id="' + section.id + '">';
+  const headers = td.headers || []; const rows = td.rows || [];
+  const rec = td.recommended || ''; const recIdx = rec ? headers.indexOf(rec) : -1;
+  let html = '<div style="overflow-x:auto"><table class="sec-table-edit" data-section-id="' + section.id + '">';
   if (headers.length) {
     html += '<thead><tr>';
     headers.forEach((h, i) => { html += '<th' + (i === recIdx ? ' class="rec-col"' : '') + ' contenteditable="true">' + escH(h) + '</th>'; });
@@ -371,59 +433,29 @@ function renderEditableTable(section) {
 }
 
 function renderEditableImage(section) {
+  const sid = section.id;
   if (section.image_url) {
-    return '<img src="' + section.image_url + '" class="image-preview" alt="' + escAttr(section.title) + '">' +
-      '<div class="image-actions">' +
-        '<button class="btn-secondary" style="font-size:12px" onclick="triggerImageUpload(\'' + section.id + '\')">Replace</button>' +
-        '<button class="btn-danger" style="font-size:12px" onclick="removeImage(\'' + section.id + '\')">Remove</button>' +
-      '</div>' +
-      '<input type="file" accept="image/*" style="display:none" id="imgInput-' + section.id + '" onchange="handleImageUpload(\'' + section.id + '\', this)">';
+    return '<img src="' + section.image_url + '" class="image-preview" alt="">' +
+      '<div class="image-actions"><button class="btn-secondary" style="font-size:12px;color:#F8FAFC;border-color:rgba(255,255,255,0.15)" onclick="triggerImageUpload(\'' + sid + '\')">Replace</button>' +
+      '<button class="btn-danger" style="font-size:12px" onclick="removeImage(\'' + sid + '\')">Remove</button></div>' +
+      '<input type="file" accept="image/*" style="display:none" id="imgInput-' + sid + '" onchange="handleImageUpload(\'' + sid + '\', this)">';
   }
-  return '<div class="image-upload-zone" onclick="triggerImageUpload(\'' + section.id + '\')" ondragover="event.preventDefault();this.classList.add(\'dragover\')" ondragleave="this.classList.remove(\'dragover\')" ondrop="handleImageDrop(\'' + section.id + '\', event)">' +
-    '<div style="font-size:32px;margin-bottom:8px;opacity:0.5">🖼️</div><div>Drag & drop an image or click to upload</div></div>' +
-    '<input type="file" accept="image/*" style="display:none" id="imgInput-' + section.id + '" onchange="handleImageUpload(\'' + section.id + '\', this)">';
-}
-
-function renderJsonEditor(section) {
-  const data = section.metrics_data || section.timeline_data || section.table_data || section.content_json || {};
-  return '<div class="json-editor-toggle" onclick="toggleJsonEditor(\'' + section.id + '\')">⚙ Edit data</div>' +
-    '<div class="json-editor" id="jsonEditor-' + section.id + '">' +
-      '<textarea id="jsonTa-' + section.id + '">' + escH(JSON.stringify(data, null, 2)) + '</textarea>' +
-      '<div class="json-editor-actions">' +
-        '<button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="saveJsonData(\'' + section.id + '\', \'' + section.content_type + '\')">Apply</button>' +
-        '<button class="btn-secondary" style="font-size:12px" onclick="toggleJsonEditor(\'' + section.id + '\')">Cancel</button>' +
-      '</div></div>';
+  return '<div class="image-upload-zone" onclick="triggerImageUpload(\'' + sid + '\')">🖼️ Drag & drop or click to upload</div>' +
+    '<input type="file" accept="image/*" style="display:none" id="imgInput-' + sid + '" onchange="handleImageUpload(\'' + sid + '\', this)">';
 }
 
 function renderChatArea(section, crs, openCRs) {
   const count = crs.length;
   const hasOpen = openCRs.length > 0;
   const dotCls = count === 0 ? '' : (hasOpen ? 'has-open' : 'all-resolved');
-
   let msgsHtml = crs.map(cr => {
     const isGaby = (cr.author || '').toLowerCase() === 'gaby';
     const time = cr.created_at ? new Date(cr.created_at).toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
-    let h = '<div class="chat-msg' + (isGaby ? ' chat-msg-gaby' : '') + '">' +
-      '<div class="chat-author">' + escH(cr.author) + ' <span class="chat-time">' + time + '</span></div>' +
-      '<div class="chat-bubble">' + escH(cr.message) + '</div>';
-    if (cr.status === 'resolved') {
-      h += '<span class="chat-resolved-badge">Resolved</span>';
-      if (cr.response) h += '<div class="chat-bubble" style="margin-top:6px;font-size:13px;color:var(--green)">' + escH(cr.response) + '</div>';
-    }
+    let h = '<div class="chat-msg' + (isGaby ? ' chat-msg-gaby' : '') + '"><div class="chat-author">' + escH(cr.author) + ' <span class="chat-time">' + time + '</span></div><div class="chat-bubble">' + escH(cr.message) + '</div>';
+    if (cr.status === 'resolved') { h += '<span class="chat-resolved-badge">Resolved</span>'; if (cr.response) h += '<div class="chat-bubble" style="margin-top:6px;font-size:13px;color:#4ECB71">' + escH(cr.response) + '</div>'; }
     return h + '</div>';
   }).join('');
-
-  return '<div class="sec-chat">' +
-    '<button class="chat-toggle" onclick="toggleChat(\'' + section.id + '\')">' +
-      '<span>💬</span><span class="chat-count">' + count + ' message' + (count !== 1 ? 's' : '') + '</span>' +
-      (dotCls ? '<span class="chat-status-dot ' + dotCls + '"></span>' : '') +
-    '</button>' +
-    '<div class="chat-thread" id="chat-' + section.id + '">' +
-      '<div class="chat-messages">' + msgsHtml + '</div>' +
-      '<div class="chat-input-row">' +
-        '<input class="chat-input" id="chatIn-' + section.id + '" placeholder="Tell Gaby what to change..." onkeydown="if(event.key===\'Enter\')sendCR(\'' + section.id + '\')" />' +
-        '<button class="chat-send-btn" onclick="sendCR(\'' + section.id + '\')">Send</button>' +
-      '</div></div></div>';
+  return '<div class="sec-chat"><button class="chat-toggle" onclick="toggleChat(\'' + section.id + '\')"><span>💬</span><span class="chat-count">' + count + ' message' + (count !== 1 ? 's' : '') + '</span>' + (dotCls ? '<span class="chat-status-dot ' + dotCls + '"></span>' : '') + '</button><div class="chat-thread" id="chat-' + section.id + '"><div class="chat-messages">' + msgsHtml + '</div><div class="chat-input-row"><input class="chat-input" id="chatIn-' + section.id + '" placeholder="Tell Gaby what to change..." onkeydown="if(event.key===\'Enter\')sendCR(\'' + section.id + '\')" /><button class="chat-send-btn" onclick="sendCR(\'' + section.id + '\')">Send</button></div></div></div>';
 }
 
 // ════════════════════════
@@ -432,268 +464,208 @@ function renderChatArea(section, crs, openCRs) {
 
 function escH(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
 function escAttr(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;') : ''; }
+function scrollToSection(id) { var el = document.getElementById('sec-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function toggleChat(id) { document.getElementById('chat-' + id).classList.toggle('open'); }
 
-function scrollToSection(id) {
-  const el = document.getElementById('sec-' + id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function toggleEditPanel(id) {
+  var panel = document.getElementById('editPanel-' + id);
+  if (!panel) return;
+  var wasOpen = panel.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.edit-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.section-card.active').forEach(c => c.classList.remove('active'));
+  if (!wasOpen) {
+    panel.classList.add('open');
+    document.getElementById('sec-' + id).classList.add('active');
+  }
 }
 
-function toggleChat(sectionId) {
-  document.getElementById('chat-' + sectionId).classList.toggle('open');
+function closeEditPanel(id) {
+  document.getElementById('editPanel-' + id).classList.remove('open');
+  document.getElementById('sec-' + id).classList.remove('active');
 }
 
-function toggleJsonEditor(sectionId) {
-  document.getElementById('jsonEditor-' + sectionId).classList.toggle('open');
-}
-
-// ── Title save ──
+// ── Saves ──
 document.getElementById('topTitle').addEventListener('change', async function() {
   if (!proposal) return;
-  try {
-    await updateProposal(proposal.id, { title: this.value });
-    proposal.title = this.value;
-    showSaved();
-  } catch (e) { showToast('Save failed', 'error'); }
+  try { await updateProposal(proposal.id, { title: this.value }); proposal.title = this.value; showSaved(); } catch (e) { showToast('Save failed', 'error'); }
 });
 
-async function saveSectionTitle(sectionId, value) {
-  try {
-    await updateSection(sectionId, { title: value });
-    const sec = sections.find(s => s.id === sectionId);
-    if (sec) sec.title = value;
-    renderSecNav();
-    showSaved();
-  } catch (e) { showToast('Save failed', 'error'); }
+async function saveSectionTitle(sid, value) {
+  try { await updateSection(sid, { title: value }); var s = sections.find(x => x.id === sid); if (s) s.title = value; renderSecNav(); renderSections(); showSaved(); } catch (e) { showToast('Save failed', 'error'); }
 }
 
-// ── Text editing ──
-function handleTextBlur(el) {
-  queueSave(el.dataset.sectionId, { content: el.innerText });
-}
+function handleTextBlur(el) { queueSave(el.dataset.sectionId, { content: el.innerText }); }
 
-// ── Table editing ──
 document.addEventListener('blur', function(e) {
-  const table = e.target.closest('.sec-table-edit');
+  var table = e.target.closest('.sec-table-edit');
   if (!table || !e.target.matches('th, td')) return;
-  saveTableData(table.dataset.sectionId, table);
+  var sid = table.dataset.sectionId;
+  var headers = [], rows = [];
+  table.querySelectorAll('thead th').forEach(th => headers.push(th.textContent.trim()));
+  table.querySelectorAll('tbody tr').forEach(tr => { var row = []; tr.querySelectorAll('td').forEach(td => row.push(td.textContent.trim())); rows.push(row); });
+  var sec = sections.find(s => s.id === sid);
+  var existing = sec ? (sec.table_data || sec.content_json || {}) : {};
+  var td = { headers, rows, recommended: existing.recommended || '' };
+  queueSave(sid, { table_data: td, content_json: td });
 }, true);
 
-function saveTableData(sectionId, tableEl) {
-  const headers = []; const rows = [];
-  tableEl.querySelectorAll('thead th').forEach(th => headers.push(th.textContent.trim()));
-  tableEl.querySelectorAll('tbody tr').forEach(tr => {
-    const row = []; tr.querySelectorAll('td').forEach(td => row.push(td.textContent.trim())); rows.push(row);
-  });
-  const sec = sections.find(s => s.id === sectionId);
-  const existing = sec ? (sec.table_data || sec.content_json || {}) : {};
-  const td = { headers, rows, recommended: existing.recommended || '' };
-  queueSave(sectionId, { table_data: td, content_json: td });
-}
-
-// ── JSON data save ──
-async function saveJsonData(sectionId, contentType) {
-  const ta = document.getElementById('jsonTa-' + sectionId);
+async function saveJsonData(sid, contentType) {
+  var ta = document.getElementById('jsonTa-' + sid);
   if (!ta) return;
   try {
-    const data = JSON.parse(ta.value);
-    const fields = { content_json: data };
+    var data = JSON.parse(ta.value);
+    var fields = { content_json: data };
     if (contentType === 'metrics') fields.metrics_data = data;
     else if (contentType === 'timeline') fields.timeline_data = data;
     else if (contentType === 'table' || contentType === 'pricing') fields.table_data = data;
-    await updateSection(sectionId, fields);
-    const sec = sections.find(s => s.id === sectionId);
-    if (sec) Object.assign(sec, fields);
-    toggleJsonEditor(sectionId);
-    renderSections();
-    showSaved();
+    await updateSection(sid, fields);
+    var sec = sections.find(s => s.id === sid); if (sec) Object.assign(sec, fields);
+    closeEditPanel(sid); renderSections(); showSaved();
   } catch (e) { showToast('Invalid JSON: ' + e.message, 'error'); }
 }
 
-// ── Image handling ──
-function triggerImageUpload(sectionId) {
-  document.getElementById('imgInput-' + sectionId).click();
-}
-
-function handleImageUpload(sectionId, input) {
-  if (input.files[0]) readImageFile(input.files[0], sectionId);
-}
-
-function handleImageDrop(sectionId, event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) readImageFile(file, sectionId);
-}
-
-function readImageFile(file, sectionId) {
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    queueSave(sectionId, { image_url: e.target.result });
-    const sec = sections.find(s => s.id === sectionId);
-    if (sec) sec.image_url = e.target.result;
-    renderSections();
-  };
+function triggerImageUpload(sid) { document.getElementById('imgInput-' + sid).click(); }
+function handleImageUpload(sid, input) { if (input.files[0]) readImageFile(input.files[0], sid); }
+function readImageFile(file, sid) {
+  var reader = new FileReader();
+  reader.onload = function(e) { queueSave(sid, { image_url: e.target.result }); var sec = sections.find(s => s.id === sid); if (sec) sec.image_url = e.target.result; renderSections(); };
   reader.readAsDataURL(file);
 }
+function removeImage(sid) { queueSave(sid, { image_url: null }); var sec = sections.find(s => s.id === sid); if (sec) sec.image_url = null; renderSections(); }
 
-function removeImage(sectionId) {
-  queueSave(sectionId, { image_url: null });
-  const sec = sections.find(s => s.id === sectionId);
-  if (sec) sec.image_url = null;
-  renderSections();
+async function approveSection(sid) {
+  try { await updateSection(sid, { status: 'approved' }); var sec = sections.find(s => s.id === sid); if (sec) sec.status = 'approved'; renderSections(); renderSecNav(); showToast('Section approved', 'success'); } catch (e) { showToast('Failed', 'error'); }
 }
 
-// ── Section status ──
-async function approveSection(sectionId) {
-  try {
-    await updateSection(sectionId, { status: 'approved' });
-    const sec = sections.find(s => s.id === sectionId);
-    if (sec) sec.status = 'approved';
-    renderSections(); renderSecNav();
-    showToast('Section approved', 'success');
-  } catch (e) { showToast('Failed to approve', 'error'); }
+async function changeProposalStatus(v) {
+  try { await updateProposal(proposal.id, { status: v }); proposal.status = v; showSaved(); } catch (e) { showToast('Failed', 'error'); }
 }
 
-async function changeProposalStatus(newStatus) {
-  try {
-    await updateProposal(proposal.id, { status: newStatus });
-    proposal.status = newStatus;
-    showSaved();
-  } catch (e) { showToast('Status change failed', 'error'); }
-}
-
-// ── Change Requests ──
-async function sendCR(sectionId) {
-  const input = document.getElementById('chatIn-' + sectionId);
-  const msg = input.value.trim();
-  if (!msg) return;
+async function sendCR(sid) {
+  var input = document.getElementById('chatIn-' + sid); var msg = input.value.trim(); if (!msg) return;
   input.disabled = true;
-  try {
-    const cr = await createChangeRequest(sectionId, proposal.id, msg, 'Yousra');
-    changeRequests.push(cr);
-    const sec = sections.find(s => s.id === sectionId);
-    if (sec) sec.status = 'change_requested';
-    input.value = '';
-    renderSections(); renderSecNav();
-    showToast('Change request sent to Gaby', 'success');
-  } catch (e) { showToast('Failed to send: ' + e.message, 'error'); }
-  finally { input.disabled = false; }
+  try { var cr = await createChangeRequest(sid, proposal.id, msg, 'Yousra'); changeRequests.push(cr); var sec = sections.find(s => s.id === sid); if (sec) sec.status = 'change_requested'; input.value = ''; renderSections(); renderSecNav(); showToast('Change request sent to Gaby', 'success'); }
+  catch (e) { showToast('Failed: ' + e.message, 'error'); } finally { input.disabled = false; }
 }
 
-// ── Add Section ──
+// ── Add/Delete Section ──
 function openAddSectionModal() {
   document.getElementById('addSecGrid').innerHTML = SECTION_TYPES.map(t =>
-    '<div class="add-sec-option" onclick="addSection(\'' + t.type + '\')">' +
-      '<div class="add-sec-icon">' + t.icon + '</div>' +
-      '<div class="add-sec-label">' + t.label + '</div>' +
-      '<div class="add-sec-desc">' + t.desc + '</div></div>'
+    '<div class="add-sec-option" onclick="addSection(\'' + t.type + '\')"><div class="add-sec-icon">' + t.icon + '</div><div class="add-sec-label">' + t.label + '</div><div class="add-sec-desc">' + t.desc + '</div></div>'
   ).join('');
   document.getElementById('addSectionModal').classList.add('open');
 }
 function closeAddSectionModal() { document.getElementById('addSectionModal').classList.remove('open'); }
 document.getElementById('addSectionModal').addEventListener('click', e => { if (e.target.id === 'addSectionModal') closeAddSectionModal(); });
 
-async function addSection(contentType) {
+async function addSection(type) {
   closeAddSectionModal();
-  const typeInfo = SECTION_TYPES.find(t => t.type === contentType) || {};
+  var info = SECTION_TYPES.find(t => t.type === type) || {};
   try {
-    const sec = await createSection(proposal.id, {
-      sort_order: sections.length + 1,
-      title: typeInfo.label || contentType,
-      content_type: contentType,
-      content: contentType === 'text' || contentType === 'callout' ? '' : null,
-      content_json: {},
-      status: 'pending'
-    });
+    var sec = await createSection(proposal.id, { sort_order: sections.length + 1, title: info.label || type, content_type: type, content: type === 'text' || type === 'callout' ? '' : null, content_json: {}, status: 'pending' });
     if (sec) { sections.push(sec); renderSections(); renderSecNav(); scrollToSection(sec.id); showToast('Section added', 'success'); }
-  } catch (e) { showToast('Failed to add section', 'error'); }
+  } catch (e) { showToast('Failed', 'error'); }
 }
 
-// ── Delete Section ──
 function openDelSecModal(id) { delSectionId = id; document.getElementById('delSecModal').classList.add('open'); }
 function closeDelSecModal() { delSectionId = null; document.getElementById('delSecModal').classList.remove('open'); }
 document.getElementById('delSecModal').addEventListener('click', e => { if (e.target.id === 'delSecModal') closeDelSecModal(); });
-
 async function confirmDeleteSection() {
   if (!delSectionId) return;
-  try {
-    await deleteSection(delSectionId);
-    sections = sections.filter(s => s.id !== delSectionId);
-    changeRequests = changeRequests.filter(cr => cr.section_id !== delSectionId);
-    closeDelSecModal(); renderSections(); renderSecNav();
-    showToast('Section deleted', 'success');
-  } catch (e) { showToast('Delete failed', 'error'); }
+  try { await deleteSection(delSectionId); sections = sections.filter(s => s.id !== delSectionId); changeRequests = changeRequests.filter(cr => cr.section_id !== delSectionId); closeDelSecModal(); renderSections(); renderSecNav(); showToast('Deleted', 'success'); } catch (e) { showToast('Failed', 'error'); }
 }
 
 // ── Auto-save ──
-function queueSave(sectionId, fields) {
-  saveQueue.set(sectionId, { ...(saveQueue.get(sectionId) || {}), ...fields });
-  showSaving();
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(flushSaveQueue, 2000);
+function queueSave(sid, fields) {
+  saveQueue.set(sid, { ...(saveQueue.get(sid) || {}), ...fields }); showSaving();
+  clearTimeout(saveTimeout); saveTimeout = setTimeout(flushSaveQueue, 2000);
 }
-
 async function flushSaveQueue() {
-  for (const [sectionId, fields] of saveQueue) {
-    try {
-      await updateSection(sectionId, fields);
-      const sec = sections.find(s => s.id === sectionId);
-      if (sec) Object.assign(sec, fields);
-    } catch (e) { console.error('Auto-save failed:', e); showSavedOffline(); return; }
+  for (var [sid, fields] of saveQueue) {
+    try { await updateSection(sid, fields); var sec = sections.find(s => s.id === sid); if (sec) Object.assign(sec, fields); }
+    catch (e) { console.error(e); showSavedOffline(); return; }
   }
-  saveQueue.clear();
-  showSaved();
+  saveQueue.clear(); showSaved();
+  // Re-render preview to reflect saved changes
+  renderSections();
 }
+function showSaved() { var el = document.getElementById('saveIndicator'); el.textContent = 'Saved ✓'; el.className = 'save-indicator show'; setTimeout(() => el.classList.remove('show'), 2000); }
+function showSaving() { var el = document.getElementById('saveIndicator'); el.textContent = 'Saving...'; el.className = 'save-indicator show'; }
+function showSavedOffline() { var el = document.getElementById('saveIndicator'); el.textContent = 'Offline'; el.className = 'save-indicator show offline'; }
 
-function showSaved() { const el = document.getElementById('saveIndicator'); el.textContent = 'Saved ✓'; el.className = 'save-indicator show'; setTimeout(() => el.classList.remove('show'), 2000); }
-function showSaving() { const el = document.getElementById('saveIndicator'); el.textContent = 'Saving...'; el.className = 'save-indicator show'; }
-function showSavedOffline() { const el = document.getElementById('saveIndicator'); el.textContent = 'Offline — saved locally'; el.className = 'save-indicator show offline'; }
-
-// ── PDF Export ──
+// ── PDF (matches client view exactly) ──
 async function exportPDF() {
   showToast('Generating PDF...', 'success');
-  const container = document.getElementById('pdfContainer');
-  let html = '<div style="font-family:General Sans,Helvetica Neue,Arial,sans-serif;color:#0F172A;max-width:800px;margin:0 auto;">';
-  sections.forEach(sec => {
-    if (sec.content_type === 'cover') {
-      html += '<div style="page-break-after:always">' + renderSectionContent(sec, proposal) + '</div>';
-    } else if (sec.content_type === 'divider') {
-      html += renderDivider();
-    } else {
-      html += '<div style="margin-bottom:32px;page-break-inside:avoid;">';
-      if (sec.title) html += '<h2 style="font-family:Space Grotesk,sans-serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#0F172A;border-bottom:2px solid #4ECB71;padding-bottom:8px;">' + escH(sec.title) + '</h2>';
-      html += renderSectionContent(sec, proposal) + '</div>';
-    }
+  var container = document.getElementById('pdfContainer');
+  // Build HTML identical to proposal-view.html
+  var html = '<div style="font-family:General Sans,Helvetica Neue,Arial,sans-serif;color:#0F172A;max-width:800px;margin:0 auto;">';
+
+  // Cover
+  var coverSec = sections.find(s => s.content_type === 'cover');
+  if (coverSec) {
+    html += '<div style="page-break-after:always">' + renderCoverPage(proposal, coverSec) + '</div>';
+  } else {
+    html += '<div style="page-break-after:always">' + renderCoverPage(proposal, { content_json: { tagline: proposal.title, subtitle: 'Prepared for ' + (proposal.client_name || 'Client') } }) + '</div>';
+  }
+
+  // TOC
+  var contentSecs = sections.filter(s => s.content_type !== 'cover' && s.content_type !== 'divider');
+  if (contentSecs.length > 1) {
+    html += '<div style="margin-bottom:48px;padding:32px;background:#fff;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">';
+    html += '<div style="font-family:Space Grotesk,sans-serif;font-size:20px;font-weight:700;color:#0F172A;margin-bottom:20px">Contents</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">';
+    contentSecs.forEach((s, i) => {
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 16px"><span style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;width:28px">' + String(i+1).padStart(2,'0') + '</span><span style="font-size:14px;font-weight:500;color:#334155">' + escH(s.title) + '</span></div>';
+    });
+    html += '</div></div>';
+  }
+
+  // Sections
+  var secNum = 0;
+  sections.forEach(s => {
+    if (s.content_type === 'cover') return;
+    if (s.content_type === 'divider') { html += '<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.08),rgba(78,203,113,0.2),rgba(0,0,0,0.08),transparent);margin:32px 0"></div>'; return; }
+    secNum++;
+    html += '<div style="margin-bottom:48px;page-break-inside:avoid">';
+    html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px"><div style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;background:rgba(78,203,113,0.1);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center">' + String(secNum).padStart(2,'0') + '</div><h2 style="font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#0F172A">' + escH(s.title) + '</h2></div>';
+    html += renderSectionContent(s, proposal);
+    html += '</div>';
   });
+
+  // Footer
+  html += '<div style="text-align:center;padding:40px 0;color:#94A3B8;font-size:13px;border-top:1px solid rgba(0,0,0,0.06)"><p>Prepared by <strong style="color:#0F172A">Sprintly Partners</strong></p><p style="margin-top:4px">' + escH(proposal.proposal_index || '') + '</p></div>';
   html += '</div>';
-  container.innerHTML = html;
+
+  // Inject client-view CSS for the PDF
+  var style = '<style>.sec-text p{font-size:16px;line-height:1.9;color:#334155;margin-bottom:16px}.sec-callout-inline{border-left:3px solid #F59E0B;padding:16px 20px;margin:24px 0;background:rgba(245,158,11,0.06);border-radius:0 4px 4px 0}.sec-callout-inline p{font-style:italic;color:#334155;margin:0}.sec-callout-inline cite{color:#64748B}.sec-table-wrap{border-radius:8px;border:1px solid rgba(0,0,0,0.08);overflow:hidden}.sec-table{width:100%;border-collapse:collapse;font-size:14px}.sec-table th{padding:14px 18px;background:#F8FAFC;text-align:left;font-weight:600;color:#0F172A;border-bottom:1px solid rgba(0,0,0,0.08);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}.sec-table td{padding:12px 18px;border-bottom:1px solid rgba(0,0,0,0.04);color:#475569}.sec-table tr:last-child td{border-bottom:none}.sec-table .rec-col{background:rgba(78,203,113,0.08)}.sec-table th.rec-col{color:#16a34a}.rec-badge{font-size:9px;background:#4ECB71;color:#fff;padding:2px 6px;border-radius:2px;margin-left:6px}.sec-pricing .price-row td{font-weight:700;font-size:16px;color:#0F172A;font-family:Space Grotesk,sans-serif}.sec-metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}.metric-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:24px;border-top:3px solid var(--accent,#4ECB71)}.metric-icon svg{width:28px;height:28px}.metric-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:36px;color:#0F172A;line-height:1;margin-bottom:4px}.metric-label{font-size:13px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:0.5px}.metric-sub{font-size:12px;color:#94A3B8;margin-top:8px;line-height:1.5}.sec-roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.roi-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:20px;text-align:center}.roi-label{font-size:12px;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}.roi-value{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:28px;color:#4ECB71}.roi-conservative .roi-value{color:#64748B}.roi-stretch .roi-value{color:#F59E0B}.sec-gantt{padding:20px 0}.gantt-header{display:flex;padding:0 0 12px;border-bottom:1px solid rgba(0,0,0,0.06);margin-bottom:12px}.gantt-header span{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748B}.gantt-header span:first-child{width:140px;flex-shrink:0}.gantt-row{display:flex;align-items:center;padding:8px 0}.gantt-label{width:140px;flex-shrink:0;font-size:14px;font-weight:500;color:#0F172A}.gantt-track{flex:1;height:36px;background:rgba(0,0,0,0.03);border-radius:6px;position:relative;overflow:hidden}.gantt-bar{position:absolute;top:3px;bottom:3px;border-radius:4px;display:flex;align-items:center;justify-content:center;min-width:40px}.gantt-bar-label{font-size:11px;font-weight:600;color:rgba(0,0,0,0.7);white-space:nowrap}.gantt-markers{display:flex;position:relative;margin-top:8px;padding-left:140px;height:20px}.gantt-marker{position:absolute;font-size:10px;color:#94A3B8;transform:translateX(-50%)}.sec-callout{border-left:4px solid #F59E0B;padding:28px 32px;background:rgba(245,158,11,0.04);border-radius:0 8px 8px 0;position:relative}.callout-mark{font-family:Georgia,serif;font-size:72px;color:rgba(245,158,11,0.15);position:absolute;top:-12px;left:16px;line-height:1}.sec-callout p{font-size:20px;font-style:italic;line-height:1.7;color:#334155;margin:0;position:relative;z-index:1}.sec-callout cite{display:block;margin-top:16px;font-size:15px;color:#64748B;font-style:normal;position:relative;z-index:1}.sec-image img{width:100%;height:auto;border-radius:8px}.sec-divider{padding:24px 0}.divider-line{height:2px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.06),rgba(78,203,113,0.2),rgba(0,0,0,0.06),transparent)}.cover-page{background:linear-gradient(135deg,#0F1923 0%,#162030 50%,#1a2942 100%);border-radius:12px;padding:80px 60px;min-height:500px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}.cover-brand{margin-bottom:48px}.cover-logo{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:14px;color:#4ECB71;letter-spacing:4px;text-transform:uppercase}.cover-logo span{color:#94A3B8;font-weight:400;margin-left:4px}.cover-title{font-family:Space Grotesk,sans-serif;font-weight:700;font-size:48px;color:#fff;line-height:1.15;margin-bottom:16px;max-width:650px}.cover-subtitle{font-size:20px;color:#94A3B8;margin-bottom:40px}.cover-meta{display:flex;gap:40px;flex-wrap:wrap}.cover-meta-item{display:flex;flex-direction:column;gap:4px}.cover-meta-label{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#64748B}.cover-meta-item span:last-child{font-size:15px;color:#F8FAFC;font-weight:500}.cover-accent-bar{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#4ECB71,#2DD4BF,#F59E0B)}.sec-empty{display:none}</style>';
+
+  container.innerHTML = style + html;
   container.style.display = 'block';
+
   try {
-    await html2pdf().set({ margin: [15, 15], filename: (proposal.slug || 'proposal') + '.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } }).from(container).save();
+    await html2pdf().set({ margin: [10, 10], filename: (proposal.slug || 'proposal') + '.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } }).from(container).save();
     showToast('PDF exported!', 'success');
-  } catch (e) { showToast('PDF export failed', 'error'); }
+  } catch (e) { showToast('PDF failed', 'error'); }
   finally { container.style.display = 'none'; }
 }
 
 // ── Share Link ──
 async function generateShareLink() {
   try {
-    let token = proposal.share_token;
+    var token = proposal.share_token;
     if (!token) { token = crypto.randomUUID(); await updateProposal(proposal.id, { share_token: token }); proposal.share_token = token; }
-    const url = location.origin + '/proposal-view.html?token=' + token;
-    await navigator.clipboard.writeText(url);
+    await navigator.clipboard.writeText(location.origin + '/proposal-view.html?token=' + token);
     showToast('Share link copied!', 'success');
-  } catch (e) { showToast('Failed to generate share link', 'error'); }
+  } catch (e) { showToast('Failed', 'error'); }
 }
 
-// ── Toast ──
 function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
+  var t = document.getElementById('toast'); t.textContent = msg;
   t.className = 'toast ' + (type || 'success') + ' show';
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── Init ──
 loadProposal();
 </script>
 </body>
