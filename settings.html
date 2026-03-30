@@ -409,7 +409,27 @@ a { text-decoration: none; color: inherit; }
     </div>
   </div>
 
-  <!-- Section 4: About -->
+  <!-- Section 4: Knowledge Base -->
+  <div class="card">
+    <h2 class="section-title">Knowledge Base</h2>
+    <p class="section-desc">Connect a Google Drive folder so Gaby can scan documents and use them to build proposals.</p>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Google Drive Folder Link</label>
+        <input type="text" class="form-input" id="kbFolderLink" placeholder="https://drive.google.com/drive/folders/..." value="" />
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button class="btn-primary" style="font-size:13px;padding:8px 16px;" onclick="saveKBFolder()">Save Folder</button>
+        <button class="btn-secondary" style="font-size:13px;padding:8px 16px;" onclick="scanKB()">Ask Gaby to Scan</button>
+        <span id="kbStatus" style="font-size:12px;color:var(--n400)"></span>
+      </div>
+      <div id="kbStats" style="display:none;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;">
+        <div style="font-size:13px;color:var(--n400)">Knowledge Base Entries: <span id="kbCount" style="color:var(--n50);font-weight:600">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: About -->
   <div class="card about-card">
     <div class="about-version">VSDR v2.0</div>
     <div class="about-name">Virtual Strategy Data Room</div>
@@ -565,6 +585,42 @@ function savePref() {
   flash.classList.add('show');
   setTimeout(function() { flash.classList.remove('show'); }, 1500);
 }
+
+// Knowledge Base
+function saveKBFolder() {
+  var link = document.getElementById('kbFolderLink').value.trim();
+  if (!link) return;
+  localStorage.setItem('vsdr-kb-folder', link);
+  document.getElementById('kbStatus').textContent = 'Folder saved';
+  document.getElementById('kbStatus').style.color = '#4ECB71';
+  setTimeout(function() { document.getElementById('kbStatus').textContent = ''; }, 2000);
+}
+
+function scanKB() {
+  var link = localStorage.getItem('vsdr-kb-folder') || document.getElementById('kbFolderLink').value.trim();
+  if (!link) { document.getElementById('kbStatus').textContent = 'Set a folder first'; return; }
+  document.getElementById('kbStatus').textContent = 'Tell Gaby: "Scan the knowledge base folder"';
+  document.getElementById('kbStatus').style.color = '#F59E0B';
+}
+
+async function loadKBCount() {
+  try {
+    var res = await fetch(SUPA + '/rest/v1/knowledge_base?select=id', {
+      headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Prefer': 'count=exact', 'Range': '0-0' }
+    });
+    var range = res.headers.get('content-range') || '';
+    var m = range.match(/\/(\d+)/);
+    var count = m ? parseInt(m[1]) : 0;
+    document.getElementById('kbCount').textContent = count;
+    document.getElementById('kbStats').style.display = 'block';
+  } catch(e) { /* KB table might not exist yet */ }
+}
+
+(function() {
+  var saved = localStorage.getItem('vsdr-kb-folder');
+  if (saved) document.getElementById('kbFolderLink').value = saved;
+  loadKBCount();
+})();
 
 // Init
 initSyncLog();

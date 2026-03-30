@@ -272,7 +272,7 @@ body { display: flex; }
 <script>
 initSidebar('proposals');
 
-var P = null, secs = [], crs = [], activeSecId = null;
+var P = null, secs = [], crs = [], comments = [], activeSecId = null;
 var saveQ = new Map(), saveTmr = null;
 var proposalId = new URLSearchParams(location.search).get('id');
 if (!proposalId) location.href = 'proposals.html';
@@ -283,6 +283,7 @@ async function load() {
     var d = await fetchProposal(proposalId);
     if (!d) { showToast('Proposal not found','error'); return; }
     P = d; secs = d.sections || []; crs = d.change_requests || [];
+    try { comments = await fetchComments(proposalId) || []; } catch(e) { comments = []; }
     renderAll();
   } catch(e) { console.error(e); showToast('Load failed','error'); }
 }
@@ -420,20 +421,48 @@ function buildImageEditor(s) {
 
 function buildChatPanel(s) {
   var myCrs = crs.filter(function(c){return c.section_id===s.id;});
-  var h = '<div class="sp-section"><span class="sp-chat-title">💬 Change Requests ('+myCrs.length+')</span>';
-  h += '<div class="sp-chat-msgs">';
-  myCrs.forEach(function(cr) {
-    var isG = (cr.author||'').toLowerCase()==='gaby';
-    var t = cr.created_at ? new Date(cr.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
-    h += '<div class="sp-msg'+(isG?' gaby':'')+'">';
-    h += '<div class="sp-msg-author">'+esc(cr.author)+'<span class="sp-msg-time">'+t+'</span></div>';
-    h += '<div class="sp-msg-text">'+esc(cr.message)+'</div>';
-    if (cr.status==='resolved') { h+='<span class="sp-msg-resolved">Resolved</span>'; if(cr.response) h+='<div class="sp-msg-text" style="margin-top:4px;color:#4ECB71;font-size:12px">'+esc(cr.response)+'</div>'; }
+  var myComments = comments.filter(function(c){return c.section_id===s.id;});
+  var h = '';
+
+  // Change Requests (actionable by Gaby)
+  h += '<div class="sp-section"><span class="sp-chat-title">⚡ Change Requests ('+myCrs.length+')</span>';
+  if (myCrs.length) {
+    h += '<div class="sp-chat-msgs">';
+    myCrs.forEach(function(cr) {
+      var isG = (cr.author||'').toLowerCase()==='gaby';
+      var t = cr.created_at ? new Date(cr.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+      h += '<div class="sp-msg'+(isG?' gaby':'')+'">';
+      h += '<div class="sp-msg-author">'+esc(cr.author)+'<span class="sp-msg-time">'+t+'</span></div>';
+      h += '<div class="sp-msg-text">'+esc(cr.message)+'</div>';
+      if (cr.status==='resolved') { h+='<span class="sp-msg-resolved">Resolved</span>'; if(cr.response) h+='<div class="sp-msg-text" style="margin-top:4px;color:#4ECB71;font-size:12px">'+esc(cr.response)+'</div>'; }
+      h += '</div>';
+    });
     h += '</div>';
-  });
-  h += '</div>';
+  } else {
+    h += '<p style="font-size:12px;color:#64748B;margin-bottom:8px">No change requests yet.</p>';
+  }
   h += '<div class="sp-chat-input"><input id="crIn-'+s.id+'" placeholder="Tell Gaby what to change..." onkeydown="if(event.key===\'Enter\')sendCR(\''+s.id+'\')" /><button onclick="sendCR(\''+s.id+'\')">Send</button></div>';
   h += '</div>';
+
+  // Comments (non-actionable notes)
+  h += '<div class="sp-divider"></div>';
+  h += '<div class="sp-section"><span class="sp-chat-title">💬 Comments ('+myComments.length+')</span>';
+  if (myComments.length) {
+    h += '<div class="sp-chat-msgs">';
+    myComments.forEach(function(c) {
+      var t = c.created_at ? new Date(c.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+      h += '<div class="sp-msg">';
+      h += '<div class="sp-msg-author">'+esc(c.author)+'<span class="sp-msg-time">'+t+'</span></div>';
+      h += '<div class="sp-msg-text" style="background:rgba(167,139,250,0.06);border-left:2px solid #A78BFA">'+esc(c.message)+'</div>';
+      h += '</div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<p style="font-size:12px;color:#64748B;margin-bottom:8px">No comments yet.</p>';
+  }
+  h += '<div class="sp-chat-input"><input id="cmtIn-'+s.id+'" placeholder="Add a note or comment..." onkeydown="if(event.key===\'Enter\')sendComment(\''+s.id+'\')" /><button style="background:#A78BFA" onclick="sendComment(\''+s.id+'\')">Note</button></div>';
+  h += '</div>';
+
   return h;
 }
 
@@ -496,7 +525,19 @@ async function changeStatus(v){
 
 async function sendCR(id){
   var input=document.getElementById('crIn-'+id);var msg=input.value.trim();if(!msg)return;
-  try{var cr=await createChangeRequest(id,P.id,msg,'Yousra');crs.push(cr);var s=secs.find(function(x){return x.id===id;});if(s)s.status='change_requested';renderAll();openPanel(id);showToast('Sent to Gaby','success');}catch(e){showToast('Failed','error');}
+  try{var cr=await createChangeRequest(id,P.id,msg,'Yousra');crs.push(cr);var s=secs.find(function(x){return x.id===id;});if(s)s.status='change_requested';renderAll();openPanel(id);showToast('Sent to Gaby','success');}catch(e){showToast('Failed: '+e.message,'error');}
+}
+
+async function sendComment(id){
+  var input=document.getElementById('cmtIn-'+id);var msg=input.value.trim();if(!msg)return;
+  try{
+    var rows=await createComment(P.id,id,msg,'Yousra');
+    if(rows&&rows.length) comments.push(rows[0]);
+    else if(rows) comments.push(rows);
+    input.value='';
+    openPanel(id);
+    showToast('Comment added','success');
+  }catch(e){showToast('Failed: '+e.message,'error');}
 }
 
 // Add/Delete — multi-select
