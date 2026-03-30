@@ -735,6 +735,204 @@ a { text-decoration: none; color: inherit; }
     padding: 12px 24px;
   }
 }
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.open {
+  display: flex;
+  opacity: 1;
+}
+.modal-card {
+  background: rgba(30,41,59,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 4px;
+  padding: 32px;
+  max-width: 480px;
+  width: 90%;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.open .modal-card {
+  transform: translateY(0);
+}
+.modal-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--n50);
+  margin-bottom: 12px;
+}
+.modal-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.modal-btn {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.modal-btn-confirm {
+  background: var(--green);
+  color: var(--charcoal);
+}
+.modal-btn-confirm:hover { background: #3fba62; }
+.modal-btn-cancel {
+  background: transparent;
+  color: var(--n400);
+  border: 1px solid var(--border);
+}
+.modal-btn-cancel:hover {
+  border-color: var(--n400);
+  color: var(--n50);
+}
+.modal-success {
+  display: none;
+  text-align: center;
+  padding: 20px 0;
+}
+.modal-success-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+.modal-success-text {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--green);
+  font-weight: 500;
+}
+
+/* ── EDIT MODAL ── */
+.edit-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.edit-option-btn {
+  flex: 1;
+  padding: 14px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.edit-option-btn:hover .edit-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+.edit-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--n800);
+  border: 1px solid var(--border);
+  color: var(--n400);
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: opacity 0.2s, visibility 0.2s;
+  pointer-events: none;
+}
+.edit-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--n800);
+}
+.edit-option-btn.active-add {
+  border-color: var(--teal);
+  background: rgba(45,212,191,0.08);
+}
+.edit-option-btn.active-change {
+  border-color: var(--amber);
+  background: rgba(245,158,11,0.08);
+}
+.edit-option-btn.active-delete {
+  border-color: var(--coral);
+  background: rgba(239,68,68,0.08);
+}
+.edit-option-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.edit-option-label {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.edit-btn-add { color: var(--teal); }
+.edit-btn-add:hover, .edit-btn-add.active-add { border-color: var(--teal); background: rgba(45,212,191,0.08); }
+.edit-btn-change { color: var(--amber); }
+.edit-btn-change:hover, .edit-btn-change.active-change { border-color: var(--amber); background: rgba(245,158,11,0.08); }
+.edit-btn-delete { color: var(--coral); }
+.edit-btn-delete:hover, .edit-btn-delete.active-delete { border-color: var(--coral); background: rgba(239,68,68,0.08); }
+
+.edit-input-area {
+  display: none;
+  margin-bottom: 16px;
+}
+.edit-input-area.visible {
+  display: block;
+}
+.edit-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.edit-input:focus {
+  border-color: var(--teal);
+}
+.edit-input::placeholder {
+  color: var(--n400);
+  opacity: 0.6;
+}
 </style>
 </head>
 <body>
@@ -802,6 +1000,62 @@ a { text-decoration: none; color: inherit; }
     Create Proposal
     <span class="tooltip">Tell Gaby to generate a proposal for this project</span>
   </button>
+</div>
+
+<!-- Proposal Modal -->
+<div class="modal-overlay" id="proposalModal">
+  <div class="modal-card">
+    <div id="proposalContent">
+      <div class="modal-title" id="proposalTitle">Create Proposal</div>
+      <div class="modal-text">Gaby will generate a professional proposal, save it to Google Drive as PDF, and draft an email to your inbox with the proposal attached.</div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" onclick="closeModal('proposalModal')">Cancel</button>
+        <button class="modal-btn modal-btn-confirm" onclick="confirmProposal()">Yes, Create Proposal</button>
+      </div>
+    </div>
+    <div class="modal-success" id="proposalSuccess">
+      <div class="modal-success-icon">✓</div>
+      <div class="modal-success-text">Request sent to Gaby. You'll receive the proposal shortly.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-card" style="max-width: 520px;">
+    <div id="editContent">
+      <div class="modal-title">Edit Project</div>
+      <div class="modal-text" style="margin-bottom: 16px;">Choose what you'd like to tell Gaby:</div>
+      <div class="edit-options">
+        <button class="edit-option-btn edit-btn-add" onclick="selectEditOption('add')">
+          <div class="edit-option-icon">＋</div>
+          <div class="edit-option-label">Add</div>
+          <span class="edit-tooltip">Tell Gaby what to add to this project</span>
+        </button>
+        <button class="edit-option-btn edit-btn-change" onclick="selectEditOption('change')">
+          <div class="edit-option-icon">✎</div>
+          <div class="edit-option-label">Change</div>
+          <span class="edit-tooltip">Tell Gaby what to update</span>
+        </button>
+        <button class="edit-option-btn edit-btn-delete" onclick="selectEditOption('delete')">
+          <div class="edit-option-icon">✕</div>
+          <div class="edit-option-label">Delete</div>
+          <span class="edit-tooltip">Tell Gaby what to remove</span>
+        </button>
+      </div>
+      <div class="edit-input-area" id="editInputArea">
+        <input type="text" class="edit-input" id="editInput" placeholder="">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+        <button class="modal-btn modal-btn-confirm" id="editSendBtn" onclick="sendEdit()" style="display:none;">Send to Gaby</button>
+      </div>
+    </div>
+    <div class="modal-success" id="editSuccess">
+      <div class="modal-success-icon">✓</div>
+      <div class="modal-success-text">Request sent to Gaby on Telegram. She'll update this shortly.</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -994,7 +1248,109 @@ a { text-decoration: none; color: inherit; }
     document.getElementById('mainContent').innerHTML = html;
     document.getElementById('actionsBar').style.display = 'flex';
   }
+
+  // Wire up action buttons
+  document.getElementById('btnProposal').addEventListener('click', function() {
+    var title = document.querySelector('.project-title');
+    var name = title ? title.textContent : 'this project';
+    openProposal(name);
+  });
+
+  document.getElementById('btnEdit').addEventListener('click', function() {
+    openEditModal();
+  });
 })();
+
+// Modal functions (global)
+function openProposal(projectName) {
+  document.getElementById('proposalTitle').textContent = 'Create Proposal for ' + projectName;
+  document.getElementById('proposalContent').style.display = 'block';
+  document.getElementById('proposalSuccess').style.display = 'none';
+  var modal = document.getElementById('proposalModal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(function() { modal.classList.add('open'); });
+}
+
+function confirmProposal() {
+  document.getElementById('proposalContent').style.display = 'none';
+  document.getElementById('proposalSuccess').style.display = 'block';
+  setTimeout(function() { closeModal('proposalModal'); }, 2000);
+}
+
+function openEditModal() {
+  document.getElementById('editContent').style.display = 'block';
+  document.getElementById('editSuccess').style.display = 'none';
+  document.getElementById('editInputArea').classList.remove('visible');
+  document.getElementById('editSendBtn').style.display = 'none';
+  // Reset active states
+  document.querySelectorAll('.edit-option-btn').forEach(function(b) {
+    b.className = b.className.replace(/active-\w+/g, '').trim();
+  });
+  var modal = document.getElementById('editModal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(function() { modal.classList.add('open'); });
+}
+
+var currentEditType = '';
+
+function selectEditOption(type) {
+  currentEditType = type;
+  var input = document.getElementById('editInput');
+  var area = document.getElementById('editInputArea');
+  var sendBtn = document.getElementById('editSendBtn');
+
+  // Reset all buttons
+  document.querySelectorAll('.edit-option-btn').forEach(function(b) {
+    b.className = b.className.replace(/active-\w+/g, '').trim();
+  });
+
+  // Activate selected
+  var placeholders = {
+    add: 'Type what to add...',
+    change: 'Type what to change...',
+    delete: 'Type what to remove...'
+  };
+  var btnClasses = {
+    add: 'edit-btn-add',
+    change: 'edit-btn-change',
+    delete: 'edit-btn-delete'
+  };
+
+  document.querySelector('.' + btnClasses[type]).classList.add('active-' + type);
+  input.placeholder = placeholders[type];
+  input.value = '';
+  area.classList.add('visible');
+  sendBtn.style.display = 'inline-block';
+  input.focus();
+}
+
+function sendEdit() {
+  document.getElementById('editContent').style.display = 'none';
+  document.getElementById('editSuccess').style.display = 'block';
+  setTimeout(function() { closeModal('editModal'); }, 2000);
+}
+
+function closeModal(id) {
+  var modal = document.getElementById(id);
+  modal.classList.remove('open');
+  setTimeout(function() { modal.style.display = 'none'; }, 300);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// Close modals on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
+      closeModal(m.id);
+    });
+  }
+});
 </script>
 </body>
 </html>

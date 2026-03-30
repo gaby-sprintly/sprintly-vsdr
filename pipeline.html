@@ -385,6 +385,13 @@ a.project-card:hover .view-details {
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 24px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.portfolio-card:hover {
+  border-color: rgba(78,203,113,0.2);
+  transform: translateY(-2px);
 }
 
 .portfolio-name {
@@ -435,6 +442,100 @@ a.project-card:hover .view-details {
   border: solid var(--green);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.open {
+  display: flex;
+  opacity: 1;
+}
+.modal-card {
+  background: rgba(30,41,59,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 4px;
+  padding: 32px;
+  max-width: 480px;
+  width: 90%;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.open .modal-card {
+  transform: translateY(0);
+}
+.modal-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--n50);
+  margin-bottom: 12px;
+}
+.modal-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.modal-btn {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.modal-btn-confirm {
+  background: var(--green);
+  color: var(--charcoal);
+}
+.modal-btn-confirm:hover {
+  background: #3fba62;
+}
+.modal-btn-cancel {
+  background: transparent;
+  color: var(--n400);
+  border: 1px solid var(--border);
+}
+.modal-btn-cancel:hover {
+  border-color: var(--n400);
+  color: var(--n50);
+}
+.modal-success {
+  display: none;
+  text-align: center;
+  padding: 20px 0;
+}
+.modal-success-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+.modal-success-text {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--green);
+  font-weight: 500;
 }
 
 /* ── MOBILE ── */
@@ -582,7 +683,7 @@ a.project-card:hover .view-details {
       <div class="project-desc">Flagship cohort. Virtual mid-May, SV June 2-8.</div>
       <div class="project-card-footer">
         <span class="view-details">View Details →</span>
-        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for MENA to the Valley 2026')">Create Proposal</button>
+        <button class="btn-proposal" onclick="event.preventDefault();openProposal('MENA to the Valley 2026')">Create Proposal</button>
       </div>
     </a>
 
@@ -596,7 +697,7 @@ a.project-card:hover .view-details {
       <div class="project-desc">Saudi government partnership for MENA to Valley.</div>
       <div class="project-card-footer">
         <span class="view-details">View Details →</span>
-        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for Monshaat Partnership')">Create Proposal</button>
+        <button class="btn-proposal" onclick="event.preventDefault();openProposal('Monshaat Partnership')">Create Proposal</button>
       </div>
     </a>
 
@@ -610,7 +711,7 @@ a.project-card:hover .view-details {
       <div class="project-desc">Qatar partnership. QASR Technologies & CircleProcess.</div>
       <div class="project-card-footer">
         <span class="view-details">View Details →</span>
-        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for HBKU Partnership')">Create Proposal</button>
+        <button class="btn-proposal" onclick="event.preventDefault();openProposal('HBKU Partnership')">Create Proposal</button>
       </div>
     </a>
 
@@ -624,7 +725,7 @@ a.project-card:hover .view-details {
       <div class="project-desc">BD retainer for A15 portfolio company CloudCom.</div>
       <div class="project-card-footer">
         <span class="view-details">View Details →</span>
-        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for ARPU Plus / CloudCom')">Create Proposal</button>
+        <button class="btn-proposal" onclick="event.preventDefault();openProposal('ARPU Plus / CloudCom')">Create Proposal</button>
       </div>
     </a>
 
@@ -638,7 +739,7 @@ a.project-card:hover .view-details {
       <div class="project-desc">Government-backed founder cohorts from Algeria.</div>
       <div class="project-card-footer">
         <span class="view-details">View Details →</span>
-        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for Algeria Ventures')">Create Proposal</button>
+        <button class="btn-proposal" onclick="event.preventDefault();openProposal('Algeria Ventures')">Create Proposal</button>
       </div>
     </a>
 
@@ -652,7 +753,7 @@ a.project-card:hover .view-details {
       <div class="project-desc">6-month executive AI enablement program.</div>
       <div class="project-card-footer">
         <span class="view-details">View Details →</span>
-        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for AI Squad')">Create Proposal</button>
+        <button class="btn-proposal" onclick="event.preventDefault();openProposal('AI Squad')">Create Proposal</button>
       </div>
     </a>
 
@@ -666,7 +767,7 @@ a.project-card:hover .view-details {
       <div class="project-desc">Evaluating CloudCon for potential partnership.</div>
       <div class="project-card-footer">
         <span class="view-details">View Details →</span>
-        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for CloudCon Diligence')">Create Proposal</button>
+        <button class="btn-proposal" onclick="event.preventDefault();openProposal('CloudCon Diligence')">Create Proposal</button>
       </div>
     </a>
 
@@ -676,19 +777,19 @@ a.project-card:hover .view-details {
   <div class="section-label portfolio">Portfolio Companies</div>
   <div class="portfolio-grid">
 
-    <div class="portfolio-card">
+    <div class="portfolio-card" onclick="openPortfolio('Stakpak', 'AI infrastructure automation. Founded via 500 Global. Raised funding. Relocated to San Francisco. Status: Alumni Success.')">
       <div class="portfolio-name">Stakpak</div>
       <div class="portfolio-desc">AI infrastructure automation</div>
       <div class="portfolio-badge"><span class="checkmark"></span> Raised & Relocated to SF</div>
     </div>
 
-    <div class="portfolio-card">
+    <div class="portfolio-card" onclick="openPortfolio('Fincart', 'E-commerce SMB delivery and cash flow solutions for Africa and MENA. Founded via Plug &amp; Play. Status: Active portfolio.')">
       <div class="portfolio-name">Fincart</div>
       <div class="portfolio-desc">E-commerce SMB delivery, Africa/MENA</div>
       <div class="portfolio-badge">Active</div>
     </div>
 
-    <div class="portfolio-card">
+    <div class="portfolio-card" onclick="openPortfolio('Incura', 'Life-saving hemostatic medical solutions for surgical care across MENA. Founded via AUC Venture Lab. Status: Active portfolio.')">
       <div class="portfolio-name">Incura</div>
       <div class="portfolio-desc">Hemostatic medical solutions, MENA</div>
       <div class="portfolio-badge">Active</div>
@@ -696,6 +797,35 @@ a.project-card:hover .view-details {
 
   </div>
 </main>
+
+<!-- Proposal Modal -->
+<div class="modal-overlay" id="proposalModal">
+  <div class="modal-card">
+    <div id="proposalContent">
+      <div class="modal-title" id="proposalTitle">Create Proposal</div>
+      <div class="modal-text">Gaby will generate a professional proposal, save it to Google Drive as PDF, and draft an email to your inbox with the proposal attached.</div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" onclick="closeModal('proposalModal')">Cancel</button>
+        <button class="modal-btn modal-btn-confirm" onclick="confirmProposal()">Yes, Create Proposal</button>
+      </div>
+    </div>
+    <div class="modal-success" id="proposalSuccess">
+      <div class="modal-success-icon">✓</div>
+      <div class="modal-success-text">Request sent to Gaby. You'll receive the proposal shortly.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Portfolio Detail Modal -->
+<div class="modal-overlay" id="portfolioModal">
+  <div class="modal-card">
+    <div class="modal-title" id="portfolioTitle"></div>
+    <div class="modal-text" id="portfolioText"></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal('portfolioModal')">Close</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function() {
@@ -720,6 +850,52 @@ a.project-card:hover .view-details {
   backdrop.addEventListener('click', closeSidebar);
   closeBtn.addEventListener('click', closeSidebar);
 })();
+
+// Modal functions
+function openProposal(projectName) {
+  document.getElementById('proposalTitle').textContent = 'Create Proposal for ' + projectName;
+  document.getElementById('proposalContent').style.display = 'block';
+  document.getElementById('proposalSuccess').style.display = 'none';
+  var modal = document.getElementById('proposalModal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(function() { modal.classList.add('open'); });
+}
+
+function confirmProposal() {
+  document.getElementById('proposalContent').style.display = 'none';
+  document.getElementById('proposalSuccess').style.display = 'block';
+  setTimeout(function() { closeModal('proposalModal'); }, 2000);
+}
+
+function openPortfolio(name, description) {
+  document.getElementById('portfolioTitle').textContent = name;
+  document.getElementById('portfolioText').textContent = description;
+  var modal = document.getElementById('portfolioModal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(function() { modal.classList.add('open'); });
+}
+
+function closeModal(id) {
+  var modal = document.getElementById(id);
+  modal.classList.remove('open');
+  setTimeout(function() { modal.style.display = 'none'; }, 300);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// Close modals on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
+      closeModal(m.id);
+    });
+  }
+});
 </script>
 </body>
 </html>

@@ -416,6 +416,75 @@ body {
   color: var(--green);
 }
 .nav-sub svg { flex-shrink: 0; }
+
+/* ── EXPANDABLE GOAL DETAILS ── */
+.goal-card {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.goal-card:hover {
+  border-color: rgba(255,255,255,0.12);
+}
+.goal-chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  color: var(--n400);
+}
+.goal-card.expanded .goal-chevron {
+  transform: rotate(180deg);
+  color: var(--green);
+}
+.goal-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+  opacity: 0;
+  margin-top: 0;
+}
+.goal-card.expanded .goal-details {
+  max-height: 300px;
+  opacity: 1;
+  margin-top: 16px;
+}
+.goal-details-inner {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.goal-details-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.goal-actions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.goal-actions-list li {
+  font-size: 13px;
+  color: var(--n50);
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+  opacity: 0.85;
+}
+.goal-actions-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: 0.7;
+}
 </style>
 </head>
 <body>
@@ -485,6 +554,7 @@ body {
       <div class="goal-top">
         <div class="goal-title">Deliver MENA to the Valley 2026 Cohort</div>
         <span class="badge badge--on-track">On Track</span>
+        <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="goal-desc">23 applications received. Selection in April. Virtual sessions mid-May. SV immersion June 2-8.</div>
       <div class="progress-row">
@@ -494,6 +564,17 @@ body {
         </div>
       </div>
       <div class="goal-updated">Last updated: Mar 30, 2026</div>
+      <div class="goal-details">
+        <div class="goal-details-inner">
+          <div class="goal-details-label">Next Actions</div>
+          <ul class="goal-actions-list">
+            <li>Review 23 applications</li>
+            <li>Finalize cohort selection in April</li>
+            <li>Assign mentors</li>
+            <li>Schedule virtual sessions</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- Goal 2 -->
@@ -501,6 +582,7 @@ body {
       <div class="goal-top">
         <div class="goal-title">Close 3+ Institutional Partnerships</div>
         <span class="badge badge--on-track">On Track</span>
+        <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="goal-desc">Monshaat signed. HBKU in review. 1 more needed.</div>
       <div class="progress-row">
@@ -510,6 +592,16 @@ body {
         </div>
       </div>
       <div class="goal-updated">Last updated: Mar 30, 2026</div>
+      <div class="goal-details">
+        <div class="goal-details-inner">
+          <div class="goal-details-label">Next Actions</div>
+          <ul class="goal-actions-list">
+            <li>Monshaat: signed, delivering</li>
+            <li>HBKU: awaiting Nada's update</li>
+            <li>Identify 3rd partner</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- Goal 3 -->
@@ -517,6 +609,7 @@ body {
       <div class="goal-top">
         <div class="goal-title">Launch AI Squad with 2+ Corporate Clients</div>
         <span class="badge badge--at-risk">At Risk</span>
+        <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="goal-desc">NVIDIA content produced. Deck ready. Zero paying clients yet.</div>
       <div class="progress-row">
@@ -526,6 +619,16 @@ body {
         </div>
       </div>
       <div class="goal-updated">Last updated: Mar 30, 2026</div>
+      <div class="goal-details">
+        <div class="goal-details-inner">
+          <div class="goal-details-label">Next Actions</div>
+          <ul class="goal-actions-list">
+            <li>Identify 5 target companies</li>
+            <li>Create outreach campaign</li>
+            <li>Leverage NVIDIA content</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- Goal 4 -->
@@ -533,6 +636,7 @@ body {
       <div class="goal-top">
         <div class="goal-title">Grow Network to 8,000+ Contacts</div>
         <span class="badge badge--on-track">On Track</span>
+        <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="goal-desc">Currently 6,000+. Growing through events and program intake.</div>
       <div class="progress-row">
@@ -542,6 +646,16 @@ body {
         </div>
       </div>
       <div class="goal-updated">Last updated: Mar 30, 2026</div>
+      <div class="goal-details">
+        <div class="goal-details-inner">
+          <div class="goal-details-label">Next Actions</div>
+          <ul class="goal-actions-list">
+            <li>Continue enrichment (100/day)</li>
+            <li>Improve data quality</li>
+            <li>Event networking</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- Goal 5 -->
@@ -549,6 +663,7 @@ body {
       <div class="goal-top">
         <div class="goal-title">Hit Annual Revenue Target</div>
         <span class="badge badge--not-started">Not Started</span>
+        <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="goal-desc">Awaiting revenue figures from Yousra.</div>
       <div class="progress-row">
@@ -558,6 +673,14 @@ body {
         </div>
       </div>
       <div class="goal-updated">Last updated: Mar 30, 2026</div>
+      <div class="goal-details">
+        <div class="goal-details-inner">
+          <div class="goal-details-label">Next Actions</div>
+          <ul class="goal-actions-list">
+            <li>Awaiting figures from Yousra</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -626,6 +749,20 @@ body {
   hamburger.addEventListener('click', openSidebar);
   closeBtn.addEventListener('click', closeSidebar);
   backdrop.addEventListener('click', closeSidebar);
+
+  // Goal card expand/collapse
+  var goalCards = document.querySelectorAll('.goal-card');
+  goalCards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      var wasExpanded = card.classList.contains('expanded');
+      // Close all other cards
+      goalCards.forEach(function(c) { c.classList.remove('expanded'); });
+      // Toggle clicked card
+      if (!wasExpanded) {
+        card.classList.add('expanded');
+      }
+    });
+  });
 })();
 </script>
 </body>
