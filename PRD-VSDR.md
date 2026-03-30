@@ -1,11 +1,11 @@
 # VSDR - Virtual Strategy Data Room
 ## Product Requirements Document (PRD)
 
-**Version:** 2.0
+**Version:** 2.2
 **Date:** March 30, 2026
 **Author:** Gaby, Strategic Operator, Sprintly Partners
 **Owner:** Yousra (Youyou), Founder & CEO, Sprintly Partners
-**Status:** Feature-Complete (v2.0)
+**Status:** Feature-Complete (v2.2) — Proposal Lab Redesign
 **Live URL:** https://vsdr.vercel.app
 **Repository:** github.com/gaby-sprintly/sprintly-vsdr
 
@@ -19,7 +19,7 @@ The VSDR replaces fragmented tools (spreadsheets, CRM dashboards, slide decks) w
 
 **Key metrics:**
 - 5,952 contacts synced from Airtable
-- 13 pages across 9 functional modules
+- 20 pages across 12 functional modules
 - Live Supabase backend with bi-directional Airtable sync
 - Auto-deployed via Vercel from GitHub
 
@@ -424,6 +424,134 @@ Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and D
 
 ---
 
+### Module 14: Proposal Lab — Dashboard (proposals.html)
+
+**Purpose:** Central hub for managing all client proposals. Replaces Google Docs/Slides with a design-rich HTML/CSS system that produces visually stunning documents.
+
+**Features:**
+- **Stats bar:** Total, Drafts, In Review, Approved, Sent
+- **Filter pills:** All, Draft, In Review, Approved, Sent, Archived
+- **Proposal grid:** 2-column card layout with status badges, section progress bars, client name, date
+- **New Proposal modal:** Client name, proposal type (Full Proposal, Quick Pitch, Program Proposal, Follow-Up, Case Study), description
+- **Seed data:** NovaTech Ventures sample proposal with all rich content types pre-loaded
+
+**Data source:** localStorage (primary), Supabase vsdr_proposals table (sync target)
+
+---
+
+### Module 15: Proposal Editor (proposal.html)
+
+**Purpose:** Build and edit proposals with rich visual content types that leverage HTML/CSS for design far beyond what Google Docs can achieve.
+
+**Features:**
+- **Top bar:** Back navigation, editable title, client chip, status dropdown (Draft/In Review/Approved/Sent), save indicator, action buttons
+- **Section navigator:** Left panel showing all sections with status icons, click-to-scroll, add section button
+- **Section cards:** Each section has a numbered header, editable title, content area, status actions (Approve/Request Changes)
+- **Content types:**
+  - **text** — Rich text paragraphs with inline editing
+  - **table** — Editable table with Tab navigation, inline cell editing
+  - **image** — Drag-and-drop upload, file picker, stored as data URLs
+  - **metrics** — Visual metric cards with icon, value, and label (e.g., "12 Startups Scaled", "$47M Funding"). Editor shows JSON textarea for power editing
+  - **timeline** — CSS Gantt chart rendered from phase data (name, weeks, color). Visual preview in editor
+  - **callout** — Highlighted quote/stat boxes with green accent
+  - **divider** — Green gradient separator
+- **Content type pills:** Colored icon + label showing section type (📝 Text, 📊 Table, 📈 Metrics, 📅 Timeline, 💬 Callout, 🖼 Image)
+- **Change Requests:** Comments renamed to "Change Requests" with amber styling. Each request shows author, timestamp, text. "Resolve" button to dismiss. Change requests are per-section.
+- **Status workflow:** Draft → In Review → Approved → Sent. Section-level approval (Approve/Request Changes per section). Final approval requires all sections approved.
+- **Share link:** Generates UUID token, creates shareable client-facing URL
+- **PDF export:** Renders the full proposal-view.html visual style into a hidden div before exporting via html2pdf.js — produces a STUNNING PDF, not a text dump
+- **Auto-save:** Debounced 1.5s save to localStorage with save indicator
+
+**Data source:** localStorage (primary)
+
+---
+
+### Module 16: Proposal Client View (proposal-view.html)
+
+**Purpose:** The client-facing, read-only view of a proposal. This is the flagship design output of Proposal Lab — what clients see and what gets exported as PDF.
+
+**Design Philosophy:** McKinsey proposal meets Stripe documentation meets premium SaaS landing page. Every section is visually rich, branded, and designed to impress.
+
+**Visual Features:**
+- **Full-bleed cover page:** Deep green gradient background with decorative radial blobs, massive display title (clamp 36-64px), teal client name, metadata row (date, ref, type, attention), 6px green-to-teal gradient footer bar. CSS `page-break-after: always` for clean PDF pagination.
+- **Table of Contents:** 2-column grid layout, green numbered items, extending rule lines
+- **Section layouts:**
+  - Green gradient circle number badges (not flat boxes)
+  - Gradient left-border accent bar per section
+  - Alternating backgrounds (white / #f8fafc) for visual rhythm
+  - Generous whitespace and strong typography hierarchy
+- **Metric cards:** 4-column grid with colored accent top bars, inline SVG icons, 36px bold values, subtle card shadows. ROI sections auto-detected and rendered as 3-column Conservative/Target/Stretch color-coded cards (green/amber/coral)
+- **CSS-only Gantt chart:** Positioned colored bars calculated from week ranges, tick markers at 25%/50%/75%, phase labels, week range annotations. Pure CSS, no libraries.
+- **Pricing comparison table:** "Full Partnership (Rec.)" column highlighted with green gradient header, amber ✦ Recommended badge, light green cells, larger font for price row. SaaS-style pricing page aesthetic.
+- **Callout boxes:** Green left-border, subtle gradient background, italic Space Grotesk quote text
+- **Professional footer:** Sprintly Partners branding, date, confidentiality notice, gradient accent bar
+- **Download bar:** Fixed bottom bar with "Download PDF" button, hidden during PDF export
+- **URL parameters:** `?token=TOKEN` for shared links, `?id=ID` for direct access, `?autoexport=1` triggers automatic PDF download
+- **Print/PDF optimized:** @media print rules ensure cover page fills first page, no mid-section page breaks, proper margins
+
+**Data source:** localStorage (by share_token or id match), Supabase fallback
+
+---
+
+### Proposal Lab — Data Schema
+
+```
+Proposal Object (localStorage key: vsdr-proposals)
+├── id: string (UUID)
+├── project_id: string
+├── title: string
+├── client_name: string
+├── client_contact: string
+├── proposal_type: "full" | "quick" | "program" | "followup" | "case_study"
+├── proposal_index: string (e.g., "SP-2026-001")
+├── slug: string
+├── description: string
+├── status: "draft" | "in_review" | "approved" | "sent" | "archived"
+├── share_token: string | null (UUID for client share links)
+├── sections: Array
+│   ├── id: string (UUID)
+│   ├── sort_order: number
+│   ├── title: string
+│   ├── content_type: "text" | "table" | "image" | "metrics" | "timeline" | "callout" | "divider"
+│   ├── content: string (for text/callout types)
+│   ├── callout_text: string (optional pull quote for text sections)
+│   ├── table_data: { headers: string[], rows: string[][], recommended?: string }
+│   ├── metrics_data: Array<{ label: string, value: string, icon: string }>
+│   ├── timeline_data: Array<{ phase: string, weeks: string, color: string }>
+│   ├── image_url: string | null
+│   └── status: "pending" | "edited" | "commented" | "approved"
+├── comments: Array (Change Requests)
+│   ├── id: string (UUID)
+│   ├── section_id: string
+│   ├── author: string
+│   ├── text: string
+│   ├── created_at: string (ISO)
+│   └── resolved: boolean
+├── metadata: { created_by: string, version: number }
+├── created_at: string (ISO)
+└── updated_at: string (ISO)
+```
+
+**Supabase table (sync target):** vsdr_proposals
+- RLS enabled (currently blocks publishable key reads)
+- Primary storage is localStorage; Gaby syncs server-side
+- Future: fix RLS policies for direct browser access
+
+---
+
+### Proposal Lab — Design Rules (Mandatory)
+
+These rules were set by Yousra and are non-negotiable:
+
+1. **No text-only proposals.** Every proposal MUST have schematics, Gantt charts, tables, visual metric cards. Text walls are not acceptable.
+2. **Images and schematics must be centrally aligned, large proportions, Sprintly branded.**
+3. **Proposals must leverage HTML/CSS flexibility** — the entire purpose of Proposal Lab is to do what Google Docs and Slides cannot.
+4. **PDF exports must look like they came from a design agency,** not a text editor.
+5. **Comments on proposals are Change Requests,** not just notes. They represent action items.
+6. **PRD Sync Rule applies:** Any Proposal Lab feature changes must update both Google Doc AND Notion PRDs.
+
+---
+
 ## 7. Global Features
 
 ### 7.1 Sync Button (All Pages)
@@ -650,6 +778,18 @@ Available at vsdr.vercel.app
 - [x] Settings & Sync Management
 - [x] Sync button on all pages
 
+### Phase 3.5: Proposal Lab (Complete — v2.2)
+- [x] Proposal Lab Dashboard (proposals.html)
+- [x] Proposal Editor with rich content types (proposal.html)
+- [x] Client-facing proposal view with stunning visual design (proposal-view.html)
+- [x] Content types: text, table, image, metrics, timeline, callout, divider
+- [x] CSS-only Gantt charts, metric cards, pricing tables
+- [x] Full-bleed branded cover page
+- [x] Change Request system (replaces comments)
+- [x] PDF export with design-agency-quality output
+- [x] Share links with UUID tokens
+- [x] NovaTech sample proposal with all content types
+
 ### Phase 4: Enhancement (Planned)
 - [ ] Supabase table for interactions (replace localStorage)
 - [ ] Supabase table for outreach drafts (replace localStorage)
@@ -684,6 +824,9 @@ sprintly-vsdr/
 ├── reports.html        # Reports & Exports
 ├── ingestion.html      # Data Ingestion
 ├── settings.html       # Settings
+├── proposals.html      # Proposal Lab Dashboard
+├── proposal.html       # Proposal Editor
+├── proposal-view.html  # Client-Facing Proposal View
 ├── favicon.svg         # VSDR favicon
 ├── network-data.json   # (legacy) Static network data
 ├── projects-data.json  # Static project data
@@ -729,4 +872,4 @@ sprintly-vsdr/
 ---
 
 *Document maintained by Gaby, Strategic Operator, Sprintly Partners.*
-*Last updated: March 30, 2026*
+*Last updated: March 30, 2026 — v2.2 (Proposal Lab Redesign)*
