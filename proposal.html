@@ -386,54 +386,74 @@ html[data-theme="light"] .sec-text-para { color: #0F172A; }
 
 <script>
 const SUPABASE_URL = 'https://gxunrnyehltpbgdodkkm.supabase.co';
-const SUPABASE_KEY = atob('c2Jfc2VjcmV0X1JxZ05HSHhFQmVaV3FpSFdGTTJFUlFfclh1aVJzTk4=');
+const SUPABASE_KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
+const LS_KEY = 'vsdr-proposals';
 
 const params = new URLSearchParams(window.location.search);
 const PROPOSAL_ID = params.get('id');
 let proposal = null;
-let content = {};
 let saveTimer = null;
 
-async function sbFetch(endpoint, options = {}) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
-    ...options,
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': options.prefer || 'return=representation',
-      ...(options.headers || {})
-    }
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
+// ── LOCALSTORAGE HELPERS ──
+function lsGetProposals() {
+  try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; }
+}
+function lsSaveProposals(proposals) { localStorage.setItem(LS_KEY, JSON.stringify(proposals)); }
+
+function lsGetProposal(id) {
+  return lsGetProposals().find(p => p.id === id) || null;
 }
 
-function parseContent(row) {
-  try { return typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {}); }
-  catch { return {}; }
+function lsSaveProposal(updated) {
+  const proposals = lsGetProposals();
+  const idx = proposals.findIndex(p => p.id === updated.id);
+  if (idx !== -1) { proposals[idx] = updated; } else { proposals.unshift(updated); }
+  lsSaveProposals(proposals);
 }
+
+// proposal is the full flat object (no separate content field)
+// For compat with old rendering code we alias content = proposal
+function getContent() { return proposal; }
 
 async function loadProposal() {
   if (!PROPOSAL_ID) { showToast('No proposal ID in URL', 'error'); return; }
-  try {
-    const data = await sbFetch(`vsdr_proposals?id=eq.${PROPOSAL_ID}&select=*`);
-    if (!data || !data.length) { showToast('Proposal not found', 'error'); return; }
-    proposal = data[0];
-    content = parseContent(proposal);
-    if (!content.sections) content.sections = [];
-    if (!content.comments) content.comments = [];
-    renderTopBar();
-    renderSections();
-    renderSecNav();
-  } catch (e) {
-    showToast('Error loading proposal: ' + e.message, 'error');
+  // Primary: localStorage
+  let found = lsGetProposal(PROPOSAL_ID);
+  if (!found) {
+    // Fallback: try Supabase (may return empty due to RLS)
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/vsdr_proposals?id=eq.${encodeURIComponent(PROPOSAL_ID)}&select=*`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length) {
+          let c = {};
+          try { c = typeof data[0].content === 'string' ? JSON.parse(data[0].content) : (data[0].content || {}); } catch {}
+          found = {
+            id: data[0].id, project_id: data[0].project_id || c.slug || '',
+            title: data[0].title || 'Untitled', client_name: c.client_name || '', client_contact: c.client_contact || '',
+            proposal_type: c.proposal_type || 'full', proposal_index: c.proposal_index || '', slug: c.slug || '',
+            description: c.description || '', status: data[0].status || 'draft', share_token: c.share_token || null,
+            sections: c.sections || [], comments: c.comments || [], metadata: c.metadata || {},
+            created_at: data[0].created_at || new Date().toISOString(), updated_at: data[0].updated_at || new Date().toISOString()
+          };
+          lsSaveProposal(found);
+        }
+      }
+    } catch {}
   }
+  if (!found) { showToast('Proposal not found', 'error'); document.getElementById('sectionsArea').innerHTML = `<div class="loading-wrap" style="color:var(--coral)">Proposal not found. <a href="proposals.html" style="color:var(--teal)">Back to proposals</a></div>`; return; }
+  proposal = found;
+  if (!proposal.sections) proposal.sections = [];
+  if (!proposal.comments) proposal.comments = [];
+  renderTopBar();
+  renderSections();
+  renderSecNav();
 }
 
 function renderTopBar() {
-  const idx = content.proposal_index || `SP-${new Date(proposal.created_at).getFullYear()}-${String(proposal.id).padStart(3,'0')}`;
+  const idx = proposal.proposal_index || `SP-${new Date(proposal.created_at).getFullYear()}-001`;
   document.getElementById('topProposalIndex').textContent = idx;
   const titleEl = document.getElementById('topTitle');
   titleEl.textContent = proposal.title || 'Untitled';
@@ -446,7 +466,7 @@ function renderTopBar() {
       saveProposal();
     }
   });
-  document.getElementById('topClient').textContent = content.client_name || '—';
+  document.getElementById('topClient').textContent = proposal.client_name || '—';
   const statusEl = document.getElementById('topStatus');
   const statusMap = { draft: 'Draft', in_review: 'In Review', approved: 'Approved', sent: 'Sent', archived: 'Archived' };
   statusEl.textContent = (statusMap[proposal.status] || proposal.status) + ' ▾';
@@ -474,14 +494,14 @@ function renderSecNav() {
   const afterSel = document.getElementById('newSecAfter');
   if (afterSel) {
     afterSel.innerHTML = '<option value="-1">At the beginning</option>';
-    content.sections.forEach((s, i) => {
+    proposal.sections.forEach((s, i) => {
       const opt = document.createElement('option');
       opt.value = i;
       opt.textContent = `After: ${s.title || `Section ${i+1}`}`;
       afterSel.appendChild(opt);
     });
   }
-  content.sections.forEach((sec, i) => {
+  proposal.sections.forEach((sec, i) => {
     const item = document.createElement('div');
     item.className = 'sec-nav-item';
     item.dataset.index = i;
@@ -496,7 +516,7 @@ function renderSecNav() {
 
 function renderSections() {
   const area = document.getElementById('sectionsArea');
-  if (!content.sections.length) {
+  if (!proposal.sections.length) {
     area.innerHTML = `<div style="text-align:center;padding:64px 32px;color:var(--n400);">
       <div style="font-size:48px;margin-bottom:16px;">📄</div>
       <div style="font-family:var(--display);font-size:20px;color:var(--n50);margin-bottom:8px;">No sections yet</div>
@@ -505,13 +525,13 @@ function renderSections() {
     </div>`;
     return;
   }
-  area.innerHTML = content.sections.map((sec, i) => renderSectionCard(sec, i)).join('');
+  area.innerHTML = proposal.sections.map((sec, i) => renderSectionCard(sec, i)).join('');
   // Bind events after render
-  content.sections.forEach((sec, i) => bindSectionEvents(sec, i));
+  proposal.sections.forEach((sec, i) => bindSectionEvents(sec, i));
 }
 
 function renderSectionCard(sec, i) {
-  const secComments = (content.comments || []).filter(c => c.section_id === sec.id);
+  const secComments = (proposal.comments || []).filter(c => c.section_id === sec.id);
   return `
   <div class="section-card" id="sec-${sec.id}" data-sec-id="${sec.id}">
     <div class="sec-card-header">
@@ -608,7 +628,7 @@ function enableEdit(el) {
 
 function onParaBlur(el, secId) {
   el.contentEditable = 'false';
-  const sec = content.sections.find(s => s.id === secId);
+  const sec = proposal.sections.find(s => s.id === secId);
   if (!sec) return;
   // Collect all paragraphs for this section
   const paras = document.querySelectorAll(`[data-sec-id="${secId}"].sec-text-para`);
@@ -623,7 +643,7 @@ function onParaBlur(el, secId) {
 
 function onSecTitleBlur(el) {
   const secId = el.dataset.secId;
-  const sec = content.sections.find(s => s.id === secId);
+  const sec = proposal.sections.find(s => s.id === secId);
   if (!sec) return;
   const newTitle = el.textContent.trim();
   if (newTitle !== sec.title) {
@@ -637,7 +657,7 @@ function onTableCellBlur(el) {
   const secId = el.dataset.secId;
   const row = parseInt(el.dataset.row);
   const col = parseInt(el.dataset.col);
-  const sec = content.sections.find(s => s.id === secId);
+  const sec = proposal.sections.find(s => s.id === secId);
   if (!sec || !sec.table_data) return;
   if (row === -1) {
     sec.table_data.headers[col] = el.textContent;
@@ -656,7 +676,7 @@ function tableTabNav(e, el) {
     const secId = el.dataset.secId;
     const row = parseInt(el.dataset.row);
     const col = parseInt(el.dataset.col);
-    const sec = content.sections.find(s => s.id === secId);
+    const sec = proposal.sections.find(s => s.id === secId);
     if (!sec || !sec.table_data) return;
     const cols = sec.table_data.headers.length;
     const rows = sec.table_data.rows.length;
@@ -682,14 +702,14 @@ function loadImageFile(file, secId) {
   const reader = new FileReader();
   reader.onload = e => {
     const dataUrl = e.target.result;
-    const sec = content.sections.find(s => s.id === secId);
+    const sec = proposal.sections.find(s => s.id === secId);
     if (!sec) return;
     sec.image_url = dataUrl;
     // Re-render just this section content
     const contentEl = document.getElementById(`secContent-${secId}`);
     if (contentEl) {
       contentEl.innerHTML = renderSectionContent(sec);
-      bindSectionEvents(sec, content.sections.indexOf(sec));
+      bindSectionEvents(sec, proposal.sections.indexOf(sec));
     }
     debouncedSave();
     showToast('Image uploaded!', 'success');
@@ -714,17 +734,17 @@ function postComment(secId) {
   const text = input.value.trim();
   if (!text) return;
   const comment = { id: crypto.randomUUID(), section_id: secId, author: 'Yousra', text, created_at: new Date().toISOString() };
-  if (!content.comments) content.comments = [];
-  content.comments.push(comment);
-  const sec = content.sections.find(s => s.id === secId);
+  if (!proposal.comments) proposal.comments = [];
+  proposal.comments.push(comment);
+  const sec = proposal.sections.find(s => s.id === secId);
   if (sec) { sec.status = 'commented'; updateSecIcon(secId, 'commented'); }
   // Re-render comment list
   const list = document.getElementById(`commentList-${secId}`);
-  if (list) list.innerHTML = content.comments.filter(c => c.section_id === secId).map(renderComment).join('');
+  if (list) list.innerHTML = proposal.comments.filter(c => c.section_id === secId).map(renderComment).join('');
   // Update toggle count
   const toggle = document.querySelector(`#secComments-${secId} .comments-toggle`);
   if (toggle) {
-    const cnt = content.comments.filter(c => c.section_id === secId).length;
+    const cnt = proposal.comments.filter(c => c.section_id === secId).length;
     toggle.innerHTML = `💬 ${cnt} comment${cnt !== 1 ? 's' : ''} <span style="margin-left:4px;opacity:0.5;font-size:10px;">▼</span>`;
   }
   input.value = '';
@@ -732,7 +752,7 @@ function postComment(secId) {
 }
 
 function approveSection(secId) {
-  const sec = content.sections.find(s => s.id === secId);
+  const sec = proposal.sections.find(s => s.id === secId);
   if (!sec) return;
   sec.status = 'approved';
   updateSecIcon(secId, 'approved');
@@ -741,7 +761,7 @@ function approveSection(secId) {
 }
 
 function requestChanges(secId) {
-  const sec = content.sections.find(s => s.id === secId);
+  const sec = proposal.sections.find(s => s.id === secId);
   if (!sec) return;
   sec.status = 'edited';
   updateSecIcon(secId, 'edited');
@@ -764,35 +784,31 @@ document.addEventListener('click', function(e) {
   }
 });
 
-async function changeStatus(newStatus) {
+function changeStatus(newStatus) {
   document.getElementById('statusDropdown').style.display = 'none';
-  if (!PROPOSAL_ID) return;
-  try {
-    await saveProposal({ status: newStatus });
-    proposal.status = newStatus;
-    renderTopBar();
-    showToast('Status updated to ' + newStatus.replace('_', ' ') + ' ✓', 'success');
-  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+  if (!proposal) return;
+  proposal.status = newStatus;
+  saveProposal();
+  renderTopBar();
+  showToast('Status updated to ' + newStatus.replace('_', ' ') + ' ✓', 'success');
 }
 
-async function submitForReview() {
-  try {
-    await saveProposal({ status: 'in_review' });
-    proposal.status = 'in_review';
-    renderTopBar();
-    showToast('Submitted for review!', 'success');
-  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+function submitForReview() {
+  proposal.status = 'in_review';
+  saveProposal();
+  renderTopBar();
+  showToast('Submitted for review!', 'success');
 }
 
-async function approveFinal() {
-  const unapproved = content.sections.filter(s => s.status !== 'approved');
+function approveFinal() {
+  const unapproved = proposal.sections.filter(s => s.status !== 'approved');
   if (unapproved.length) {
     showToast(`⚠ ${unapproved.length} section(s) not yet approved: ${unapproved.map(s => s.title).join(', ')}`, 'error');
     return;
   }
-  content.approved_at = new Date().toISOString();
-  await saveProposal({ status: 'approved' });
+  proposal.approved_at = new Date().toISOString();
   proposal.status = 'approved';
+  saveProposal();
   renderTopBar();
   showToast('Proposal approved! 🎉', 'success');
 }
@@ -818,14 +834,13 @@ async function exportPDF() {
   }
 }
 
-async function shareLink() {
+function shareLink() {
   const token = crypto.randomUUID();
-  content.share_token = token;
-  await saveProposal();
-  const url = `https://vsdr.vercel.app/proposal-view.html?token=${token}`;
+  proposal.share_token = token;
+  saveProposal();
+  const url = `${window.location.origin}${window.location.pathname.replace('proposal.html','proposal-view.html')}?token=${token}`;
   try {
-    await navigator.clipboard.writeText(url);
-    showToast('Link copied! 🔗', 'success');
+    navigator.clipboard.writeText(url).then(() => showToast('Link copied! 🔗', 'success'));
   } catch {
     prompt('Copy this link:', url);
   }
@@ -836,21 +851,15 @@ function debouncedSave() {
   saveTimer = setTimeout(saveProposal, 1500);
 }
 
-async function saveProposal(extra = {}) {
-  if (!PROPOSAL_ID) return;
-  try {
-    const body = { content: JSON.stringify(content), updated_at: new Date().toISOString(), ...extra };
-    if (extra.status) body.status = extra.status;
-    if (proposal.title) body.title = proposal.title;
-    await sbFetch(`vsdr_proposals?id=eq.${PROPOSAL_ID}`, {
-      method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(body)
-    });
-    proposal.updated_at = body.updated_at;
-    showSaved();
-    updateLastSaved();
-  } catch (e) {
-    showToast('Save error: ' + e.message, 'error');
-  }
+function saveProposal() {
+  if (!proposal) return;
+  proposal.updated_at = new Date().toISOString();
+  const proposals = lsGetProposals();
+  const idx = proposals.findIndex(p => p.id === proposal.id);
+  if (idx !== -1) { proposals[idx] = proposal; } else { proposals.unshift(proposal); }
+  lsSaveProposals(proposals);
+  showSaved();
+  updateLastSaved();
 }
 
 function showSaved() {
@@ -910,9 +919,9 @@ async function addSection() {
   };
 
   // Insert at position
-  content.sections.splice(afterIdx + 1, 0, newSec);
+  proposal.sections.splice(afterIdx + 1, 0, newSec);
   // Re-number sort_order
-  content.sections.forEach((s, i) => s.sort_order = i + 1);
+  proposal.sections.forEach((s, i) => s.sort_order = i + 1);
 
   closeAddSection();
   renderSections();

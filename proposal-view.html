@@ -337,29 +337,16 @@ body {
 
 <script>
 const SUPABASE_URL = 'https://gxunrnyehltpbgdodkkm.supabase.co';
-const SUPABASE_KEY = atob('c2Jfc2VjcmV0X1JxZ05HSHhFQmVaV3FpSFdGTTJFUlFfclh1aVJzTk4=');
+const SUPABASE_KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
+const LS_KEY = 'vsdr-proposals';
 
 const params = new URLSearchParams(window.location.search);
 const TOKEN = params.get('token');
 
 let proposalData = null;
-let proposalContent = null;
 
-async function sbFetch(endpoint) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json'
-    }
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-
-function parseContent(row) {
-  try { return typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {}); }
-  catch { return {}; }
+function lsGetProposals() {
+  try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; }
 }
 
 function escapeHtml(str) {
@@ -416,10 +403,11 @@ function renderSection(sec, i) {
   </section>`;
 }
 
-function renderProposal(row, content) {
-  document.title = `${row.title || 'Proposal'} — Sprintly Partners`;
-  const sections = (content.sections || []).filter(s => s.content_type !== undefined);
-  const createdDate = formatDate(row.created_at);
+function renderProposal(p) {
+  proposalData = p;
+  document.title = `${p.title || 'Proposal'} — Sprintly Partners`;
+  const sections = (p.sections || []).filter(s => s.content_type !== undefined);
+  const createdDate = formatDate(p.created_at);
 
   const tocItems = sections.map((s, i) => {
     if (s.content_type === 'divider') return '';
@@ -435,15 +423,15 @@ function renderProposal(row, content) {
   document.getElementById('appRoot').innerHTML = `
     <div class="container" id="proposalDoc">
       <div class="proposal-header">
-        <h1 class="proposal-title">${escapeHtml(row.title || 'Proposal')}</h1>
+        <h1 class="proposal-title">${escapeHtml(p.title || 'Proposal')}</h1>
         <div class="proposal-meta">
-          <div class="meta-item"><span class="meta-label">Prepared for:</span> ${escapeHtml(content.client_name || '—')}</div>
-          ${content.client_contact ? `<div class="meta-item"><span class="meta-label">Attention:</span> ${escapeHtml(content.client_contact)}</div>` : ''}
+          <div class="meta-item"><span class="meta-label">Prepared for:</span> ${escapeHtml(p.client_name || '—')}</div>
+          ${p.client_contact ? `<div class="meta-item"><span class="meta-label">Attention:</span> ${escapeHtml(p.client_contact)}</div>` : ''}
           <div class="meta-item"><span class="meta-label">Date:</span> ${createdDate || today}</div>
-          ${content.proposal_index ? `<div class="meta-item"><span class="meta-label">Ref:</span> ${escapeHtml(content.proposal_index)}</div>` : ''}
-          ${content.proposal_type ? `<div class="meta-item"><span class="meta-label">Type:</span> ${escapeHtml(content.proposal_type)}</div>` : ''}
+          ${p.proposal_index ? `<div class="meta-item"><span class="meta-label">Ref:</span> ${escapeHtml(p.proposal_index)}</div>` : ''}
+          ${p.proposal_type ? `<div class="meta-item"><span class="meta-label">Type:</span> ${escapeHtml(p.proposal_type)}</div>` : ''}
         </div>
-        ${content.description ? `<p style="margin-top:20px;font-size:16px;color:#64748b;line-height:1.7;">${escapeHtml(content.description)}</p>` : ''}
+        ${p.description ? `<p style="margin-top:20px;font-size:16px;color:#64748b;line-height:1.7;">${escapeHtml(p.description)}</p>` : ''}
       </div>
 
       <div class="green-divider"></div>
@@ -459,7 +447,7 @@ function renderProposal(row, content) {
       <div class="proposal-footer">
         <div class="footer-brand"><span class="brand-dot" style="width:8px;height:8px;"></span> Sprintly Partners</div>
         <div class="footer-text">Prepared by Sprintly Partners | ${today} | yousra@sprintlypartners.com</div>
-        <div class="footer-text">This document is confidential and intended solely for ${escapeHtml(content.client_name || 'the recipient')}.</div>
+        <div class="footer-text">This document is confidential and intended solely for ${escapeHtml(p.client_name || 'the recipient')}.</div>
       </div>
 
       <button class="download-btn" onclick="downloadPDF()">
@@ -472,7 +460,7 @@ function renderProposal(row, content) {
 async function downloadPDF() {
   const el = document.getElementById('proposalDoc');
   const btn = document.querySelector('.download-btn');
-  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'Generating\u2026'; btn.disabled = true; }
   const opt = {
     margin: [16, 20],
     filename: `${proposalData ? proposalData.title : 'proposal'}.pdf`,
@@ -483,7 +471,7 @@ async function downloadPDF() {
   try {
     await html2pdf().set(opt).from(el).save();
   } finally {
-    if (btn) { btn.innerHTML = '⬇ Download PDF'; btn.disabled = false; }
+    if (btn) { btn.innerHTML = '\u2b07 Download PDF'; btn.disabled = false; }
   }
 }
 
@@ -493,37 +481,46 @@ async function loadByToken() {
     return;
   }
 
-  try {
-    // Fetch all proposals and find matching share_token in content
-    const data = await sbFetch('vsdr_proposals?select=id,title,status,created_at,content&order=created_at.desc');
-    if (!data || !data.length) { showError('Proposal not found or the link has expired.'); return; }
+  // Primary: localStorage
+  const proposals = lsGetProposals();
+  let found = proposals.find(p => p.share_token === TOKEN) || null;
 
-    let found = null;
-    let foundContent = null;
-
-    for (const row of data) {
-      try {
-        const c = parseContent(row);
-        if (c.share_token === TOKEN) {
-          found = row;
-          foundContent = c;
-          break;
+  if (!found) {
+    // Fallback: Supabase (may return empty due to RLS — that's OK)
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/vsdr_proposals?select=*&order=created_at.desc`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        for (const row of (data || [])) {
+          try {
+            let c = {};
+            try { c = typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {}); } catch {}
+            if (c.share_token === TOKEN) {
+              found = {
+                id: row.id, project_id: row.project_id || '', title: row.title || 'Untitled',
+                client_name: c.client_name || '', client_contact: c.client_contact || '',
+                proposal_type: c.proposal_type || '', proposal_index: c.proposal_index || '',
+                slug: c.slug || '', description: c.description || '',
+                status: row.status || 'draft', share_token: TOKEN,
+                sections: c.sections || [], comments: c.comments || [], metadata: c.metadata || {},
+                created_at: row.created_at || new Date().toISOString(), updated_at: row.updated_at || new Date().toISOString()
+              };
+              break;
+            }
+          } catch {}
         }
-      } catch {}
-    }
-
-    if (!found) {
-      showError('This proposal link is invalid or has expired. Please contact yousra@sprintlypartners.com for a new link.');
-      return;
-    }
-
-    proposalData = found;
-    proposalContent = foundContent;
-    renderProposal(found, foundContent);
-
-  } catch (e) {
-    showError('Failed to load proposal: ' + e.message);
+      }
+    } catch {}
   }
+
+  if (!found) {
+    showError('This proposal link is invalid or has expired. Please contact yousra@sprintlypartners.com for a new link.');
+    return;
+  }
+
+  renderProposal(found);
 }
 
 loadByToken();
