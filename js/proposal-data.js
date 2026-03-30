@@ -86,10 +86,14 @@ async function deleteProposal(id) {
 // ═══════════════════════════
 
 async function createSection(proposalId, data) {
-  data.proposal_id = proposalId;
-  if (!data.id) data.id = crypto.randomUUID();
-  const rows = await sbInsert('proposal_sections', data, { returnData: true });
-  return rows && rows.length ? rows[0] : null;
+  const section = Object.assign({}, data, {
+    proposal_id: proposalId,
+    id: data.id || crypto.randomUUID()
+  });
+  console.log('[createSection] Inserting:', section);
+  const rows = await sbInsert('proposal_sections', section, { returnData: true });
+  console.log('[createSection] Result:', rows);
+  return rows && rows.length ? rows[0] : (rows || null);
 }
 
 async function createSectionsBatch(proposalId, sectionsArray) {
@@ -193,6 +197,41 @@ function getTemplateSections(proposalType, clientName) {
     ]
   };
   return templates[proposalType] || templates['Full Proposal'];
+}
+
+// ═══════════════════════════
+// Knowledge Base
+// ═══════════════════════════
+
+async function fetchKBEntries(filter) {
+  return sbGet('knowledge_base', (filter || '') + '&order=created_at.desc');
+}
+
+async function searchKB(query) {
+  return sbGet('knowledge_base', 'or=(title.ilike.*' + encodeURIComponent(query) + '*,content.ilike.*' + encodeURIComponent(query) + '*)&order=created_at.desc');
+}
+
+async function fetchKBByType(contentType) {
+  return sbGet('knowledge_base', 'content_type=eq.' + contentType + '&order=created_at.desc');
+}
+
+async function fetchKBByFolder(folderId) {
+  return sbGet('knowledge_base', 'folder_id=eq.' + folderId + '&order=created_at.desc');
+}
+
+async function createKBEntry(data) {
+  if (!data.id) data.id = crypto.randomUUID();
+  const rows = await sbInsert('knowledge_base', data, { returnData: true });
+  return rows && rows.length ? rows[0] : null;
+}
+
+async function updateKBEntry(id, fields) {
+  fields.updated_at = new Date().toISOString();
+  return sbUpdate('knowledge_base', 'id=eq.' + id, fields);
+}
+
+async function deleteKBEntry(id) {
+  return sbDelete('knowledge_base', 'id=eq.' + id);
 }
 
 function generateProposalIndex(existingProposals) {

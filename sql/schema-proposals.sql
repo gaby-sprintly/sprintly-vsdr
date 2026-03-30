@@ -140,5 +140,29 @@ INSERT INTO proposal_sections (id, proposal_id, sort_order, title, content_type,
  NULL, NULL, 'approved', NULL, NULL, NULL)
 ON CONFLICT (id) DO NOTHING;
 
+-- 6. Knowledge Base table
+CREATE TABLE IF NOT EXISTS knowledge_base (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  source TEXT,
+  source_id TEXT,
+  source_url TEXT,
+  folder_id TEXT,
+  content TEXT,
+  content_type TEXT,
+  tags JSONB DEFAULT '[]',
+  metadata JSONB DEFAULT '{}',
+  created_by TEXT DEFAULT 'gaby',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_kb_source ON knowledge_base(source);
+CREATE INDEX IF NOT EXISTS idx_kb_folder ON knowledge_base(folder_id);
+CREATE INDEX IF NOT EXISTS idx_kb_type ON knowledge_base(content_type);
+
+ALTER TABLE knowledge_base ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on knowledge_base" ON knowledge_base FOR ALL USING (true) WITH CHECK (true);
+
 -- Drop the old vsdr_proposals table if migrating (CAREFUL - back up first!)
 -- DROP TABLE IF EXISTS vsdr_proposals;

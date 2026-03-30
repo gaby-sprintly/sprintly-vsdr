@@ -192,6 +192,11 @@ body { display: flex; }
 .add-sec-label { font-size: 13px; font-weight: 600; color: var(--n50); }
 .add-sec-desc { font-size: 11px; color: var(--n400); margin-top: 2px; }
 
+/* Drag and drop */
+.sec-wrap { cursor: grab; }
+.sec-wrap.dragging { opacity: 0.3; cursor: grabbing; }
+.drop-indicator { height: 3px; background: #4ECB71; margin: 2px 0; border-radius: 2px; transition: opacity 0.15s; }
+
 @media (max-width: 1024px) { .sec-nav { display: none; } }
 @media (max-width: 768px) {
   .top-bar { padding: 10px 16px; gap: 6px; }
@@ -309,7 +314,7 @@ function renderNav() {
 function renderPreview() {
   var h = '', num = 0;
   secs.forEach(function(s) {
-    h += '<div class="sec-wrap'+(s.id===activeSecId?' active':'')+'" data-id="'+s.id+'" onclick="selectSection(\''+s.id+'\')">';
+    h += '<div class="sec-wrap'+(s.id===activeSecId?' active':'')+'" data-id="'+s.id+'" draggable="true" onclick="selectSection(\''+s.id+'\')" ondragstart="dragStart(event,\''+s.id+'\')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondrop="dropSec(event,\''+s.id+'\')">';
     if (s.content_type === 'cover') {
       h += renderSectionContent(s, P);
     } else if (s.content_type === 'divider') {
@@ -558,6 +563,77 @@ async function addSelectedSections() {
 async function delSec(id){
   if(!confirm('Delete this section?'))return;
   try{await deleteSection(id);secs=secs.filter(function(s){return s.id!==id;});crs=crs.filter(function(c){return c.section_id!==id;});closePanel();renderAll();showToast('Deleted','success');}catch(e){showToast('Failed','error');}
+}
+
+// ═══ Drag and drop reorder ═══
+var draggedId = null;
+
+function dragStart(e, id) {
+  draggedId = id;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+}
+
+function dragEnd(e) {
+  e.target.classList.remove('dragging');
+  draggedId = null;
+  document.querySelectorAll('.drop-indicator').forEach(function(el) { el.remove(); });
+}
+
+function dragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  var wrap = e.target.closest('.sec-wrap');
+  if (!wrap || wrap.dataset.id === draggedId) return;
+  // Remove old indicators
+  document.querySelectorAll('.drop-indicator').forEach(function(el) { el.remove(); });
+  // Add indicator above target
+  var rect = wrap.getBoundingClientRect();
+  var mid = rect.top + rect.height / 2;
+  var indicator = document.createElement('div');
+  indicator.className = 'drop-indicator';
+  if (e.clientY < mid) {
+    wrap.insertAdjacentElement('beforebegin', indicator);
+  } else {
+    wrap.insertAdjacentElement('afterend', indicator);
+  }
+}
+
+async function dropSec(e, targetId) {
+  e.preventDefault();
+  document.querySelectorAll('.drop-indicator').forEach(function(el) { el.remove(); });
+  if (!draggedId || draggedId === targetId) return;
+
+  var fromIdx = secs.findIndex(function(s) { return s.id === draggedId; });
+  var toIdx = secs.findIndex(function(s) { return s.id === targetId; });
+  if (fromIdx === -1 || toIdx === -1) return;
+
+  // Determine if dropping before or after target
+  var wrap = document.querySelector('[data-id="' + targetId + '"]');
+  if (wrap) {
+    var rect = wrap.getBoundingClientRect();
+    if (e.clientY > rect.top + rect.height / 2) toIdx++;
+  }
+  if (fromIdx < toIdx) toIdx--;
+
+  // Reorder array
+  var moved = secs.splice(fromIdx, 1)[0];
+  secs.splice(toIdx, 0, moved);
+
+  // Update sort_order and re-render
+  renderAll();
+  showToast('Section moved', 'success');
+
+  // Persist to Supabase
+  try {
+    var ids = secs.map(function(s) { return s.id; });
+    await reorderSections(P.id, ids);
+    saved();
+  } catch(err) {
+    console.error('Reorder save failed:', err);
+    showToast('Reorder save failed', 'error');
+  }
 }
 
 // Auto-save queue
