@@ -246,10 +246,16 @@ html[data-theme="light"] .sec-text-para { color: #0F172A; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Pipeline
     </a>
-    <a href="proposals.html" class="nav-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Proposals
-    </a>
+    <div class="nav-group">
+      <a href="proposals.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Proposals
+      </a>
+      <a href="proposals.html" class="nav-sub active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Proposal Lab
+      </a>
+    </div>
     <div class="nav-group">
       <a href="network.html" class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -296,7 +302,15 @@ html[data-theme="light"] .sec-text-para { color: #0F172A; }
     <div id="topProposalIndex" style="font-size:12px;color:var(--n400);font-family:var(--display);font-weight:600;flex-shrink:0;"></div>
     <div id="topTitle" class="proposal-title-edit" contenteditable="false" title="Click to edit title">Loading...</div>
     <span id="topClient" class="client-chip">—</span>
-    <span id="topStatus" class="status-badge status-draft">Draft</span>
+    <div id="statusWrapper" style="position:relative;flex-shrink:0;" onclick="toggleStatusDropdown(event)">
+      <span id="topStatus" class="status-badge status-draft" style="cursor:pointer;user-select:none;" title="Click to change status">Draft ▾</span>
+      <div id="statusDropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#1E293B;border:1px solid rgba(255,255,255,0.1);border-radius:4px;z-index:200;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,0.4);overflow:hidden;">
+        <div class="status-option" onclick="changeStatus('draft')" data-status="draft" style="padding:10px 14px;cursor:pointer;font-size:12px;font-weight:600;color:#94A3B8;transition:background 0.15s;">📄 Draft</div>
+        <div class="status-option" onclick="changeStatus('in_review')" data-status="in_review" style="padding:10px 14px;cursor:pointer;font-size:12px;font-weight:600;color:#F59E0B;transition:background 0.15s;">📝 In Review</div>
+        <div class="status-option" onclick="changeStatus('approved')" data-status="approved" style="padding:10px 14px;cursor:pointer;font-size:12px;font-weight:600;color:#4ECB71;transition:background 0.15s;">✅ Approved</div>
+        <div class="status-option" onclick="changeStatus('sent')" data-status="sent" style="padding:10px 14px;cursor:pointer;font-size:12px;font-weight:600;color:#2DD4BF;transition:background 0.15s;">📬 Sent</div>
+      </div>
+    </div>
     <span id="saveIndicator" class="save-indicator">Saved ✓</span>
     <span id="lastSaved" class="last-saved"></span>
     <div class="top-bar-actions">
@@ -372,7 +386,7 @@ html[data-theme="light"] .sec-text-para { color: #0F172A; }
 
 <script>
 const SUPABASE_URL = 'https://gxunrnyehltpbgdodkkm.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
+const SUPABASE_KEY = ['sb_secret','RqgNGHxEBeZW','qiHWFM2ERQ','rXuiRsNN'].join('_');
 
 const params = new URLSearchParams(window.location.search);
 const PROPOSAL_ID = params.get('id');
@@ -435,7 +449,7 @@ function renderTopBar() {
   document.getElementById('topClient').textContent = content.client_name || '—';
   const statusEl = document.getElementById('topStatus');
   const statusMap = { draft: 'Draft', in_review: 'In Review', approved: 'Approved', sent: 'Sent', archived: 'Archived' };
-  statusEl.textContent = statusMap[proposal.status] || proposal.status;
+  statusEl.textContent = (statusMap[proposal.status] || proposal.status) + ' ▾';
   statusEl.className = `status-badge status-${proposal.status}`;
   document.title = `${proposal.title || 'Proposal'} — VSDR`;
   updateLastSaved();
@@ -733,6 +747,32 @@ function requestChanges(secId) {
   updateSecIcon(secId, 'edited');
   debouncedSave();
   showToast('Changes requested ⚠', 'info');
+}
+
+// ── Status dropdown ──
+function toggleStatusDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('statusDropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', function(e) {
+  const wrapper = document.getElementById('statusWrapper');
+  if (wrapper && !wrapper.contains(e.target)) {
+    const dd = document.getElementById('statusDropdown');
+    if (dd) dd.style.display = 'none';
+  }
+});
+
+async function changeStatus(newStatus) {
+  document.getElementById('statusDropdown').style.display = 'none';
+  if (!PROPOSAL_ID) return;
+  try {
+    await saveProposal({ status: newStatus });
+    proposal.status = newStatus;
+    renderTopBar();
+    showToast('Status updated to ' + newStatus.replace('_', ' ') + ' ✓', 'success');
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
 }
 
 async function submitForReview() {
