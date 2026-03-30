@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposal Lab — VSDR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #4ECB71;
+  --charcoal: #0F1923;
+  --teal: #2DD4BF;
+  --amber: #F59E0B;
+  --coral: #EF4444;
+  --gold: #FBBF24;
+  --n50: #F8FAFC;
+  --n400: #94A3B8;
+  --n800: #1E293B;
+  --surface: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.06);
+  --sidebar-w: 240px;
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'General Sans', sans-serif;
+}
+
+html { background: var(--charcoal); }
+body { font-family: var(--body); background: var(--charcoal); color: var(--n50); min-height: 100vh; display: flex; }
+a { text-decoration: none; color: inherit; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); min-height: 100vh; background: var(--charcoal); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; padding: 32px 0 24px; }
+.sidebar-brand { padding: 0 24px; margin-bottom: 8px; }
+.sidebar-logo { font-family: var(--display); font-weight: 700; font-size: 22px; color: #fff; display: flex; align-items: center; gap: 10px; }
+.pulse-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(0.8); opacity: 0.6; } 50% { transform: scale(1.2); opacity: 1.0; } }
+.sidebar-sub { font-family: var(--body); font-size: 11px; color: var(--n400); letter-spacing: 2px; text-transform: uppercase; padding: 0 24px; margin-top: 4px; }
+.sidebar-nav { margin-top: 40px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 24px; font-family: var(--body); font-weight: 500; font-size: 14px; color: var(--n400); text-decoration: none; border-left: 3px solid transparent; transition: color 0.15s, background 0.15s, border-color 0.15s; }
+.nav-item:hover { color: #fff; }
+.nav-item.active { color: #fff; border-left-color: var(--green); background: rgba(78,203,113,0.08); }
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+.sidebar-version { padding: 0 27px; font-family: var(--body); font-size: 12px; color: var(--n400); opacity: 0.5; }
+.nav-group { display: flex; flex-direction: column; }
+.nav-sub { padding-left: 44px !important; font-size: 0.85em; opacity: 0.7; display: flex; align-items: center; gap: 8px; padding: 8px 24px 8px 44px; color: var(--n400); transition: all 0.2s ease; }
+.nav-sub:hover, .nav-sub.active { opacity: 1; color: var(--green); }
+.nav-sub svg { flex-shrink: 0; }
+
+/* HAMBURGER */
+.hamburger { display: none; position: fixed; top: 16px; left: 16px; z-index: 200; background: var(--n800); border: 1px solid var(--border); border-radius: 2px; width: 40px; height: 40px; cursor: pointer; align-items: center; justify-content: center; }
+.hamburger svg { width: 20px; height: 20px; color: var(--n50); }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 90; }
+.sidebar-close { display: none; position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: var(--n400); }
+.sidebar-close svg { width: 20px; height: 20px; }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); flex: 1; padding: 48px; max-width: calc(1200px + 96px); }
+.page-header { font-family: var(--display); font-weight: 700; font-size: 36px; color: var(--n50); margin-bottom: 8px; }
+.page-subtitle { font-family: var(--body); font-size: 16px; color: var(--n400); margin-bottom: 32px; }
+
+/* STATS */
+.stats-bar { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+.stat-block { background: var(--n800); border: 1px solid var(--border); border-radius: 2px; padding: 20px 24px; flex: 1; min-width: 100px; }
+.stat-number { font-family: var(--display); font-weight: 700; font-size: 28px; color: var(--n50); line-height: 1; }
+.stat-label { font-family: var(--body); font-weight: 400; font-size: 11px; color: var(--n400); text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+.stat-loading { width: 48px; height: 28px; background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px; }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* FILTER PILLS */
+.filter-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.pill { padding: 7px 16px; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--n400); font-family: var(--body); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.pill:hover { color: #fff; border-color: rgba(255,255,255,0.15); }
+.pill.active { background: var(--green); border-color: var(--green); color: #0F1923; font-weight: 600; }
+
+/* PROPOSAL GRID */
+.proposals-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+@media (max-width: 900px) { .proposals-grid { grid-template-columns: 1fr; } }
+
+.proposal-card { background: var(--n800); border: 1px solid var(--border); border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 12px; transition: border-color 0.15s, transform 0.15s; }
+.proposal-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-1px); }
+
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.proposal-index-badge { font-family: var(--display); font-size: 11px; font-weight: 600; color: var(--n400); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px; white-space: nowrap; }
+.status-badge { padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.status-draft { background: rgba(148,163,184,0.15); color: var(--n400); }
+.status-in_review { background: rgba(245,158,11,0.15); color: var(--amber); }
+.status-approved { background: rgba(78,203,113,0.15); color: var(--green); }
+.status-sent { background: rgba(45,212,191,0.15); color: var(--teal); }
+.status-archived { background: rgba(148,163,184,0.08); color: rgba(148,163,184,0.5); }
+
+.proposal-title { font-family: var(--display); font-weight: 700; font-size: 18px; color: var(--n50); line-height: 1.3; }
+.proposal-client { font-size: 14px; color: var(--n400); }
+.proposal-desc { font-size: 13px; color: var(--n400); line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proposal-date { font-size: 12px; color: rgba(148,163,184,0.6); }
+
+.section-progress { display: flex; flex-direction: column; gap: 6px; }
+.progress-label { font-size: 12px; color: var(--n400); }
+.progress-bar-wrap { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s ease; }
+
+.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.btn-open { padding: 8px 18px; background: transparent; border: 1px solid var(--border); border-radius: 2px; color: var(--n50); font-family: var(--body); font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.15s; }
+.btn-open:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+
+/* HEADER ROW */
+.header-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 0; }
+.btn-new { padding: 10px 20px; background: var(--green); border: none; border-radius: 2px; color: #0F1923; font-family: var(--body); font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; display: flex; align-items: center; gap: 8px; }
+.btn-new:hover { opacity: 0.9; }
+.btn-sync { padding: 10px 16px; background: transparent; border: 1px solid var(--border); border-radius: 2px; color: var(--n400); font-family: var(--body); font-size: 13px; cursor: pointer; transition: all 0.15s; }
+.btn-sync:hover { color: #fff; border-color: rgba(255,255,255,0.15); }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+/* SKELETON CARDS */
+.skeleton-card { background: var(--n800); border: 1px solid var(--border); border-radius: 4px; padding: 24px; }
+.skel { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 2px; }
+.skel-title { height: 22px; width: 70%; margin-bottom: 12px; }
+.skel-text { height: 14px; width: 100%; margin-bottom: 8px; }
+.skel-text-sm { height: 14px; width: 50%; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500; align-items: center; justify-content: center; padding: 24px; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: #162030; border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; padding: 32px; width: 100%; max-width: 480px; }
+.modal-title { font-family: var(--display); font-size: 20px; font-weight: 700; color: var(--n50); margin-bottom: 24px; }
+.form-group { margin-bottom: 20px; }
+.form-label { font-size: 13px; font-weight: 500; color: var(--n400); margin-bottom: 8px; display: block; }
+.form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 2px; color: var(--n50); font-family: var(--body); font-size: 14px; outline: none; transition: border-color 0.15s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--green); }
+.form-input::placeholder, .form-textarea::placeholder { color: rgba(148,163,184,0.5); }
+.form-select option { background: #162030; }
+.form-textarea { resize: vertical; min-height: 80px; }
+.modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+.btn-cancel { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: var(--n400); font-family: var(--body); font-size: 14px; padding: 10px 20px; border-radius: 2px; cursor: pointer; }
+.btn-generate { background: var(--green); border: none; color: #0F1923; font-family: var(--body); font-size: 14px; font-weight: 600; padding: 10px 24px; border-radius: 2px; cursor: pointer; transition: opacity 0.15s; }
+.btn-generate:hover { opacity: 0.9; }
+.btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 32px; right: 32px; background: var(--n800); border: 1px solid var(--border); border-radius: 4px; padding: 14px 20px; font-size: 14px; color: var(--n50); z-index: 1000; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--coral); }
+
+/* EMPTY STATE */
+.empty-state { grid-column: 1 / -1; text-align: center; padding: 64px 32px; color: var(--n400); }
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+.empty-title { font-family: var(--display); font-size: 20px; color: var(--n50); margin-bottom: 8px; }
+
+/* THEME */
+.theme-btn { background: transparent; border: 1px solid var(--border); border-radius: 2px; color: var(--n400); font-family: var(--body); font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 12px; width: 100%; }
+.theme-btn:hover { color: #fff; }
+
+html[data-theme="light"] {
+  --green: #2EA84E; --charcoal: #F8FAFC; --teal: #0D9488; --amber: #D97706; --coral: #DC2626;
+  --n50: #0F172A; --n400: #64748B; --n800: #FFFFFF; --surface: rgba(0,0,0,0.02); --border: rgba(0,0,0,0.08);
+}
+html[data-theme="light"] body { background: #F1F5F9; color: #0F172A; }
+html[data-theme="light"] .sidebar { background: #FFFFFF; border-right-color: rgba(0,0,0,0.08); }
+html[data-theme="light"] .sidebar-logo, html[data-theme="light"] .page-header { color: #0F172A; }
+html[data-theme="light"] .nav-item:hover { color: #0F172A; }
+html[data-theme="light"] .nav-item.active { color: #0F172A; background: rgba(46,168,78,0.06); }
+html[data-theme="light"] .proposal-card, html[data-theme="light"] .stat-block { background: #FFFFFF; border-color: rgba(0,0,0,0.08); }
+html[data-theme="light"] .modal-card { background: rgba(255,255,255,0.97); border-color: rgba(0,0,0,0.1); }
+html[data-theme="light"] .form-input, html[data-theme="light"] .form-select, html[data-theme="light"] .form-textarea { background: #FFFFFF; border-color: rgba(0,0,0,0.12); color: #0F172A; }
+html[data-theme="light"] .form-select option { background: #FFFFFF; }
+html[data-theme="light"] .hamburger { background: #FFFFFF; border-color: rgba(0,0,0,0.08); }
+html[data-theme="light"] .toast { background: #FFFFFF; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sidebar { left: -100%; transition: left 0.3s ease; }
+  .sidebar.open { left: 0; }
+  .sidebar-backdrop.open { display: block; }
+  .sidebar-close { display: flex; }
+  .hamburger { display: flex; }
+  .main { margin-left: 0; padding: 24px 16px; padding-top: 72px; }
+  .proposals-grid { grid-template-columns: 1fr; }
+  .stats-bar .stat-block { min-width: 80px; }
+  .header-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<button class="hamburger" id="hamburger" aria-label="Open menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="sidebar-backdrop" id="backdrop"></div>
+
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div>
+  </div>
+  <div class="sidebar-sub">Sprintly Partners</div>
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Home
+    </a>
+    <a href="bmc.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      Strategy
+    </a>
+    <a href="goals.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Goals
+    </a>
+    <a href="pipeline.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Pipeline
+    </a>
+    <a href="proposals.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Proposals
+    </a>
+    <div class="nav-group">
+      <a href="network.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Network
+      </a>
+      <a href="matches.html" class="nav-sub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/><circle cx="9" cy="11" r="3"/></svg>
+        Matches
+      </a>
+      <a href="interactions.html" class="nav-sub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Interactions
+      </a>
+    </div>
+    <a href="outreach.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Outreach
+    </a>
+    <a href="analytics.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      Analytics
+    </a>
+    <a href="reports.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Reports
+    </a>
+    <a href="ingestion.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+      Ingestion
+    </a>
+    <a href="settings.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </a>
+  </nav>
+  <div class="theme-toggle" style="padding: 0 24px; margin-bottom: 12px;">
+    <button id="themeToggle" class="theme-btn">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-label">Light Mode</span>
+    </button>
+  </div>
+  <div class="sidebar-version">v2.0</div>
+</aside>
+
+<main class="main">
+  <div class="header-row">
+    <div>
+      <h1 class="page-header">Proposal Lab</h1>
+      <p class="page-subtitle">Create, review, and manage client proposals.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-sync" onclick="loadProposals()">⟳ Sync</button>
+      <button class="btn-new" onclick="openNewModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Proposal
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-block"><div class="stat-number" id="statTotal"><div class="stat-loading"></div></div><div class="stat-label">Total</div></div>
+    <div class="stat-block"><div class="stat-number" id="statDraft"><div class="stat-loading"></div></div><div class="stat-label">Drafts</div></div>
+    <div class="stat-block"><div class="stat-number" id="statInReview"><div class="stat-loading"></div></div><div class="stat-label">In Review</div></div>
+    <div class="stat-block"><div class="stat-number" id="statApproved"><div class="stat-loading"></div></div><div class="stat-label">Approved</div></div>
+    <div class="stat-block"><div class="stat-number" id="statSent"><div class="stat-loading"></div></div><div class="stat-label">Sent</div></div>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="filter-pills" id="filterPills">
+    <button class="pill active" data-filter="all">All</button>
+    <button class="pill" data-filter="draft">Draft</button>
+    <button class="pill" data-filter="in_review">In Review</button>
+    <button class="pill" data-filter="approved">Approved</button>
+    <button class="pill" data-filter="sent">Sent</button>
+    <button class="pill" data-filter="archived">Archived</button>
+  </div>
+
+  <!-- Proposals Grid -->
+  <div class="proposals-grid" id="proposalsGrid">
+    <!-- Skeleton -->
+    <div class="skeleton-card"><div class="skel skel-title"></div><div class="skel skel-text"></div><div class="skel skel-text-sm"></div></div>
+    <div class="skeleton-card"><div class="skel skel-title"></div><div class="skel skel-text"></div><div class="skel skel-text-sm"></div></div>
+    <div class="skeleton-card"><div class="skel skel-title"></div><div class="skel skel-text"></div><div class="skel skel-text-sm"></div></div>
+    <div class="skeleton-card"><div class="skel skel-title"></div><div class="skel skel-text"></div><div class="skel skel-text-sm"></div></div>
+  </div>
+</main>
+
+<!-- New Proposal Modal -->
+<div class="modal-overlay" id="newModal">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 class="modal-title" id="modalTitle">New Proposal</h3>
+    <div class="form-group">
+      <label class="form-label" for="inputClientName">Client Name</label>
+      <input type="text" class="form-input" id="inputClientName" placeholder="e.g. Acme Corp" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inputProposalType">Proposal Type</label>
+      <select class="form-select" id="inputProposalType">
+        <option value="Full Proposal">Full Proposal</option>
+        <option value="Quick Pitch">Quick Pitch</option>
+        <option value="Program Proposal">Program Proposal</option>
+        <option value="Follow-Up">Follow-Up</option>
+        <option value="Case Study">Case Study</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inputDescription">Brief Description</label>
+      <textarea class="form-textarea" id="inputDescription" placeholder="Describe the proposal objective..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeNewModal()">Cancel</button>
+      <button class="btn-generate" id="btnGenerate" onclick="createProposal()">Generate</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://gxunrnyehltpbgdodkkm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
+
+let allProposals = [];
+let activeFilter = 'all';
+
+async function sbFetch(endpoint, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+      ...(options.headers || {})
+    }
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+function parseContent(row) {
+  try { return typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {}); }
+  catch { return {}; }
+}
+
+function statusBadge(status) {
+  const map = { draft: 'Draft', in_review: 'In Review', approved: 'Approved', sent: 'Sent', archived: 'Archived' };
+  return `<span class="status-badge status-${status}">${map[status] || status}</span>`;
+}
+
+function sectionProgress(sections) {
+  if (!sections || !sections.length) return { approved: 0, total: 0 };
+  const approved = sections.filter(s => s.status === 'approved').length;
+  return { approved, total: sections.length };
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  try {
+    return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch { return ''; }
+}
+
+function renderCard(row) {
+  const content = parseContent(row);
+  const { approved, total } = sectionProgress(content.sections);
+  const pct = total > 0 ? Math.round((approved / total) * 100) : 0;
+  const idx = content.proposal_index || `SP-${new Date(row.created_at).getFullYear()}-${String(row.id).padStart(3,'0')}`;
+  const clientName = content.client_name || '—';
+  const desc = content.description || 'No description provided.';
+
+  return `
+  <div class="proposal-card" data-status="${row.status}">
+    <div class="card-top">
+      <span class="proposal-index-badge">${idx}</span>
+      ${statusBadge(row.status)}
+    </div>
+    <div class="proposal-title">${row.title || 'Untitled Proposal'}</div>
+    <div class="proposal-client">👤 ${clientName}</div>
+    <div class="proposal-desc">${desc}</div>
+    <div class="proposal-date">${formatDate(row.created_at)}</div>
+    <div class="section-progress">
+      <div class="progress-label">${approved}/${total} sections approved</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="card-footer">
+      <span></span>
+      <a href="proposal.html?id=${row.id}" class="btn-open">Open →</a>
+    </div>
+  </div>`;
+}
+
+function renderGrid(proposals) {
+  const grid = document.getElementById('proposalsGrid');
+  if (!proposals.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📄</div><div class="empty-title">No proposals found</div><p>Create your first proposal to get started.</p></div>`;
+    return;
+  }
+  grid.innerHTML = proposals.map(renderCard).join('');
+}
+
+async function loadProposals() {
+  try {
+    const data = await sbFetch('vsdr_proposals?select=*&order=created_at.desc');
+    allProposals = data || [];
+    updateStats(allProposals);
+    applyFilter();
+  } catch (e) {
+    console.error(e);
+    showToast('Failed to load proposals: ' + e.message, 'error');
+    document.getElementById('proposalsGrid').innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Error loading proposals</div><p>${e.message}</p></div>`;
+  }
+}
+
+function updateStats(proposals) {
+  document.getElementById('statTotal').textContent = proposals.length;
+  document.getElementById('statDraft').textContent = proposals.filter(p => p.status === 'draft').length;
+  document.getElementById('statInReview').textContent = proposals.filter(p => p.status === 'in_review').length;
+  document.getElementById('statApproved').textContent = proposals.filter(p => p.status === 'approved').length;
+  document.getElementById('statSent').textContent = proposals.filter(p => p.status === 'sent').length;
+}
+
+function applyFilter() {
+  const filtered = activeFilter === 'all' ? allProposals : allProposals.filter(p => p.status === activeFilter);
+  renderGrid(filtered);
+}
+
+// Filter pills
+document.getElementById('filterPills').addEventListener('click', e => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.filter;
+  applyFilter();
+});
+
+// New proposal modal
+function openNewModal() {
+  document.getElementById('newModal').classList.add('open');
+  document.getElementById('inputClientName').focus();
+}
+function closeNewModal() {
+  document.getElementById('newModal').classList.remove('open');
+  document.getElementById('inputClientName').value = '';
+  document.getElementById('inputDescription').value = '';
+}
+document.getElementById('newModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('newModal')) closeNewModal();
+});
+
+async function createProposal() {
+  const clientName = document.getElementById('inputClientName').value.trim();
+  const proposalType = document.getElementById('inputProposalType').value;
+  const description = document.getElementById('inputDescription').value.trim();
+  if (!clientName) { showToast('Please enter a client name', 'error'); return; }
+
+  const btn = document.getElementById('btnGenerate');
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+
+  const year = new Date().getFullYear();
+  const idx = `SP-${year}-${String(Math.floor(Math.random() * 900) + 100).padStart(3,'0')}`;
+  const slug = clientName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
+
+  const content = {
+    client_name: clientName,
+    client_contact: '',
+    proposal_type: proposalType,
+    proposal_index: idx,
+    slug,
+    description,
+    share_token: null,
+    pdf_url: null,
+    approved_at: null,
+    sent_at: null,
+    sections: [],
+    comments: [],
+    metadata: {}
+  };
+
+  try {
+    const result = await sbFetch('vsdr_proposals', {
+      method: 'POST',
+      prefer: 'return=representation',
+      body: JSON.stringify({
+        title: `${proposalType} — ${clientName}`,
+        status: 'draft',
+        content: JSON.stringify(content),
+        project_id: slug
+      })
+    });
+    closeNewModal();
+    showToast('✅ Proposal created!', 'success');
+    await loadProposals();
+    if (result && result[0]) {
+      setTimeout(() => { window.location.href = `proposal.html?id=${result[0].id}`; }, 800);
+    }
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate';
+  }
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Mobile sidebar
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const backdrop = document.getElementById('backdrop');
+const sidebarClose = document.getElementById('sidebarClose');
+hamburger.addEventListener('click', () => { sidebar.classList.add('open'); backdrop.classList.add('open'); });
+sidebarClose.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
+backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); });
+
+// Theme
+(function() {
+  var saved = localStorage.getItem('vsdr-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeBtn(saved);
+  var btn = document.getElementById('themeToggle');
+  if (btn) btn.addEventListener('click', function() {
+    var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('vsdr-theme', next);
+    updateThemeBtn(next);
+  });
+  function updateThemeBtn(theme) {
+    var btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    btn.querySelector('.theme-icon').textContent = theme === 'light' ? '🌙' : '☀️';
+    btn.querySelector('.theme-label').textContent = theme === 'light' ? 'Dark Mode' : 'Light Mode';
+  }
+})();
+
+loadProposals();
+</script>
+</body>
+</html>

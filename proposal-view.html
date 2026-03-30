@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposal — Sprintly Partners</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #4ECB71;
+  --charcoal: #0F1923;
+  --body-font: 'General Sans', sans-serif;
+  --display-font: 'Space Grotesk', sans-serif;
+}
+
+html { background: #ffffff; }
+
+body {
+  font-family: var(--body-font);
+  background: #ffffff;
+  color: #1a202c;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── BRAND BAR ── */
+.brand-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 48px;
+  border-bottom: 1px solid #e2e8f0;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.brand-logo {
+  font-family: var(--display-font);
+  font-weight: 700;
+  font-size: 20px;
+  color: #1a202c;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--green);
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.confidential-badge {
+  font-family: var(--body-font);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+  padding: 4px 10px;
+  border-radius: 2px;
+}
+
+/* ── MAIN CONTAINER ── */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px 48px 80px;
+}
+
+@media (max-width: 768px) {
+  .brand-bar { padding: 20px 24px; }
+  .container { padding: 32px 24px 64px; }
+}
+
+/* ── PROPOSAL HEADER ── */
+.proposal-header { margin-bottom: 40px; }
+
+.proposal-title {
+  font-family: var(--display-font);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.2;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .proposal-title { font-size: 28px; }
+}
+
+.proposal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  color: #64748b;
+  font-size: 14px;
+  padding: 20px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.meta-item { display: flex; align-items: center; gap: 6px; }
+.meta-label { font-weight: 600; color: #374151; }
+
+/* ── DIVIDER ── */
+.green-divider {
+  height: 3px;
+  background: linear-gradient(90deg, var(--green), transparent);
+  border-radius: 2px;
+  margin: 32px 0;
+}
+
+/* ── TABLE OF CONTENTS ── */
+.toc {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin-bottom: 48px;
+}
+
+.toc-title {
+  font-family: var(--display-font);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.toc-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.toc-item { display: flex; align-items: center; gap: 8px; }
+.toc-num {
+  font-family: var(--display-font);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  min-width: 20px;
+}
+.toc-link {
+  font-size: 14px;
+  color: #374151;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.toc-link:hover { color: var(--green); }
+
+/* ── SECTION ── */
+.proposal-section {
+  margin-bottom: 48px;
+  scroll-margin-top: 24px;
+}
+
+.section-heading {
+  font-family: var(--display-font);
+  font-weight: 700;
+  font-size: 22px;
+  color: #0f172a;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f1f5f9;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.section-num {
+  font-size: 14px;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.section-text {
+  font-size: 16px;
+  color: #374151;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.section-divider {
+  height: 2px;
+  background: linear-gradient(90deg, var(--green), #e2e8f0);
+  border-radius: 1px;
+  margin: 32px 0;
+}
+
+.section-image {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  display: block;
+}
+
+/* ── TABLE ── */
+.section-table-wrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.section-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.section-table th {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--display-font);
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+  vertical-align: top;
+}
+
+.section-table tr:last-child td { border-bottom: none; }
+.section-table tr:nth-child(even) td { background: #f8fafc; }
+
+/* ── FOOTER ── */
+.proposal-footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 2px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-text {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.footer-brand {
+  font-family: var(--display-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+/* ── DOWNLOAD BUTTON ── */
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--green);
+  border: none;
+  border-radius: 4px;
+  color: #0f172a;
+  font-family: var(--display-font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  margin-top: 32px;
+}
+
+.download-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ── ERROR STATE ── */
+.error-state {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-icon { font-size: 64px; margin-bottom: 24px; }
+.error-title { font-family: var(--display-font); font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+.error-msg { font-size: 16px; color: #64748b; line-height: 1.6; }
+
+/* ── LOADING ── */
+.loading-state { padding: 64px 48px; max-width: 800px; margin: 0 auto; }
+.skel { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
+@keyframes shimmer { 0%{background-position:-200% 0}100%{background-position:200% 0} }
+
+/* ── PRINT / PDF ── */
+@media print {
+  .download-btn, .brand-bar .confidential-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="brand-bar" id="brandBar">
+  <div class="brand-logo">
+    <span class="brand-dot"></span> Sprintly Partners
+  </div>
+  <span class="confidential-badge">Confidential</span>
+</div>
+
+<div id="appRoot">
+  <!-- Loading skeleton -->
+  <div class="loading-state" id="loadingState">
+    <div class="skel" style="height:44px;width:70%;margin-bottom:16px;"></div>
+    <div class="skel" style="height:18px;width:40%;margin-bottom:32px;"></div>
+    <div class="skel" style="height:12px;width:100%;margin-bottom:8px;"></div>
+    <div class="skel" style="height:12px;width:85%;margin-bottom:8px;"></div>
+    <div class="skel" style="height:12px;width:90%;margin-bottom:8px;"></div>
+    <div class="skel" style="height:12px;width:60%;"></div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://gxunrnyehltpbgdodkkm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
+
+const params = new URLSearchParams(window.location.search);
+const TOKEN = params.get('token');
+
+let proposalData = null;
+let proposalContent = null;
+
+async function sbFetch(endpoint) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function parseContent(row) {
+  try { return typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {}); }
+  catch { return {}; }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(str) {
+  if (!str) return '';
+  try { return new Date(str).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); }
+  catch { return ''; }
+}
+
+function showError(msg) {
+  document.getElementById('appRoot').innerHTML = `
+    <div class="error-state">
+      <div class="error-icon">🔒</div>
+      <div class="error-title">Proposal Not Found</div>
+      <div class="error-msg">${escapeHtml(msg)}</div>
+    </div>`;
+}
+
+function renderSection(sec, i) {
+  if (sec.content_type === 'divider') {
+    return `<div class="section-divider"></div>`;
+  }
+
+  let contentHtml = '';
+
+  if (sec.content_type === 'table' && sec.table_data) {
+    const { headers, rows } = sec.table_data;
+    contentHtml = `<div class="section-table-wrap"><table class="section-table">
+      <thead><tr>${(headers || []).map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
+      <tbody>${(rows || []).map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>`;
+  } else if (sec.content_type === 'image') {
+    const imgHtml = sec.image_url ? `<img src="${escapeHtml(sec.image_url)}" class="section-image" alt="${escapeHtml(sec.title)}" />` : '';
+    const textHtml = sec.content ? `<div class="section-text">${escapeHtml(sec.content)}</div>` : '';
+    contentHtml = textHtml + imgHtml;
+  } else {
+    // text
+    contentHtml = `<div class="section-text">${escapeHtml(sec.content || '')}</div>`;
+    if (sec.image_url) {
+      contentHtml += `<img src="${escapeHtml(sec.image_url)}" class="section-image" alt="" />`;
+    }
+  }
+
+  return `<section class="proposal-section" id="sec-view-${i}">
+    <h2 class="section-heading">
+      <span class="section-num">${String(i+1).padStart(2,'0')}</span>
+      ${escapeHtml(sec.title || `Section ${i+1}`)}
+    </h2>
+    ${contentHtml}
+  </section>`;
+}
+
+function renderProposal(row, content) {
+  document.title = `${row.title || 'Proposal'} — Sprintly Partners`;
+  const sections = (content.sections || []).filter(s => s.content_type !== undefined);
+  const createdDate = formatDate(row.created_at);
+
+  const tocItems = sections.map((s, i) => {
+    if (s.content_type === 'divider') return '';
+    return `<li class="toc-item">
+      <span class="toc-num">${String(i+1).padStart(2,'0')}</span>
+      <a href="#sec-view-${i}" class="toc-link">${escapeHtml(s.title || `Section ${i+1}`)}</a>
+    </li>`;
+  }).filter(Boolean).join('');
+
+  const sectionsHtml = sections.map((s, i) => renderSection(s, i)).join('');
+  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  document.getElementById('appRoot').innerHTML = `
+    <div class="container" id="proposalDoc">
+      <div class="proposal-header">
+        <h1 class="proposal-title">${escapeHtml(row.title || 'Proposal')}</h1>
+        <div class="proposal-meta">
+          <div class="meta-item"><span class="meta-label">Prepared for:</span> ${escapeHtml(content.client_name || '—')}</div>
+          ${content.client_contact ? `<div class="meta-item"><span class="meta-label">Attention:</span> ${escapeHtml(content.client_contact)}</div>` : ''}
+          <div class="meta-item"><span class="meta-label">Date:</span> ${createdDate || today}</div>
+          ${content.proposal_index ? `<div class="meta-item"><span class="meta-label">Ref:</span> ${escapeHtml(content.proposal_index)}</div>` : ''}
+          ${content.proposal_type ? `<div class="meta-item"><span class="meta-label">Type:</span> ${escapeHtml(content.proposal_type)}</div>` : ''}
+        </div>
+        ${content.description ? `<p style="margin-top:20px;font-size:16px;color:#64748b;line-height:1.7;">${escapeHtml(content.description)}</p>` : ''}
+      </div>
+
+      <div class="green-divider"></div>
+
+      ${sections.length ? `
+      <div class="toc">
+        <div class="toc-title">Table of Contents</div>
+        <ul class="toc-list">${tocItems}</ul>
+      </div>` : ''}
+
+      ${sectionsHtml}
+
+      <div class="proposal-footer">
+        <div class="footer-brand"><span class="brand-dot" style="width:8px;height:8px;"></span> Sprintly Partners</div>
+        <div class="footer-text">Prepared by Sprintly Partners | ${today} | yousra@sprintlypartners.com</div>
+        <div class="footer-text">This document is confidential and intended solely for ${escapeHtml(content.client_name || 'the recipient')}.</div>
+      </div>
+
+      <button class="download-btn" onclick="downloadPDF()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+    </div>`;
+}
+
+async function downloadPDF() {
+  const el = document.getElementById('proposalDoc');
+  const btn = document.querySelector('.download-btn');
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+  const opt = {
+    margin: [16, 20],
+    filename: `${proposalData ? proposalData.title : 'proposal'}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  try {
+    await html2pdf().set(opt).from(el).save();
+  } finally {
+    if (btn) { btn.innerHTML = '⬇ Download PDF'; btn.disabled = false; }
+  }
+}
+
+async function loadByToken() {
+  if (!TOKEN) {
+    showError('No share token provided. Please check the link you were sent.');
+    return;
+  }
+
+  try {
+    // Fetch all proposals and find matching share_token in content
+    const data = await sbFetch('vsdr_proposals?select=id,title,status,created_at,content&order=created_at.desc');
+    if (!data || !data.length) { showError('Proposal not found or the link has expired.'); return; }
+
+    let found = null;
+    let foundContent = null;
+
+    for (const row of data) {
+      try {
+        const c = parseContent(row);
+        if (c.share_token === TOKEN) {
+          found = row;
+          foundContent = c;
+          break;
+        }
+      } catch {}
+    }
+
+    if (!found) {
+      showError('This proposal link is invalid or has expired. Please contact yousra@sprintlypartners.com for a new link.');
+      return;
+    }
+
+    proposalData = found;
+    proposalContent = foundContent;
+    renderProposal(found, foundContent);
+
+  } catch (e) {
+    showError('Failed to load proposal: ' + e.message);
+  }
+}
+
+loadByToken();
+</script>
+</body>
+</html>
