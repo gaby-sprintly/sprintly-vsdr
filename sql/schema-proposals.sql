@@ -140,7 +140,23 @@ INSERT INTO proposal_sections (id, proposal_id, sort_order, title, content_type,
  NULL, NULL, 'approved', NULL, NULL, NULL)
 ON CONFLICT (id) DO NOTHING;
 
--- 6. Knowledge Base table
+-- 6. Proposal Comments table (non-actionable notes, separate from change requests)
+CREATE TABLE IF NOT EXISTS proposal_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  proposal_id UUID NOT NULL REFERENCES proposals(id) ON DELETE CASCADE,
+  section_id UUID REFERENCES proposal_sections(id) ON DELETE CASCADE,
+  author TEXT NOT NULL DEFAULT 'Yousra',
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_comments_proposal ON proposal_comments(proposal_id);
+CREATE INDEX IF NOT EXISTS idx_comments_section ON proposal_comments(section_id);
+
+ALTER TABLE proposal_comments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on proposal_comments" ON proposal_comments FOR ALL USING (true) WITH CHECK (true);
+
+-- 7. Knowledge Base table
 CREATE TABLE IF NOT EXISTS knowledge_base (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,

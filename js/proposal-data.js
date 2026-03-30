@@ -200,6 +200,32 @@ function getTemplateSections(proposalType, clientName) {
 }
 
 // ═══════════════════════════
+// Comments (non-actionable notes)
+// ═══════════════════════════
+
+async function fetchComments(proposalId) {
+  return sbGet('proposal_comments', 'proposal_id=eq.' + proposalId + '&order=created_at.asc');
+}
+
+async function fetchSectionComments(sectionId) {
+  return sbGet('proposal_comments', 'section_id=eq.' + sectionId + '&order=created_at.asc');
+}
+
+async function createComment(proposalId, sectionId, message, author) {
+  return sbInsert('proposal_comments', {
+    id: crypto.randomUUID(),
+    proposal_id: proposalId,
+    section_id: sectionId || null,
+    author: author || 'Yousra',
+    message: message
+  }, { returnData: true });
+}
+
+async function deleteComment(id) {
+  return sbDelete('proposal_comments', 'id=eq.' + id);
+}
+
+// ═══════════════════════════
 // Knowledge Base
 // ═══════════════════════════
 
