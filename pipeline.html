@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline & Projects — Sprintly Partners VSDR</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0B1120;
+            --bg-secondary: #111827;
+            --bg-card: #1a2332;
+            --bg-card-hover: #1f2b3d;
+            --green: #4ECB71;
+            --green-dim: rgba(78, 203, 113, 0.15);
+            --amber: #F59E0B;
+            --amber-dim: rgba(245, 158, 11, 0.15);
+            --blue: #3B82F6;
+            --blue-dim: rgba(59, 130, 246, 0.15);
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border: rgba(148, 163, 184, 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Satoshi', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between; height: 56px;
+        }
+        .nav-brand {
+            font-family: 'Clash Display', sans-serif; font-weight: 600;
+            font-size: 1rem; color: var(--green); letter-spacing: -0.02em;
+        }
+        .nav-links { display: flex; gap: 0.25rem; }
+        .nav-links a {
+            color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;
+            font-weight: 500; padding: 0.4rem 0.75rem; border-radius: 6px; transition: all 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary); background: rgba(255,255,255,0.05);
+        }
+        .nav-links a.active { color: var(--green); }
+
+        /* LAYOUT */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; flex: 1; }
+
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 {
+            font-family: 'Clash Display', sans-serif; font-weight: 700;
+            font-size: clamp(1.75rem, 4vw, 2.5rem); letter-spacing: -0.03em;
+        }
+        .page-header h1 .accent { color: var(--green); }
+        .page-header p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem; }
+
+        /* SUMMARY BAR */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+        .summary-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            text-align: center;
+        }
+        .summary-item .number {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--green);
+        }
+        .summary-item .label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 0.25rem;
+        }
+
+        .section-label {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .section-label .tag {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 0.7rem; font-weight: 600;
+            background: var(--green-dim); color: var(--green);
+            padding: 0.2rem 0.6rem; border-radius: 100px;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+
+        /* PROJECT CARDS GRID */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            border-radius: 0 3px 3px 0;
+        }
+        .project-card.status-green::before { background: var(--green); }
+        .project-card.status-amber::before { background: var(--amber); }
+        .project-card.status-blue::before { background: var(--blue); }
+        .project-card:hover { border-color: rgba(148, 163, 184, 0.2); }
+
+        .project-top {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 0.75rem; margin-bottom: 0.75rem;
+        }
+        .project-name {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 600; font-size: 1.05rem; line-height: 1.3;
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            font-size: 0.65rem; font-weight: 600;
+            padding: 0.2rem 0.6rem; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+        }
+        .badge-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .badge.green { background: var(--green-dim); color: var(--green); }
+        .badge.green .badge-dot { background: var(--green); }
+        .badge.amber { background: var(--amber-dim); color: var(--amber); }
+        .badge.amber .badge-dot { background: var(--amber); }
+        .badge.blue { background: var(--blue-dim); color: var(--blue); }
+        .badge.blue .badge-dot { background: var(--blue); }
+
+        .project-desc {
+            color: var(--text-secondary); font-size: 0.8rem; line-height: 1.5; margin-bottom: 1rem;
+        }
+
+        .project-meta {
+            display: flex; flex-wrap: wrap; gap: 0.5rem;
+        }
+        .meta-chip {
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        .meta-chip strong { color: var(--text-primary); font-weight: 600; }
+
+        /* PORTFOLIO */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .portfolio-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem;
+        }
+        .portfolio-card .project-name { font-size: 0.95rem; margin-bottom: 0.4rem; }
+        .portfolio-card .project-desc { margin-bottom: 0; }
+        .portfolio-card .check { color: var(--green); font-size: 0.85rem; }
+
+        /* FOOTER */
+        footer {
+            text-align: center; padding: 1.25rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted); font-size: 0.75rem;
+        }
+        footer span { color: var(--text-secondary); }
+
+        @media (max-width: 640px) {
+            .container { padding: 1.25rem; }
+            .projects-grid, .portfolio-grid { grid-template-columns: 1fr; }
+            .summary-bar { grid-template-columns: repeat(2, 1fr); }
+            nav { padding: 0 1rem; }
+            .nav-links a { font-size: 0.8rem; padding: 0.3rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <div class="nav-brand">⚡ Sprintly Partners</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="bmc.html">Strategy</a>
+                <a href="goals.html">Goals</a>
+                <a href="pipeline.html" class="active">Pipeline</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Pipeline & <span class="accent">Active Projects</span></h1>
+            <p>Live deal flow, program status, and portfolio overview</p>
+        </div>
+
+        <!-- SUMMARY BAR -->
+        <div class="summary-bar">
+            <div class="summary-item">
+                <div class="number">7</div>
+                <div class="label">Active Projects</div>
+            </div>
+            <div class="summary-item">
+                <div class="number">3</div>
+                <div class="label">Portfolio Cos</div>
+            </div>
+            <div class="summary-item">
+                <div class="number">4</div>
+                <div class="label">Signed / Active</div>
+            </div>
+            <div class="summary-item">
+                <div class="number">2</div>
+                <div class="label">In Review</div>
+            </div>
+            <div class="summary-item">
+                <div class="number">1</div>
+                <div class="label">Research</div>
+            </div>
+        </div>
+
+        <!-- ACTIVE PROJECTS -->
+        <div class="section-label">
+            Active Projects
+            <span class="tag">7 projects</span>
+        </div>
+
+        <div class="projects-grid">
+            <!-- MENA to the Valley -->
+            <div class="project-card status-amber">
+                <div class="project-top">
+                    <div class="project-name">MENA to the Valley 2026</div>
+                    <span class="badge amber"><span class="badge-dot"></span> Launching</span>
+                </div>
+                <div class="project-desc">Flagship accelerator program connecting MENA founders to Silicon Valley. 2026 cohort applications open, selection in April.</div>
+                <div class="project-meta">
+                    <div class="meta-chip"><strong>23</strong> applications</div>
+                    <div class="meta-chip">Next: <strong>Selection — April</strong></div>
+                </div>
+            </div>
+
+            <!-- Monshaat -->
+            <div class="project-card status-green">
+                <div class="project-top">
+                    <div class="project-name">Monshaat Partnership</div>
+                    <span class="badge green"><span class="badge-dot"></span> Signed</span>
+                </div>
+                <div class="project-desc">Institutional partnership with Saudi Arabia's SME authority. Program delivers SV exposure and mentorship to 4-5 Saudi founders.</div>
+                <div class="project-meta">
+                    <div class="meta-chip"><strong>4-5</strong> Saudi founders</div>
+                    <div class="meta-chip">Next: <strong>Delivering program</strong></div>
+                </div>
+            </div>
+
+            <!-- HBKU -->
+            <div class="project-card status-amber">
+                <div class="project-top">
+                    <div class="project-name">HBKU Partnership</div>
+                    <span class="badge amber"><span class="badge-dot"></span> In Review</span>
+                </div>
+                <div class="project-desc">Partnership with Hamad Bin Khalifa University for 2 Qatari startups. Contract under review.</div>
+                <div class="project-meta">
+                    <div class="meta-chip"><strong>2</strong> startups (QASR, CircleProcess)</div>
+                    <div class="meta-chip">Status: <strong>In Review</strong></div>
+                </div>
+            </div>
+
+            <!-- ARPU Plus -->
+            <div class="project-card status-green">
+                <div class="project-top">
+                    <div class="project-name">ARPU Plus / CloudCom</div>
+                    <span class="badge green"><span class="badge-dot"></span> Active</span>
+                </div>
+                <div class="project-desc">US market expansion advisory for ARPU Plus via CloudCom. Monthly retainer for strategic introductions and market intelligence.</div>
+                <div class="project-meta">
+                    <div class="meta-chip">US market expansion</div>
+                    <div class="meta-chip">Type: <strong>Retainer + Rev Share</strong></div>
+                </div>
+            </div>
+
+            <!-- Algeria Ventures -->
+            <div class="project-card status-green">
+                <div class="project-top">
+                    <div class="project-name">Algeria Ventures</div>
+                    <span class="badge green"><span class="badge-dot"></span> Running</span>
+                </div>
+                <div class="project-desc">Quarterly cohort-based program supporting Algerian startups with mentorship, network access, and go-to-market support.</div>
+                <div class="project-meta">
+                    <div class="meta-chip">Quarterly cohorts</div>
+                    <div class="meta-chip">Status: <strong>Ongoing</strong></div>
+                </div>
+            </div>
+
+            <!-- AI Squad -->
+            <div class="project-card status-green">
+                <div class="project-top">
+                    <div class="project-name">AI Squad</div>
+                    <span class="badge green"><span class="badge-dot"></span> Active</span>
+                </div>
+                <div class="project-desc">AI-focused content and advisory offering. NVIDIA podcast produced. Seeking 2+ corporate clients for retainer engagements.</div>
+                <div class="project-meta">
+                    <div class="meta-chip">NVIDIA podcast ✅</div>
+                    <div class="meta-chip">Next: <strong>Corporate clients</strong></div>
+                </div>
+            </div>
+
+            <!-- CloudCon -->
+            <div class="project-card status-blue">
+                <div class="project-top">
+                    <div class="project-name">CloudCon Diligence</div>
+                    <span class="badge blue"><span class="badge-dot"></span> Research</span>
+                </div>
+                <div class="project-desc">Due diligence research underway. Evaluating opportunity, market positioning, and strategic fit for Sprintly involvement.</div>
+                <div class="project-meta">
+                    <div class="meta-chip">Phase: <strong>Due diligence</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PORTFOLIO COMPANIES -->
+        <div class="section-label">
+            Portfolio Companies
+            <span class="tag">3 companies</span>
+        </div>
+
+        <div class="portfolio-grid">
+            <div class="portfolio-card">
+                <div class="project-name">Stakpak <span class="check">✅</span></div>
+                <div class="project-desc">AI infrastructure automation. Raised funding, relocated to San Francisco. Active portfolio company with strong momentum.</div>
+                <div class="project-meta" style="margin-top:0.75rem">
+                    <div class="meta-chip">AI Infra</div>
+                    <div class="meta-chip"><strong>Funded</strong></div>
+                    <div class="meta-chip">📍 SF</div>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="project-name">Fincart</div>
+                <div class="project-desc">E-commerce SMB delivery platform serving small and medium businesses across Africa and MENA markets.</div>
+                <div class="project-meta" style="margin-top:0.75rem">
+                    <div class="meta-chip">E-commerce / Logistics</div>
+                    <div class="meta-chip">📍 Africa / MENA</div>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="project-name">Incura</div>
+                <div class="project-desc">Hemostatic medtech company developing advanced wound care solutions for MENA healthcare markets.</div>
+                <div class="project-meta" style="margin-top:0.75rem">
+                    <div class="meta-chip">Medtech</div>
+                    <div class="meta-chip">📍 MENA</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Maintained by <span>Gaby</span> · Last updated: March 30, 2026 · <span>Sprintly Partners VSDR</span> — Confidential
+    </footer>
+</body>
+</html>

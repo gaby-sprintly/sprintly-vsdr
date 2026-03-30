@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprintly Partners VSDR - Virtual Strategy Data Room</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0B1120;
+            --bg-secondary: #111827;
+            --bg-card: #1a2332;
+            --bg-card-hover: #1f2b3d;
+            --green: #4ECB71;
+            --green-dim: rgba(78, 203, 113, 0.15);
+            --green-glow: rgba(78, 203, 113, 0.3);
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border: rgba(148, 163, 184, 0.1);
+            --border-hover: rgba(78, 203, 113, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Satoshi', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAV */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 17, 32, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+        }
+        .nav-brand {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--green);
+            letter-spacing: -0.02em;
+        }
+        .nav-links { display: flex; gap: 0.25rem; }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-links a.active { color: var(--green); }
+
+        /* HERO */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            min-height: calc(100vh - 56px - 60px);
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--green-dim);
+            border: 1px solid rgba(78, 203, 113, 0.2);
+            color: var(--green);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            margin-bottom: 2rem;
+        }
+        .hero-badge .dot {
+            width: 6px; height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .hero h1 {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+        .hero h1 .accent { color: var(--green); }
+        .hero .subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 3rem;
+            letter-spacing: 0.15em;
+        }
+
+        /* NAV CARDS */
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            max-width: 900px;
+            width: 100%;
+        }
+        .nav-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--green);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .nav-card:hover {
+            border-color: var(--border-hover);
+            background: var(--bg-card-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .nav-card:hover::before { opacity: 1; }
+        .nav-card .card-icon {
+            width: 44px; height: 44px;
+            background: var(--green-dim);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+        .nav-card h3 {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+        .nav-card p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .nav-card .arrow {
+            position: absolute;
+            top: 1.5rem; right: 1.5rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        .nav-card:hover .arrow {
+            color: var(--green);
+            transform: translateX(4px);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 1.25rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        footer span { color: var(--text-secondary); }
+
+        @media (max-width: 640px) {
+            .nav-cards { grid-template-columns: 1fr; }
+            nav { padding: 0 1rem; }
+            .hero { padding: 1.5rem; }
+            .nav-links a { font-size: 0.8rem; padding: 0.3rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <div class="nav-brand">⚡ Sprintly Partners</div>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="bmc.html">Strategy</a>
+                <a href="goals.html">Goals</a>
+                <a href="pipeline.html">Pipeline</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-badge"><span class="dot"></span> Live Strategy Room</div>
+        <h1>Virtual Strategy <span class="accent">Data Room</span></h1>
+        <p class="subtitle">Strategy · Goals · Pipeline · Always Live</p>
+
+        <div class="nav-cards">
+            <a href="bmc.html" class="nav-card">
+                <div class="card-icon">🧭</div>
+                <span class="arrow">→</span>
+                <h3>Strategy</h3>
+                <p>Business Model Canvas — partners, channels, value props, revenue streams</p>
+            </a>
+            <a href="goals.html" class="nav-card">
+                <div class="card-icon">🎯</div>
+                <span class="arrow">→</span>
+                <h3>Goals & OKRs</h3>
+                <p>2026 annual goals, quarterly milestones, and real-time progress tracking</p>
+            </a>
+            <a href="pipeline.html" class="nav-card">
+                <div class="card-icon">🚀</div>
+                <span class="arrow">→</span>
+                <h3>Pipeline</h3>
+                <p>Active projects, deal status, portfolio companies, and key metrics</p>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        Maintained by <span>Gaby</span> · Last updated: March 30, 2026 · <span>Sprintly Partners</span> — Confidential
+    </footer>
+</body>
+</html>
