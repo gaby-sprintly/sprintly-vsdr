@@ -469,6 +469,101 @@ a { text-decoration: none; color: inherit; }
   font-size: 12px;
   color: var(--n400);
 }
+.btn-enrich {
+  background: transparent;
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.btn-enrich:hover {
+  background: var(--teal);
+  color: var(--charcoal);
+}
+.btn-enriched {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--green);
+  opacity: 0.7;
+}
+.enrich-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+}
+.enrich-modal.open {
+  display: flex;
+}
+.enrich-modal-card {
+  background: rgba(30,41,59,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 4px;
+  padding: 32px;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+}
+.enrich-modal-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--n50);
+  margin-bottom: 12px;
+}
+.enrich-modal-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.enrich-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.enrich-btn-confirm {
+  background: var(--teal);
+  color: var(--charcoal);
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.enrich-btn-cancel {
+  background: transparent;
+  color: var(--n400);
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.enrich-success {
+  color: var(--green);
+  font-family: var(--body);
+  font-size: 15px;
+  font-weight: 500;
+}
 
 .follow-up-badge {
   display: inline-flex;
@@ -940,6 +1035,13 @@ a { text-decoration: none; color: inherit; }
 
     var id = c.id || '';
 
+    var enrichBtn = '';
+    if (c.enrichment_status !== 'enriched') {
+      enrichBtn = '<button class="btn-enrich" onclick="event.preventDefault();event.stopPropagation();enrichContact(\'' + id + '\',\'' + escHTML(name).replace(/'/g,'\\\'') + '\')" title="Enrich this contact">Enrich</button>';
+    } else {
+      enrichBtn = '<span class="btn-enriched">Enriched</span>';
+    }
+
     return '<a href="contact.html?id=' + id + '" class="' + cls + '">' +
       '<div class="card-top">' +
         '<div class="card-name">' + star + escHTML(name) + '</div>' +
@@ -952,6 +1054,7 @@ a { text-decoration: none; color: inherit; }
           '<span class="enrichment-dot ' + eDot + '" title="Enrichment: ' + (c.enrichment_status || 'none') + '"></span>' +
           followUp +
         '</div>' +
+        enrichBtn +
       '</div>' +
     '</a>';
   }
@@ -1143,6 +1246,65 @@ a { text-decoration: none; color: inherit; }
 
   initPage();
 })();
+</script>
+<!-- Enrich Modal -->
+<div class="enrich-modal" id="enrichModal">
+  <div class="enrich-modal-card">
+    <div id="enrichStep1">
+      <div class="enrich-modal-title" id="enrichTitle">Enrich Contact</div>
+      <div class="enrich-modal-text">Gaby will research this contact using web search and LinkedIn, then update their profile with industry, region, email, and notes.</div>
+      <div class="enrich-modal-actions">
+        <button class="enrich-btn-cancel" onclick="closeEnrich()">Cancel</button>
+        <button class="enrich-btn-confirm" onclick="confirmEnrich()">Yes, Enrich</button>
+      </div>
+    </div>
+    <div id="enrichStep2" style="display:none; padding:20px 0;">
+      <div style="font-size:32px; color:var(--teal); margin-bottom:12px;">✓</div>
+      <div class="enrich-success">Enrichment requested! Gaby will update this contact shortly.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var enrichTargetId = '';
+var enrichTargetName = '';
+
+function enrichContact(id, name) {
+  enrichTargetId = id;
+  enrichTargetName = name;
+  document.getElementById('enrichTitle').textContent = 'Enrich: ' + name;
+  document.getElementById('enrichStep1').style.display = 'block';
+  document.getElementById('enrichStep2').style.display = 'none';
+  var modal = document.getElementById('enrichModal');
+  modal.classList.add('open');
+}
+
+function confirmEnrich() {
+  document.getElementById('enrichStep1').style.display = 'none';
+  document.getElementById('enrichStep2').style.display = 'block';
+  // Update the button on the card
+  var cards = document.querySelectorAll('.btn-enrich');
+  cards.forEach(function(btn) {
+    if (btn.getAttribute('onclick').indexOf(enrichTargetId) > -1) {
+      var span = document.createElement('span');
+      span.className = 'btn-enriched';
+      span.textContent = 'Enrichment Requested';
+      btn.parentNode.replaceChild(span, btn);
+    }
+  });
+  setTimeout(function() { closeEnrich(); }, 2000);
+}
+
+function closeEnrich() {
+  document.getElementById('enrichModal').classList.remove('open');
+}
+
+document.getElementById('enrichModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEnrich();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeEnrich();
+});
 </script>
 </body>
 </html>
