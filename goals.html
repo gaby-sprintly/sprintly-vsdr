@@ -1,470 +1,603 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goals & OKRs — Sprintly Partners VSDR</title>
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0B1120;
-            --bg-secondary: #111827;
-            --bg-card: #1a2332;
-            --bg-card-hover: #1f2b3d;
-            --green: #4ECB71;
-            --green-dim: rgba(78, 203, 113, 0.15);
-            --green-glow: rgba(78, 203, 113, 0.3);
-            --amber: #F59E0B;
-            --amber-dim: rgba(245, 158, 11, 0.15);
-            --red: #EF4444;
-            --red-dim: rgba(239, 68, 68, 0.15);
-            --blue: #3B82F6;
-            --blue-dim: rgba(59, 130, 246, 0.15);
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --text-muted: #64748B;
-            --border: rgba(148, 163, 184, 0.1);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Satoshi', -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goals & OKRs — VSDR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* NAV */
-        nav {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(11, 17, 32, 0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: 0 2rem;
-        }
-        .nav-inner {
-            max-width: 1200px; margin: 0 auto;
-            display: flex; align-items: center; justify-content: space-between; height: 56px;
-        }
-        .nav-brand {
-            font-family: 'Clash Display', sans-serif; font-weight: 600;
-            font-size: 1rem; color: var(--green); letter-spacing: -0.02em;
-        }
-        .nav-links { display: flex; gap: 0.25rem; }
-        .nav-links a {
-            color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;
-            font-weight: 500; padding: 0.4rem 0.75rem; border-radius: 6px; transition: all 0.2s;
-        }
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--text-primary); background: rgba(255,255,255,0.05);
-        }
-        .nav-links a.active { color: var(--green); }
+:root {
+  --green: #4ECB71;
+  --charcoal: #0F1923;
+  --teal: #2DD4BF;
+  --amber: #F59E0B;
+  --coral: #EF4444;
+  --n50: #F8FAFC;
+  --n400: #94A3B8;
+  --n800: #1E293B;
+  --surface: rgba(255,255,255,0.03);
+  --sidebar-w: 240px;
+}
 
-        /* LAYOUT */
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-        .page-header {
-            margin-bottom: 0.75rem;
-        }
-        .page-header h1 {
-            font-family: 'Clash Display', sans-serif; font-weight: 700;
-            font-size: clamp(1.75rem, 4vw, 2.5rem); letter-spacing: -0.03em;
-        }
-        .page-header h1 .accent { color: var(--green); }
-        .page-header p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem; }
+body {
+  background: var(--charcoal);
+  color: var(--n50);
+  font-family: 'General Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+}
 
-        .info-banner {
-            background: var(--green-dim);
-            border: 1px solid rgba(78, 203, 113, 0.2);
-            border-radius: 10px;
-            padding: 0.75rem 1.25rem;
-            font-size: 0.8rem;
-            color: var(--green);
-            margin-bottom: 2.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--charcoal);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0;
+  z-index: 100;
+}
 
-        .section-label {
-            font-family: 'Clash Display', sans-serif;
-            font-weight: 600;
-            font-size: 1.25rem;
-            margin-bottom: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .section-label .tag {
-            font-family: 'Satoshi', sans-serif;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: var(--green-dim);
-            color: var(--green);
-            padding: 0.2rem 0.6rem;
-            border-radius: 100px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+.sidebar-brand { padding: 0 28px; margin-bottom: 8px; }
 
-        /* GOAL CARDS */
-        .goals-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-        .goal-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1.5rem;
-            transition: border-color 0.2s;
-        }
-        .goal-card:hover { border-color: rgba(148, 163, 184, 0.2); }
+.sidebar-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-        .goal-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
-        }
-        .goal-title {
-            font-family: 'Clash Display', sans-serif;
-            font-weight: 600;
-            font-size: 1.05rem;
-            line-height: 1.3;
-        }
-        .goal-desc {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-        }
+.pulse-dot {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
 
-        /* STATUS BADGES */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.25rem 0.65rem;
-            border-radius: 100px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .badge-dot { width: 5px; height: 5px; border-radius: 50%; }
-        .badge.on-track { background: var(--green-dim); color: var(--green); }
-        .badge.on-track .badge-dot { background: var(--green); }
-        .badge.at-risk { background: var(--amber-dim); color: var(--amber); }
-        .badge.at-risk .badge-dot { background: var(--amber); }
-        .badge.behind { background: var(--red-dim); color: var(--red); }
-        .badge.behind .badge-dot { background: var(--red); }
-        .badge.not-started { background: rgba(100,116,139,0.15); color: var(--text-muted); }
-        .badge.not-started .badge-dot { background: var(--text-muted); }
-        .badge.completed { background: var(--green-dim); color: var(--green); }
-        .badge.completed .badge-dot { background: var(--green); }
+@keyframes pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1.0; }
+}
 
-        /* PROGRESS BAR */
-        .progress-row {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .progress-track {
-            flex: 1;
-            height: 8px;
-            background: rgba(148, 163, 184, 0.1);
-            border-radius: 100px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 100px;
-            background: var(--green);
-            transition: width 1s ease;
-            position: relative;
-        }
-        .progress-fill.amber { background: var(--amber); }
-        .progress-fill.red { background: var(--red); }
-        .progress-pct {
-            font-family: 'Clash Display', sans-serif;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--green);
-            min-width: 40px;
-            text-align: right;
-        }
-        .progress-pct.amber { color: var(--amber); }
-        .progress-pct.zero { color: var(--text-muted); }
+.sidebar-sub {
+  font-family: 'General Sans', sans-serif;
+  font-size: 11px;
+  color: var(--n400);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 28px;
+  margin-top: 4px;
+}
 
-        .goal-meta {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 0.75rem;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
+.sidebar-nav { margin-top: 40px; flex: 1; }
 
-        /* Q2 SECTION */
-        .q-goals-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-        .q-goal-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1.25rem;
-        }
-        .q-goal-card .goal-title { font-size: 0.95rem; margin-bottom: 0.5rem; }
-        .q-goal-card .goal-desc { margin-bottom: 0.75rem; }
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 28px;
+  font-family: 'General Sans', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--n400);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
 
-        /* FOOTER */
-        footer {
-            text-align: center; padding: 1.25rem 2rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted); font-size: 0.75rem;
-            margin-top: auto;
-        }
-        footer span { color: var(--text-secondary); }
+.sidebar-nav a:hover { color: #fff; }
 
-        @media (max-width: 640px) {
-            .container { padding: 1.25rem; }
-            .goal-top { flex-direction: column; gap: 0.5rem; }
-            .q-goals-grid { grid-template-columns: 1fr; }
-            nav { padding: 0 1rem; }
-            .nav-links a { font-size: 0.8rem; padding: 0.3rem 0.5rem; }
-        }
-    </style>
+.sidebar-nav a.active {
+  color: #fff;
+  border-left-color: var(--green);
+  background: rgba(78,203,113,0.08);
+}
+
+.sidebar-nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.sidebar-version {
+  padding: 0 28px;
+  font-size: 11px;
+  color: var(--n400);
+  opacity: 0.5;
+}
+
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 200;
+  background: var(--n800);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 2px;
+  color: var(--n50);
+  width: 40px; height: 40px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.hamburger svg { width: 20px; height: 20px; }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 90;
+}
+
+.sidebar-close {
+  display: none;
+  position: absolute;
+  top: 16px; right: 16px;
+  background: none; border: none;
+  color: var(--n400);
+  cursor: pointer;
+}
+
+.sidebar-close svg { width: 20px; height: 20px; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 48px;
+  max-width: 1200px;
+}
+
+/* ── PAGE HEADER ── */
+.page-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--n50);
+  line-height: 1.1;
+}
+
+.info-banner {
+  margin-top: 20px;
+  background: rgba(78,203,113,0.06);
+  border-left: 3px solid var(--green);
+  padding: 12px 16px;
+}
+
+.info-banner p {
+  font-size: 14px;
+  color: var(--n400);
+  line-height: 1.5;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/* ── GOAL CARDS ── */
+.goals-stack { display: flex; flex-direction: column; gap: 16px; }
+
+.goal-card {
+  background: var(--n800);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 2px;
+  padding: 28px 32px;
+  backdrop-filter: blur(12px);
+}
+
+.goal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.goal-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--n50);
+  line-height: 1.3;
+}
+
+.badge {
+  font-family: 'General Sans', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge--on-track {
+  background: rgba(78,203,113,0.12);
+  color: var(--green);
+  box-shadow: 0 0 12px rgba(78,203,113,0.3);
+}
+
+.badge--at-risk {
+  background: rgba(245,158,11,0.12);
+  color: var(--amber);
+  box-shadow: 0 0 12px rgba(245,158,11,0.3);
+}
+
+.badge--behind {
+  background: rgba(239,68,68,0.12);
+  color: var(--coral);
+  box-shadow: 0 0 12px rgba(239,68,68,0.3);
+}
+
+.badge--not-started {
+  background: rgba(148,163,184,0.12);
+  color: var(--n400);
+}
+
+.badge--in-progress {
+  background: rgba(45,212,191,0.12);
+  color: var(--teal);
+  box-shadow: 0 0 10px rgba(45,212,191,0.2);
+}
+
+.badge--upcoming {
+  background: rgba(148,163,184,0.08);
+  color: var(--n400);
+}
+
+.goal-desc {
+  font-size: 14px;
+  color: var(--n400);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.progress-pct {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  color: var(--n50);
+  margin-right: 20px;
+  min-width: 60px;
+}
+
+.progress-track {
+  flex-grow: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 0; bottom: 0;
+  width: 300%;
+  background: linear-gradient(90deg, transparent 0%, transparent 33%, rgba(255,255,255,0.35) 50%, transparent 67%, transparent 100%);
+  animation: shimmer 1.5s ease forwards;
+  animation-fill-mode: forwards;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.goal-card:nth-child(1) .progress-fill::after { animation-delay: 0s; }
+.goal-card:nth-child(2) .progress-fill::after { animation-delay: 0.15s; }
+.goal-card:nth-child(3) .progress-fill::after { animation-delay: 0.3s; }
+.goal-card:nth-child(4) .progress-fill::after { animation-delay: 0.45s; }
+.goal-card:nth-child(5) .progress-fill::after { animation-delay: 0.6s; }
+
+.goal-updated {
+  font-size: 11px;
+  color: var(--n400);
+  margin-top: 12px;
+  opacity: 0.6;
+}
+
+/* ── Q2 GRID ── */
+.q2-section { margin-top: 48px; }
+
+.q2-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.q2-card {
+  background: var(--n800);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 2px;
+  padding: 20px 24px;
+  backdrop-filter: blur(12px);
+}
+
+.q2-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.q2-title {
+  font-family: 'General Sans', sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--n50);
+  line-height: 1.4;
+}
+
+.q2-badge {
+  font-family: 'General Sans', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open { display: block; }
+  .sidebar-close.show { display: block; }
+  .hamburger { display: flex; }
+
+  .main {
+    margin-left: 0;
+    padding: 24px;
+    padding-top: 72px;
+  }
+
+  .page-title { font-size: 28px; }
+
+  .goal-card { padding: 20px; }
+  .goal-top { flex-direction: column; gap: 8px; }
+  .goal-title { font-size: 18px; }
+  .progress-pct { font-size: 26px; }
+
+  .q2-grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .q2-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
 </head>
 <body>
-    <nav>
-        <div class="nav-inner">
-            <div class="nav-brand">⚡ Sprintly Partners</div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="bmc.html">Strategy</a>
-                <a href="goals.html" class="active">Goals</a>
-                <a href="pipeline.html">Pipeline</a>
-            </div>
+
+<!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- Hamburger -->
+<button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div>
+  </div>
+  <div class="sidebar-sub">Sprintly Partners</div>
+  <nav class="sidebar-nav">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Home
+    </a>
+    <a href="bmc.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/><line x1="2" y1="8.5" x2="22" y2="8.5"/><line x1="2" y1="15.5" x2="22" y2="15.5"/></svg>
+      Strategy
+    </a>
+    <a href="goals.html" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Goals
+    </a>
+    <a href="pipeline.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Pipeline
+    </a>
+  </nav>
+  <div class="sidebar-version">v2.0</div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <h1 class="page-title">Goals & OKRs</h1>
+
+  <div class="info-banner">
+    <p>Progress updated by Yousra. Ask Gaby anytime.</p>
+  </div>
+
+  <!-- 2026 Annual Goals -->
+  <div class="section-label">2026 Annual Goals</div>
+
+  <div class="goals-stack">
+    <!-- Goal 1 -->
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-title">Deliver MENA to the Valley 2026 Cohort</div>
+        <span class="badge badge--on-track">On Track</span>
+      </div>
+      <div class="goal-desc">23 applications received. Selection in April. Virtual sessions mid-May. SV immersion June 2-8.</div>
+      <div class="progress-row">
+        <div class="progress-pct">30%</div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:30%"></div>
         </div>
-    </nav>
-
-    <div class="container">
-        <div class="page-header">
-            <h1>Goals & <span class="accent">OKRs</span></h1>
-            <p>Track annual and quarterly progress in real time</p>
-        </div>
-
-        <div class="info-banner">
-            💡 Progress percentages updated by Yousra. Ask Gaby to update anytime.
-        </div>
-
-        <!-- 2026 ANNUAL GOALS -->
-        <div class="section-label">
-            2026 Annual Goals
-            <span class="tag">5 goals</span>
-        </div>
-
-        <div class="goals-grid">
-            <!-- Goal 1 -->
-            <div class="goal-card">
-                <div class="goal-top">
-                    <div class="goal-title">Deliver MENA to the Valley 2026 Cohort</div>
-                    <span class="badge on-track"><span class="badge-dot"></span> In Progress</span>
-                </div>
-                <div class="goal-desc">Launch and execute the 2026 cohort — from application review through Silicon Valley immersion. 23 applications received, selection in April.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:30%"></div></div>
-                    <div class="progress-pct">30%</div>
-                </div>
-                <div class="goal-meta">
-                    <span>Updated: Mar 30, 2026</span>
-                </div>
-            </div>
-
-            <!-- Goal 2 -->
-            <div class="goal-card">
-                <div class="goal-top">
-                    <div class="goal-title">Close 3+ Institutional Partnerships</div>
-                    <span class="badge on-track"><span class="badge-dot"></span> On Track</span>
-                </div>
-                <div class="goal-desc">Monshaat ✅ signed. HBKU in review ($38K). One more partnership needed to hit target. Strong pipeline.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:65%"></div></div>
-                    <div class="progress-pct">65%</div>
-                </div>
-                <div class="goal-meta">
-                    <span>Updated: Mar 30, 2026</span>
-                    <span>·</span>
-                    <span>2 of 3 closed</span>
-                </div>
-            </div>
-
-            <!-- Goal 3 -->
-            <div class="goal-card">
-                <div class="goal-top">
-                    <div class="goal-title">Launch AI Squad with 2+ Corporate Clients</div>
-                    <span class="badge at-risk"><span class="badge-dot"></span> At Risk</span>
-                </div>
-                <div class="goal-desc">AI content production active (NVIDIA podcast produced). Seeking corporate clients — none signed yet. Need to accelerate BD.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill amber" style="width:25%"></div></div>
-                    <div class="progress-pct amber">25%</div>
-                </div>
-                <div class="goal-meta">
-                    <span>Updated: Mar 30, 2026</span>
-                    <span>·</span>
-                    <span>0 of 2 clients</span>
-                </div>
-            </div>
-
-            <!-- Goal 4 -->
-            <div class="goal-card">
-                <div class="goal-top">
-                    <div class="goal-title">Grow Network to 8,000+ Contacts</div>
-                    <span class="badge on-track"><span class="badge-dot"></span> On Track</span>
-                </div>
-                <div class="goal-desc">Current network at 6,000+ contacts in Airtable. Steady growth through programs, events, and outreach. Target: 8,000 by year-end.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:75%"></div></div>
-                    <div class="progress-pct">75%</div>
-                </div>
-                <div class="goal-meta">
-                    <span>Updated: Mar 30, 2026</span>
-                    <span>·</span>
-                    <span>6,000 / 8,000</span>
-                </div>
-            </div>
-
-            <!-- Goal 5 -->
-            <div class="goal-card">
-                <div class="goal-top">
-                    <div class="goal-title">Hit Annual Revenue Target</div>
-                    <span class="badge not-started"><span class="badge-dot"></span> Awaiting Data</span>
-                </div>
-                <div class="goal-desc">Revenue tracking placeholder — awaiting numbers from Yousra. Will be updated once financials are confirmed.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
-                    <div class="progress-pct zero">0%</div>
-                </div>
-                <div class="goal-meta">
-                    <span>Updated: Mar 30, 2026</span>
-                    <span>·</span>
-                    <span>Pending Yousra input</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Q2 2026 QUARTERLY GOALS -->
-        <div class="section-label">
-            Q2 2026 Quarterly Goals
-            <span class="tag">Apr – Jun</span>
-        </div>
-
-        <div class="q-goals-grid">
-            <div class="q-goal-card">
-                <div class="goal-title">Finalize MENA to Valley Cohort Selection</div>
-                <div class="goal-desc">Review 23 applications, shortlist candidates, and confirm final cohort by end of April.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:20%"></div></div>
-                    <div class="progress-pct">20%</div>
-                </div>
-                <div class="goal-meta">
-                    <span class="badge on-track"><span class="badge-dot"></span> On Track</span>
-                    <span>·</span>
-                    <span>Due: April 2026</span>
-                </div>
-            </div>
-
-            <div class="q-goal-card">
-                <div class="goal-title">Execute Virtual Mentorship Sessions</div>
-                <div class="goal-desc">Pair selected founders with mentors and facilitate virtual sessions in preparation for SV immersion.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
-                    <div class="progress-pct zero">0%</div>
-                </div>
-                <div class="goal-meta">
-                    <span class="badge not-started"><span class="badge-dot"></span> Not Started</span>
-                    <span>·</span>
-                    <span>Due: Mid-May 2026</span>
-                </div>
-            </div>
-
-            <div class="q-goal-card">
-                <div class="goal-title">Silicon Valley Immersion Week</div>
-                <div class="goal-desc">One-week intensive in Silicon Valley — VC meetings, corporate visits, pitch sessions, and networking.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
-                    <div class="progress-pct zero">0%</div>
-                </div>
-                <div class="goal-meta">
-                    <span class="badge not-started"><span class="badge-dot"></span> Not Started</span>
-                    <span>·</span>
-                    <span>Due: June 2–8, 2026</span>
-                </div>
-            </div>
-
-            <div class="q-goal-card">
-                <div class="goal-title">Close HBKU Contract</div>
-                <div class="goal-desc">Finalize partnership with HBKU for 2 startups (QASR, CircleProcess). Contract value: $38K. Currently in review.</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill amber" style="width:50%"></div></div>
-                    <div class="progress-pct amber">50%</div>
-                </div>
-                <div class="goal-meta">
-                    <span class="badge at-risk"><span class="badge-dot"></span> In Review</span>
-                    <span>·</span>
-                    <span>Due: Q2 2026</span>
-                </div>
-            </div>
-
-            <div class="q-goal-card">
-                <div class="goal-title">Deliver ARPU Plus First Introductions</div>
-                <div class="goal-desc">Execute first round of US market partnership introductions for ARPU Plus / CloudCom ($7.5K/mo retainer).</div>
-                <div class="progress-row">
-                    <div class="progress-track"><div class="progress-fill" style="width:15%"></div></div>
-                    <div class="progress-pct">15%</div>
-                </div>
-                <div class="goal-meta">
-                    <span class="badge on-track"><span class="badge-dot"></span> On Track</span>
-                    <span>·</span>
-                    <span>Due: Q2 2026</span>
-                </div>
-            </div>
-        </div>
+      </div>
+      <div class="goal-updated">Last updated: Mar 30, 2026</div>
     </div>
 
-    <footer>
-        Maintained by <span>Gaby</span> · Last updated: March 30, 2026 · <span>Sprintly Partners VSDR</span> — Confidential
-    </footer>
+    <!-- Goal 2 -->
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-title">Close 3+ Institutional Partnerships</div>
+        <span class="badge badge--on-track">On Track</span>
+      </div>
+      <div class="goal-desc">Monshaat signed. HBKU in review. 1 more needed.</div>
+      <div class="progress-row">
+        <div class="progress-pct">65%</div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:65%"></div>
+        </div>
+      </div>
+      <div class="goal-updated">Last updated: Mar 30, 2026</div>
+    </div>
 
-    <script>
-        // Animate progress bars on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const fills = entry.target.querySelectorAll('.progress-fill');
-                    fills.forEach(fill => {
-                        const width = fill.style.width;
-                        fill.style.width = '0%';
-                        requestAnimationFrame(() => {
-                            requestAnimationFrame(() => {
-                                fill.style.width = width;
-                            });
-                        });
-                    });
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.2 });
+    <!-- Goal 3 -->
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-title">Launch AI Squad with 2+ Corporate Clients</div>
+        <span class="badge badge--at-risk">At Risk</span>
+      </div>
+      <div class="goal-desc">NVIDIA content produced. Deck ready. Zero paying clients yet.</div>
+      <div class="progress-row">
+        <div class="progress-pct">25%</div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:25%"></div>
+        </div>
+      </div>
+      <div class="goal-updated">Last updated: Mar 30, 2026</div>
+    </div>
 
-        document.querySelectorAll('.goal-card, .q-goal-card').forEach(card => observer.observe(card));
-    </script>
+    <!-- Goal 4 -->
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-title">Grow Network to 8,000+ Contacts</div>
+        <span class="badge badge--on-track">On Track</span>
+      </div>
+      <div class="goal-desc">Currently 6,000+. Growing through events and program intake.</div>
+      <div class="progress-row">
+        <div class="progress-pct">75%</div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:75%"></div>
+        </div>
+      </div>
+      <div class="goal-updated">Last updated: Mar 30, 2026</div>
+    </div>
+
+    <!-- Goal 5 -->
+    <div class="goal-card">
+      <div class="goal-top">
+        <div class="goal-title">Hit Annual Revenue Target</div>
+        <span class="badge badge--not-started">Not Started</span>
+      </div>
+      <div class="goal-desc">Awaiting revenue figures from Yousra.</div>
+      <div class="progress-row">
+        <div class="progress-pct">0%</div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="goal-updated">Last updated: Mar 30, 2026</div>
+    </div>
+  </div>
+
+  <!-- Q2 2026 Quarterly Goals -->
+  <div class="q2-section">
+    <div class="section-label">Q2 2026 Quarterly Goals</div>
+
+    <div class="q2-grid">
+      <div class="q2-card">
+        <div class="q2-card-top">
+          <div class="q2-title">Finalize cohort selection (April)</div>
+          <span class="q2-badge badge--in-progress">In Progress</span>
+        </div>
+      </div>
+
+      <div class="q2-card">
+        <div class="q2-card-top">
+          <div class="q2-title">Execute virtual mentorship (mid-May)</div>
+          <span class="q2-badge badge--upcoming">Upcoming</span>
+        </div>
+      </div>
+
+      <div class="q2-card">
+        <div class="q2-card-top">
+          <div class="q2-title">Silicon Valley immersion (June 2-8)</div>
+          <span class="q2-badge badge--upcoming">Upcoming</span>
+        </div>
+      </div>
+
+      <div class="q2-card">
+        <div class="q2-card-top">
+          <div class="q2-title">Close HBKU contract</div>
+          <span class="q2-badge badge--in-progress">In Progress</span>
+        </div>
+      </div>
+
+      <div class="q2-card">
+        <div class="q2-card-top">
+          <div class="q2-title">Deliver ARPU Plus first partnerships</div>
+          <span class="q2-badge badge--in-progress">In Progress</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function() {
+  var sidebar = document.getElementById('sidebar');
+  var backdrop = document.getElementById('sidebarBackdrop');
+  var hamburger = document.getElementById('hamburgerBtn');
+  var closeBtn = document.getElementById('sidebarClose');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    backdrop.classList.add('open');
+    closeBtn.classList.add('show');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('open');
+    closeBtn.classList.remove('show');
+  }
+
+  hamburger.addEventListener('click', openSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+  backdrop.addEventListener('click', closeSidebar);
+})();
+</script>
 </body>
 </html>
