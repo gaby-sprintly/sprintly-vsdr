@@ -325,6 +325,54 @@ body {
   opacity: 0.8;
 }
 
+a.project-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.project-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.view-details {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--teal);
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+a.project-card:hover .view-details {
+  color: var(--green);
+}
+
+.btn-proposal {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-proposal:hover {
+  background: rgba(78,203,113,0.1);
+  border-color: var(--green);
+}
+
 /* ── PORTFOLIO GRID ── */
 .portfolio-grid {
   display: grid;
@@ -524,7 +572,7 @@ body {
   <div class="section-label">Active Projects</div>
   <div class="project-grid">
 
-    <div class="project-card" style="border-left-color: #F59E0B;">
+    <a href="project.html?id=mena-to-valley-2026" class="project-card" style="border-left-color: #F59E0B;">
       <div class="project-top">
         <div class="project-name">MENA to the Valley 2026</div>
         <div class="badge badge-amber">Launching</div>
@@ -532,9 +580,13 @@ body {
       <div class="project-metric">23 applications</div>
       <div class="project-next"><span>Next:</span> April selection</div>
       <div class="project-desc">Flagship cohort. Virtual mid-May, SV June 2-8.</div>
-    </div>
+      <div class="project-card-footer">
+        <span class="view-details">View Details →</span>
+        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for MENA to the Valley 2026')">Create Proposal</button>
+      </div>
+    </a>
 
-    <div class="project-card" style="border-left-color: #4ECB71;">
+    <a href="project.html?id=monshaat" class="project-card" style="border-left-color: #4ECB71;">
       <div class="project-top">
         <div class="project-name">Monshaat Partnership</div>
         <div class="badge badge-green">Signed</div>
@@ -542,9 +594,13 @@ body {
       <div class="project-metric">4-5 Saudi founders</div>
       <div class="project-next"><span>Next:</span> Program delivery</div>
       <div class="project-desc">Saudi government partnership for MENA to Valley.</div>
-    </div>
+      <div class="project-card-footer">
+        <span class="view-details">View Details →</span>
+        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for Monshaat Partnership')">Create Proposal</button>
+      </div>
+    </a>
 
-    <div class="project-card" style="border-left-color: #F59E0B;">
+    <a href="project.html?id=hbku" class="project-card" style="border-left-color: #F59E0B;">
       <div class="project-top">
         <div class="project-name">HBKU Partnership</div>
         <div class="badge badge-amber">In Review</div>
@@ -552,9 +608,13 @@ body {
       <div class="project-metric">2 startups confirmed</div>
       <div class="project-next"><span>Next:</span> Contract finalization</div>
       <div class="project-desc">Qatar partnership. QASR Technologies & CircleProcess.</div>
-    </div>
+      <div class="project-card-footer">
+        <span class="view-details">View Details →</span>
+        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for HBKU Partnership')">Create Proposal</button>
+      </div>
+    </a>
 
-    <div class="project-card" style="border-left-color: #4ECB71;">
+    <a href="project.html?id=arpu-plus" class="project-card" style="border-left-color: #4ECB71;">
       <div class="project-top">
         <div class="project-name">ARPU Plus / CloudCom</div>
         <div class="badge badge-green">Active</div>
@@ -562,9 +622,13 @@ body {
       <div class="project-metric">US market expansion</div>
       <div class="project-next"><span>Next:</span> First partnership intros</div>
       <div class="project-desc">BD retainer for A15 portfolio company CloudCom.</div>
-    </div>
+      <div class="project-card-footer">
+        <span class="view-details">View Details →</span>
+        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for ARPU Plus / CloudCom')">Create Proposal</button>
+      </div>
+    </a>
 
-    <div class="project-card" style="border-left-color: #4ECB71;">
+    <a href="project.html?id=algeria-ventures" class="project-card" style="border-left-color: #4ECB71;">
       <div class="project-top">
         <div class="project-name">Algeria Ventures</div>
         <div class="badge badge-green">Running</div>
@@ -572,9 +636,13 @@ body {
       <div class="project-metric">Quarterly cohorts</div>
       <div class="project-next"><span>Next:</span> Next cohort cycle</div>
       <div class="project-desc">Government-backed founder cohorts from Algeria.</div>
-    </div>
+      <div class="project-card-footer">
+        <span class="view-details">View Details →</span>
+        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for Algeria Ventures')">Create Proposal</button>
+      </div>
+    </a>
 
-    <div class="project-card" style="border-left-color: #4ECB71;">
+    <a href="project.html?id=ai-squad" class="project-card" style="border-left-color: #4ECB71;">
       <div class="project-top">
         <div class="project-name">AI Squad</div>
         <div class="badge badge-green">Active</div>
@@ -582,9 +650,13 @@ body {
       <div class="project-metric">NVIDIA podcast produced</div>
       <div class="project-next"><span>Next:</span> First corporate client</div>
       <div class="project-desc">6-month executive AI enablement program.</div>
-    </div>
+      <div class="project-card-footer">
+        <span class="view-details">View Details →</span>
+        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for AI Squad')">Create Proposal</button>
+      </div>
+    </a>
 
-    <div class="project-card" style="border-left-color: #2DD4BF;">
+    <a href="project.html?id=cloudcon" class="project-card" style="border-left-color: #2DD4BF;">
       <div class="project-top">
         <div class="project-name">CloudCon Diligence</div>
         <div class="badge badge-teal">Research</div>
@@ -592,7 +664,11 @@ body {
       <div class="project-metric">Due diligence underway</div>
       <div class="project-next"><span>Next:</span> Validation complete</div>
       <div class="project-desc">Evaluating CloudCon for potential partnership.</div>
-    </div>
+      <div class="project-card-footer">
+        <span class="view-details">View Details →</span>
+        <button class="btn-proposal" onclick="event.preventDefault();alert('Tell Gaby on Telegram: Create proposal for CloudCon Diligence')">Create Proposal</button>
+      </div>
+    </a>
 
   </div>
 

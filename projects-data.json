@@ -1,0 +1,368 @@
+{
+  "projects": [
+    {
+      "id": "mena-to-valley-2026",
+      "name": "MENA to the Valley 2026",
+      "status": "Launching",
+      "company_brief": "Sprintly Partners' flagship program connecting MENA/Africa founders with Silicon Valley investors, mentors, and corporate partners through a structured 3-phase journey: regional selection, virtual bootcamp, and 7-10 day Silicon Valley immersion.",
+      "executives": [
+        {
+          "name": "Yousra Gaballah",
+          "role": "Program Lead",
+          "company": "Sprintly Partners"
+        },
+        {
+          "name": "Annija Eizenarma",
+          "role": "Strategic Partnerships",
+          "company": "Sprintly Partners"
+        },
+        {
+          "name": "Sherif Nessim",
+          "role": "Investment Advisory",
+          "company": "Sprintly Partners"
+        }
+      ],
+      "spoc": {
+        "name": "Yousra Gaballah",
+        "role": "Founder & CEO",
+        "email": "yousra@sprintlypartners.com"
+      },
+      "key_metrics": "23 applications received",
+      "timeline": [
+        {
+          "date": "Feb-Mar 2026",
+          "milestone": "Applications open",
+          "status": "completed"
+        },
+        {
+          "date": "April 2026",
+          "milestone": "Cohort selection",
+          "status": "in_progress"
+        },
+        {
+          "date": "Mid-May 2026",
+          "milestone": "Virtual mentorship sessions",
+          "status": "upcoming"
+        },
+        {
+          "date": "June 2-8, 2026",
+          "milestone": "Silicon Valley immersion week",
+          "status": "upcoming"
+        }
+      ],
+      "next_actions": [
+        "Review and shortlist from 23 applications",
+        "Confirm mentor assignments from AI Squad",
+        "Finalize virtual session schedule for May",
+        "Book SV immersion venues and corporate visits"
+      ],
+      "possible_intros": [
+        "Tarek Taha (CBE Fintech Hub) for fintech founders",
+        "Sara Rona (SVB) for US banking setup",
+        "Mohammed Al-Emadi (QDB) for Qatar founders"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "monshaat",
+      "name": "Monshaat Partnership",
+      "status": "Signed",
+      "company_brief": "The General Authority for Small and Medium Enterprises (Monshaat) is the Saudi government body responsible for SME development. Chaired by Dr. Majid bin Abdullah Alqasabi (Minister of Commerce). Governor: Sami Ibrahim Alhussaini. Monshaat promotes entrepreneurship, provides funding, and runs accelerator programs across Saudi Arabia.",
+      "executives": [
+        {
+          "name": "Sami Ibrahim Alhussaini",
+          "role": "Governor",
+          "company": "Monshaat"
+        },
+        {
+          "name": "Dr. Majid bin Abdullah Alqasabi",
+          "role": "Chairman (Minister of Commerce)",
+          "company": "Monshaat"
+        }
+      ],
+      "spoc": {
+        "name": "TBD",
+        "role": "Monshaat program contact",
+        "email": ""
+      },
+      "key_metrics": "4-5 Saudi founders",
+      "timeline": [
+        {
+          "date": "March 9, 2026",
+          "milestone": "Agreement signed",
+          "status": "completed"
+        },
+        {
+          "date": "April 2026",
+          "milestone": "Startup nominations from Monshaat",
+          "status": "in_progress"
+        },
+        {
+          "date": "Mid-May 2026",
+          "milestone": "Virtual mentorship phase",
+          "status": "upcoming"
+        },
+        {
+          "date": "June 2-8, 2026",
+          "milestone": "Silicon Valley immersion",
+          "status": "upcoming"
+        }
+      ],
+      "next_actions": [
+        "Receive startup nominations from Monshaat",
+        "Evaluate nominated startups against program criteria",
+        "Propose MENA to the Valley showcase at LEAP 2026 (Aug)"
+      ],
+      "possible_intros": [
+        "Khalid Al-Murshed (Return On Health, Saudi healthtech founder)",
+        "Hasan Jabarti (Bridging to Saudi)"
+      ],
+      "notes": "Contract value: confidential. Payment: 50% on signature, 50% before program start."
+    },
+    {
+      "id": "hbku",
+      "name": "HBKU Partnership",
+      "status": "In Review",
+      "company_brief": "Hamad Bin Khalifa University (HBKU) is a member of Qatar Foundation. Their Innovation Center incubates deep-tech startups spun out of HBKU research. The partnership focuses on accelerating 2 HBKU spinout startups through the MENA to the Valley program.",
+      "executives": [
+        {
+          "name": "Nada Mohd Al-Balam",
+          "role": "Innovation Center Contact",
+          "company": "HBKU"
+        },
+        {
+          "name": "Dr. Ahmad Abushaikha",
+          "role": "Founder",
+          "company": "QASR Technologies"
+        },
+        {
+          "name": "Dr. Ma'moun Al-Rawashdeh",
+          "role": "Founder",
+          "company": "CircleProcess Technologies"
+        }
+      ],
+      "spoc": {
+        "name": "Nada Al-Balam",
+        "role": "HBKU Innovation Center",
+        "email": "naalbalam@hbku.edu.qa"
+      },
+      "key_metrics": "2 startups confirmed",
+      "timeline": [
+        {
+          "date": "March 6, 2026",
+          "milestone": "Contract received for review",
+          "status": "completed"
+        },
+        {
+          "date": "March 30, 2026",
+          "milestone": "Nada updating on timeline this week",
+          "status": "in_progress"
+        },
+        {
+          "date": "TBD",
+          "milestone": "Contract finalization",
+          "status": "upcoming"
+        },
+        {
+          "date": "Mid-May 2026",
+          "milestone": "Virtual sessions begin",
+          "status": "upcoming"
+        }
+      ],
+      "next_actions": [
+        "Follow up with Nada Al-Balam for timeline update (promised this week)",
+        "Finalize contract terms",
+        "Onboard QASR Technologies and CircleProcess"
+      ],
+      "possible_intros": [
+        "Mohammed Al-Emadi (QDB Investment & Incubation)",
+        "Khalid Al-Murshed (Saudi healthtech, potential cross-Gulf connection)"
+      ],
+      "notes": "QASR Technologies: AI for oil & gas (signed deal with Shell). CircleProcess: LNG-to-hydrogen conversion (won Qatar grant, partnered with Milaha and ABS).",
+      "startups": [
+        {
+          "name": "QASR Technologies",
+          "founder": "Dr. Ahmad Abushaikha",
+          "description": "Deep-tech AI for reservoir analysis in oil & gas. HBKU spinout. Signed 12-month AI deal with Shell Qatar.",
+          "stage": "Revenue"
+        },
+        {
+          "name": "CircleProcess Technologies",
+          "founder": "Dr. Ma'moun Al-Rawashdeh",
+          "description": "LNG-to-hydrogen onboard conversion. HBKU spinout. Won Qatar grant for ReformLNG project. Partners: Milaha, ABS, QSTP.",
+          "stage": "Grant-funded"
+        }
+      ]
+    },
+    {
+      "id": "arpu-plus",
+      "name": "ARPU Plus / CloudCom",
+      "status": "Active",
+      "company_brief": "ARPU Plus is a telecoms value-added services company under A15, one of Egypt's largest digital holding companies. Sprintly provides BD and US market expansion support for ARPU Plus portfolio companies, starting with CloudCom (cloud communications). Medhat Karam is CEO of ARPU Plus.",
+      "executives": [
+        {
+          "name": "Medhat Karam",
+          "role": "CEO",
+          "company": "ARPU Plus"
+        },
+        {
+          "name": "Shady Aziz",
+          "role": "Cloud Communication Lead",
+          "company": "ARPU Plus"
+        }
+      ],
+      "spoc": {
+        "name": "Medhat Karam",
+        "role": "CEO, ARPU Plus",
+        "email": "medhat.karam@arpuplus.com"
+      },
+      "key_metrics": "US market expansion",
+      "timeline": [
+        {
+          "date": "March 2026",
+          "milestone": "Agreement signed",
+          "status": "completed"
+        },
+        {
+          "date": "Q2 2026",
+          "milestone": "First partnership introductions to US tech companies",
+          "status": "in_progress"
+        },
+        {
+          "date": "Ongoing",
+          "milestone": "Monthly BD activities and reporting",
+          "status": "in_progress"
+        }
+      ],
+      "next_actions": [
+        "Deliver first partnership introductions to US tech targets (Meta, Microsoft, Google)",
+        "CloudCom meeting scheduled Wednesday 6 PM",
+        "Prepare partnership positioning deck for US targets"
+      ],
+      "possible_intros": [
+        "Ahmed Ibrahim (CoreWeave, Engineering Manager)",
+        "Jonathan Wan (Ironmind.ai, Draper alumni)"
+      ],
+      "notes": "Retainer model. Revenue share on partnerships introduced."
+    },
+    {
+      "id": "algeria-ventures",
+      "name": "Algeria Ventures",
+      "status": "Running",
+      "company_brief": "Algeria Ventures is at the heart of Algeria's entrepreneurial ecosystem, helping startups grow, scale, and succeed. They run cohort-based programs. Sprintly guides quarterly founder cohorts from Algeria through intensive Silicon Valley mentorship programs.",
+      "executives": [],
+      "spoc": {
+        "name": "TBD",
+        "role": "Algeria Ventures program contact",
+        "email": ""
+      },
+      "key_metrics": "Quarterly cohorts",
+      "timeline": [
+        {
+          "date": "Ongoing",
+          "milestone": "Quarterly cohort delivery",
+          "status": "in_progress"
+        },
+        {
+          "date": "Q2 2026",
+          "milestone": "Next cohort cycle",
+          "status": "upcoming"
+        }
+      ],
+      "next_actions": [
+        "Confirm next cohort dates",
+        "Identify Algerian founders for MENA to the Valley crossover"
+      ],
+      "possible_intros": [
+        "Arslane Souici (4eme Revolution, EM Lyon)",
+        "Anass Laktiri (Stealth Startup, North Africa)"
+      ],
+      "notes": "Government-backed. Regular recurring revenue stream."
+    },
+    {
+      "id": "ai-squad",
+      "name": "AI Squad",
+      "status": "Active",
+      "company_brief": "Sprintly's 6-month executive AI enablement program. Corporate innovation support from AI experts at NVIDIA, OpenAI, Scale AI, Dropbox, Salesforce. 4 sprints: Discovery, Strategic Blueprinting, Implementation, Scaling. Includes optional Silicon Valley immersion. NVIDIA podcast produced at Grand Egyptian Museum.",
+      "executives": [
+        {
+          "name": "Mohammad Elgendi",
+          "role": "AI Quality & Standards Lead",
+          "company": "Sprintly Partners"
+        },
+        {
+          "name": "Aliaa Abdelaziz",
+          "role": "Program Operations",
+          "company": "Sprintly Partners"
+        }
+      ],
+      "spoc": {
+        "name": "Yousra Gaballah",
+        "role": "Program Lead",
+        "email": "yousra@sprintlypartners.com"
+      },
+      "key_metrics": "0 paying clients",
+      "timeline": [
+        {
+          "date": "Q1 2026",
+          "milestone": "Deck and content produced",
+          "status": "completed"
+        },
+        {
+          "date": "March 2026",
+          "milestone": "NVIDIA podcast at Grand Egyptian Museum",
+          "status": "completed"
+        },
+        {
+          "date": "Q2 2026",
+          "milestone": "First corporate client",
+          "status": "at_risk"
+        }
+      ],
+      "next_actions": [
+        "Identify 5 target companies for AI Squad",
+        "Create outreach campaign for corporate AI transformation",
+        "Leverage NVIDIA podcast content for lead generation"
+      ],
+      "possible_intros": [
+        "Jayakarthikeyan G. (MADON, CIO & Head of AI)",
+        "Hazem Safwat (Director of AI, confidential org)",
+        "April Lim (Vornex AI, Founder)"
+      ],
+      "notes": "WEAKEST GOAL. Zero paying clients. Content exists but no pipeline. Needs urgent attention."
+    },
+    {
+      "id": "cloudcon",
+      "name": "CloudCon Diligence",
+      "status": "Research",
+      "company_brief": "CloudCon is under evaluation for potential partnership. Sprintly is conducting due diligence on leadership, legal entity, customer proof, and US positioning. Research and insider-only diligence questions have been prepared.",
+      "executives": [],
+      "spoc": {
+        "name": "Yousra Gaballah",
+        "role": "Diligence Lead",
+        "email": "yousra@sprintlypartners.com"
+      },
+      "key_metrics": "Due diligence underway",
+      "timeline": [
+        {
+          "date": "March 28, 2026",
+          "milestone": "Research brief created",
+          "status": "completed"
+        },
+        {
+          "date": "April 2026",
+          "milestone": "Validation: leadership, legal entity, customer proof",
+          "status": "in_progress"
+        }
+      ],
+      "next_actions": [
+        "Send refined diligence questions to CloudCon team",
+        "Verify legal entity and US incorporation",
+        "Validate customer references"
+      ],
+      "possible_intros": [],
+      "notes": "Proceed with caution. Validation not complete."
+    }
+  ],
+  "last_updated": "2026-03-30T13:55:00Z"
+}

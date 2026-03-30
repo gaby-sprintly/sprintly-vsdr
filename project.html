@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — VSDR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #4ECB71;
+  --charcoal: #0F1923;
+  --teal: #2DD4BF;
+  --amber: #F59E0B;
+  --coral: #EF4444;
+  --n50: #F8FAFC;
+  --n400: #94A3B8;
+  --n800: #1E293B;
+  --surface: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.06);
+  --sidebar-w: 240px;
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'General Sans', sans-serif;
+}
+
+html { background: var(--charcoal); }
+
+body {
+  font-family: var(--body);
+  background: var(--charcoal);
+  color: var(--n50);
+  min-height: 100vh;
+  display: flex;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--charcoal);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 32px 0 24px;
+}
+
+.sidebar-brand { padding: 0 24px; margin-bottom: 8px; }
+
+.sidebar-logo {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pulse-dot {
+  width: 8px; height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1.0; }
+}
+
+.sidebar-sub {
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--n400);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 24px;
+  margin-top: 4px;
+}
+
+.sidebar-nav {
+  margin-top: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--n400);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.nav-item:hover { color: #fff; }
+
+.nav-item.active {
+  color: #fff;
+  border-left-color: var(--green);
+  background: rgba(78,203,113,0.08);
+}
+
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.sidebar-version {
+  padding: 0 27px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  opacity: 0.5;
+}
+
+.nav-group { display: flex; flex-direction: column; }
+.nav-sub {
+  padding-left: 44px !important;
+  font-size: 0.85em;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px 8px 44px;
+  color: var(--n400);
+  transition: all 0.2s ease;
+}
+.nav-sub:hover, .nav-sub.active { opacity: 1; color: var(--green); }
+.nav-sub svg { flex-shrink: 0; }
+
+/* ── HAMBURGER ── */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 200;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  width: 40px; height: 40px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+.hamburger svg { width: 20px; height: 20px; color: var(--n50); }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 90;
+}
+
+.sidebar-close {
+  display: none;
+  position: absolute;
+  top: 16px; right: 16px;
+  background: none; border: none;
+  cursor: pointer; color: var(--n400);
+}
+.sidebar-close svg { width: 20px; height: 20px; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 48px;
+  padding-bottom: 120px;
+  max-width: calc(1200px + 96px);
+}
+
+/* ── BACK LINK ── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+.back-link:hover { color: var(--n50); }
+.back-link svg { width: 16px; height: 16px; }
+
+/* ── PROJECT HEADER ── */
+.project-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.project-header-left { flex: 1; min-width: 300px; }
+
+.project-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--n50);
+  line-height: 1.2;
+}
+
+.project-status-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.badge {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); box-shadow: 0 0 12px rgba(245,158,11,0.3); }
+.badge-green { background: rgba(78,203,113,0.12); color: var(--green); box-shadow: 0 0 12px rgba(78,203,113,0.3); }
+.badge-teal { background: rgba(45,212,191,0.12); color: var(--teal); box-shadow: 0 0 12px rgba(45,212,191,0.3); }
+.badge-coral { background: rgba(239,68,68,0.12); color: var(--coral); box-shadow: 0 0 12px rgba(239,68,68,0.3); }
+
+.key-metric {
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--n50);
+}
+
+/* ── SPOC CARD ── */
+.spoc-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px 24px;
+  min-width: 260px;
+}
+
+.spoc-label {
+  font-family: var(--body);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-bottom: 8px;
+}
+
+.spoc-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--n50);
+}
+
+.spoc-role {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 2px;
+}
+
+.spoc-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--teal);
+  margin-top: 8px;
+  transition: color 0.15s;
+}
+.spoc-email:hover { color: var(--green); }
+.spoc-email svg { width: 14px; height: 14px; }
+
+/* ── SECTION ── */
+.section-label {
+  font-family: var(--body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+/* ── GLASS CARD ── */
+.glass-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border-radius: 2px;
+  padding: 28px 32px;
+}
+
+.glass-card p {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--n50);
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+.glass-card .empty-note {
+  color: var(--n400);
+  font-style: italic;
+}
+
+/* ── PEOPLE GRID ── */
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.person-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px;
+}
+
+.person-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--n50);
+}
+
+.person-role {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 4px;
+}
+
+.person-company {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--teal);
+  margin-top: 4px;
+}
+
+/* ── STARTUP CARDS ── */
+.startup-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  border-radius: 2px;
+  padding: 20px 24px;
+}
+
+.startup-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--n50);
+}
+
+.startup-founder {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--teal);
+  margin-top: 4px;
+}
+
+.startup-desc {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.startup-stage {
+  display: inline-block;
+  font-family: var(--body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--green);
+  background: rgba(78,203,113,0.1);
+  padding: 3px 10px;
+  border-radius: 2px;
+  margin-top: 10px;
+}
+
+/* ── TIMELINE ── */
+.timeline {
+  position: relative;
+  padding-left: 140px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 130px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255,255,255,0.08);
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 32px 32px;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-date {
+  position: absolute;
+  left: -140px;
+  top: 2px;
+  width: 120px;
+  text-align: right;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -8px;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-dot.completed {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.timeline-dot.completed::after {
+  content: '';
+  width: 4px;
+  height: 7px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -1px;
+}
+
+.timeline-dot.in_progress {
+  background: transparent;
+  border-color: var(--amber);
+  box-shadow: 0 0 8px rgba(245,158,11,0.4);
+}
+
+.timeline-dot.in_progress::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--amber);
+  border-radius: 50%;
+}
+
+.timeline-dot.at_risk {
+  background: transparent;
+  border-color: var(--coral);
+  box-shadow: 0 0 8px rgba(239,68,68,0.4);
+}
+
+.timeline-dot.at_risk::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--coral);
+  border-radius: 50%;
+}
+
+.timeline-dot.upcoming {
+  background: transparent;
+  border-color: var(--n400);
+}
+
+.timeline-name {
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--n50);
+}
+
+/* ── ACTIONS LIST ── */
+.action-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  border-radius: 2px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.action-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--n400);
+  border-radius: 2px;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.action-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+  line-height: 1.4;
+}
+
+/* ── INTRO CARDS ── */
+.intro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.intro-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px;
+}
+
+.intro-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--n50);
+}
+
+.intro-context {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.view-matches {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--teal);
+  margin-top: 16px;
+  transition: color 0.15s;
+}
+.view-matches:hover { color: var(--green); }
+.view-matches svg { width: 14px; height: 14px; }
+
+/* ── EMPTY INTROS ── */
+.no-intros {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  font-style: italic;
+}
+
+/* ── ACTIONS BAR ── */
+.actions-bar {
+  position: fixed;
+  bottom: 0;
+  left: var(--sidebar-w);
+  right: 0;
+  background: var(--charcoal);
+  border-top: 1px solid var(--border);
+  padding: 16px 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 50;
+}
+
+.btn {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--n50);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover {
+  border-color: var(--n400);
+  background: rgba(255,255,255,0.04);
+}
+
+.btn-primary {
+  background: var(--green);
+  color: var(--charcoal);
+}
+.btn-primary:hover {
+  background: #3fba62;
+}
+
+.btn .tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--n800);
+  border: 1px solid var(--border);
+  color: var(--n400);
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: opacity 0.2s, visibility 0.2s;
+  pointer-events: none;
+}
+
+.btn .tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--n800);
+}
+
+.btn:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ── ERROR CARD ── */
+.error-card {
+  background: var(--n800);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-left: 3px solid var(--coral);
+  border-radius: 2px;
+  padding: 32px;
+  margin-top: 48px;
+  text-align: center;
+}
+
+.error-card h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--coral);
+  margin-bottom: 12px;
+}
+
+.error-card p {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--n400);
+}
+
+.error-card a {
+  color: var(--teal);
+  text-decoration: underline;
+}
+
+/* ── LOADING ── */
+.loading {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  padding: 48px 0;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop.open { display: block; }
+  .sidebar-close.show { display: block; }
+  .hamburger { display: flex; }
+
+  .main {
+    margin-left: 0;
+    padding: 24px;
+    padding-top: 72px;
+    padding-bottom: 100px;
+  }
+
+  .project-title { font-size: 28px; }
+  .project-header { flex-direction: column; }
+  .spoc-card { min-width: 0; width: 100%; }
+  .people-grid { grid-template-columns: 1fr; }
+  .intro-grid { grid-template-columns: 1fr; }
+
+  .timeline { padding-left: 100px; }
+  .timeline::before { left: 90px; }
+  .timeline-date { left: -100px; width: 80px; font-size: 11px; }
+
+  .actions-bar {
+    left: 0;
+    padding: 12px 24px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Hamburger -->
+<button class="hamburger" id="hamburger" aria-label="Open menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" id="backdrop"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="sidebar-brand">
+    <div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div>
+  </div>
+  <div class="sidebar-sub">Sprintly Partners</div>
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Home
+    </a>
+    <a href="bmc.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      Strategy
+    </a>
+    <a href="goals.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Goals
+    </a>
+    <a href="pipeline.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Pipeline
+    </a>
+    <div class="nav-group">
+      <a href="network.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Network
+      </a>
+      <a href="matches.html" class="nav-sub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/><circle cx="9" cy="11" r="3"/></svg>
+        Matches
+      </a>
+    </div>
+  </nav>
+  <div class="sidebar-version">v2.0</div>
+</aside>
+
+<!-- Main Content -->
+<main class="main" id="mainContent">
+  <div class="loading" id="loading">Loading project...</div>
+</main>
+
+<!-- Actions Bar (hidden until project loads) -->
+<div class="actions-bar" id="actionsBar" style="display:none;">
+  <button class="btn btn-outline" id="btnEdit">
+    Edit Project
+    <span class="tooltip">Tell Gaby on Telegram what to change</span>
+  </button>
+  <button class="btn btn-primary" id="btnProposal">
+    Create Proposal
+    <span class="tooltip">Tell Gaby to generate a proposal for this project</span>
+  </button>
+</div>
+
+<script>
+(function() {
+  // Sidebar mobile toggle
+  var hamburger = document.getElementById('hamburger');
+  var sidebar = document.getElementById('sidebar');
+  var backdrop = document.getElementById('backdrop');
+  var closeBtn = document.getElementById('sidebarClose');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    backdrop.classList.add('open');
+    closeBtn.classList.add('show');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('open');
+    closeBtn.classList.remove('show');
+  }
+
+  hamburger.addEventListener('click', openSidebar);
+  backdrop.addEventListener('click', closeSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+
+  // Get project ID from URL
+  var params = new URLSearchParams(window.location.search);
+  var projectId = params.get('id');
+
+  if (!projectId) {
+    showError();
+    return;
+  }
+
+  // Fetch project data
+  fetch('projects-data.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var project = data.projects.find(function(p) { return p.id === projectId; });
+      if (!project) {
+        showError();
+        return;
+      }
+      renderProject(project);
+    })
+    .catch(function() {
+      showError();
+    });
+
+  function showError() {
+    var main = document.getElementById('mainContent');
+    main.innerHTML = '<a href="pipeline.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back to Pipeline</a>' +
+      '<div class="error-card"><h2>Project Not Found</h2><p>Check the URL or <a href="pipeline.html">go back to Pipeline</a>.</p></div>';
+  }
+
+  function statusBadgeClass(status) {
+    var s = status.toLowerCase();
+    if (s === 'signed' || s === 'active' || s === 'running') return 'badge-green';
+    if (s === 'launching' || s === 'in review') return 'badge-amber';
+    if (s === 'research') return 'badge-teal';
+    if (s === 'at risk') return 'badge-coral';
+    return 'badge-amber';
+  }
+
+  function esc(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function renderProject(p) {
+    document.title = p.name + ' — VSDR';
+
+    var html = '';
+
+    // Back link
+    html += '<a href="pipeline.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back to Pipeline</a>';
+
+    // Section 1: Project Header
+    html += '<div class="project-header">';
+    html += '<div class="project-header-left">';
+    html += '<h1 class="project-title">' + esc(p.name) + '</h1>';
+    html += '<div class="project-status-row">';
+    html += '<span class="badge ' + statusBadgeClass(p.status) + '">' + esc(p.status) + '</span>';
+    html += '<span class="key-metric">' + esc(p.key_metrics) + '</span>';
+    html += '</div>';
+    html += '</div>';
+
+    // SPOC Card
+    if (p.spoc && p.spoc.name) {
+      html += '<div class="spoc-card">';
+      html += '<div class="spoc-label">Single Point of Contact</div>';
+      html += '<div class="spoc-name">' + esc(p.spoc.name) + '</div>';
+      html += '<div class="spoc-role">' + esc(p.spoc.role) + '</div>';
+      if (p.spoc.email) {
+        html += '<a href="mailto:' + esc(p.spoc.email) + '" class="spoc-email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>' + esc(p.spoc.email) + '</a>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+
+    // Section 2: Company Brief
+    html += '<div class="section-label">Company Brief</div>';
+    html += '<div class="glass-card"><p>' + esc(p.company_brief) + '</p></div>';
+
+    // Section 3: Executives / Founders
+    if (p.executives && p.executives.length > 0) {
+      html += '<div class="section-label">Key Executives</div>';
+      html += '<div class="people-grid">';
+      p.executives.forEach(function(e) {
+        html += '<div class="person-card">';
+        html += '<div class="person-name">' + esc(e.name) + '</div>';
+        html += '<div class="person-role">' + esc(e.role) + '</div>';
+        html += '<div class="person-company">' + esc(e.company) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Startups (HBKU style)
+    if (p.startups && p.startups.length > 0) {
+      html += '<div class="section-label">Startups</div>';
+      html += '<div class="people-grid">';
+      p.startups.forEach(function(s) {
+        html += '<div class="startup-card">';
+        html += '<div class="startup-name">' + esc(s.name) + '</div>';
+        html += '<div class="startup-founder">Founded by ' + esc(s.founder) + '</div>';
+        html += '<div class="startup-desc">' + esc(s.description) + '</div>';
+        html += '<span class="startup-stage">' + esc(s.stage) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Section 4: Timeline
+    if (p.timeline && p.timeline.length > 0) {
+      html += '<div class="section-label">Timeline</div>';
+      html += '<div class="timeline">';
+      p.timeline.forEach(function(t) {
+        html += '<div class="timeline-item">';
+        html += '<div class="timeline-date">' + esc(t.date) + '</div>';
+        html += '<div class="timeline-dot ' + t.status + '"></div>';
+        html += '<div class="timeline-name">' + esc(t.milestone) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Section 5: Next Actions
+    if (p.next_actions && p.next_actions.length > 0) {
+      html += '<div class="section-label">Next Actions</div>';
+      p.next_actions.forEach(function(a) {
+        html += '<div class="action-card">';
+        html += '<div class="action-checkbox"></div>';
+        html += '<div class="action-text">' + esc(a) + '</div>';
+        html += '</div>';
+      });
+    }
+
+    // Section 6: Possible Introductions
+    html += '<div class="section-label">Possible Introductions</div>';
+    if (p.possible_intros && p.possible_intros.length > 0) {
+      html += '<div class="intro-grid">';
+      p.possible_intros.forEach(function(intro) {
+        // Parse "Name (Context)" pattern
+        var match = intro.match(/^([^(]+)\(([^)]+)\)/);
+        var name = match ? match[1].trim() : intro;
+        var context = match ? match[2].trim() : '';
+        html += '<div class="intro-card">';
+        html += '<div class="intro-name">' + esc(name) + '</div>';
+        if (context) html += '<div class="intro-context">' + esc(context) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<a href="matches.html" class="view-matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg> View in Matches</a>';
+    } else {
+      html += '<p class="no-intros">No introductions suggested yet.</p>';
+    }
+
+    // Section 7: Notes
+    html += '<div class="section-label">Notes</div>';
+    html += '<div class="glass-card">';
+    if (p.notes && p.notes.trim()) {
+      html += '<p>' + esc(p.notes) + '</p>';
+    } else {
+      html += '<p class="empty-note">No notes yet. Tell Gaby to add notes.</p>';
+    }
+    html += '</div>';
+
+    document.getElementById('mainContent').innerHTML = html;
+    document.getElementById('actionsBar').style.display = 'flex';
+  }
+})();
+</script>
+</body>
+</html>
