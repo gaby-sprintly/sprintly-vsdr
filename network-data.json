@@ -1,0 +1,241 @@
+{
+  "last_synced": "2026-03-30T10:33:47.977049Z",
+  "vips": [
+    {
+      "name": "Ahmed Gaballah",
+      "company": "SOKNA",
+      "title": "Founder & CEO",
+      "email": "",
+      "last_contacted": "",
+      "follow_up_date": "",
+      "follow_up_reason": "",
+      "industry": "",
+      "region": "",
+      "source": "airtable"
+    },
+    {
+      "name": "Ahmed Bazza Abaza",
+      "company": "Synapse Analytics",
+      "title": "CEO",
+      "email": "aabaza@synapse-analytics.io",
+      "note": "Built Gaby. Close friend. Call him Bazza.",
+      "source": "memory"
+    }
+  ],
+  "followups_due": [],
+  "followups_upcoming": [],
+  "potential_intros": [],
+  "network_health": {
+    "total_estimated": "6,000+",
+    "sample_size": 100,
+    "with_company_pct": 99,
+    "with_industry_pct": 0,
+    "with_email_pct": 3,
+    "with_priority_pct": 0,
+    "vip_count": 2,
+    "followups_overdue": 0,
+    "followups_upcoming": 0
+  },
+  "needs_enrichment": [
+    {
+      "name": "Moe Nada",
+      "company": "SupportFinity\u2122",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Yomna El Gabry",
+      "company": "Kraft Heinz",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Mohamed Ashraf",
+      "company": "Abu Dhabi Commercial Bank - Egypt",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Hann Nyvil",
+      "company": "China Money Network",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Amr Gazea",
+      "company": "Mezatech",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Yasmine Taha, MBA",
+      "company": "PENTIUM IT",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Moustafa Eldesouki",
+      "company": "Bayut & Dubizzle",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Karim Elazhary",
+      "company": "Talents Arena",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Maged Galal",
+      "company": "Fine Hygienic Holding",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Reem Raheem,MBA\u00ae,DBA,SHL.",
+      "company": "Floward",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Mohamed Haggag MBA CPM CExporter",
+      "company": "United Nations",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Djihane Kahlouche",
+      "company": "IRIGREEN",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Black Juma",
+      "company": "Oryx ",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Wael Gaber",
+      "company": "Wafeer",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Abdellah Daoud",
+      "company": "Routimize",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Negar Feher",
+      "company": "Sustainable Space Consulting",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Mohamed Samy El Shayeb",
+      "company": "WHITE Advertising | Dubai",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Ahmed Nawar",
+      "company": "Microsoft",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Katherine Atkinson",
+      "company": "Nuro",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    },
+    {
+      "name": "Ahmed Tantawy",
+      "company": "ILLA ",
+      "missing_fields": [
+        "Industry",
+        "Priority",
+        "Region",
+        "Tags"
+      ]
+    }
+  ]
+}
