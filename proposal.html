@@ -192,6 +192,13 @@ body { display: flex; }
 .add-sec-label { font-size: 13px; font-weight: 600; color: var(--n50); }
 .add-sec-desc { font-size: 11px; color: var(--n400); margin-top: 2px; }
 
+/* Gaby Fill buttons */
+.gaby-fill-all { padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: var(--body); cursor: pointer; border: 1px solid #A78BFA; background: rgba(167,139,250,0.1); color: #A78BFA; transition: all 0.15s; display: none; align-items: center; gap: 6px; }
+.gaby-fill-all:hover { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+.gaby-fill-all.visible { display: inline-flex; }
+.gaby-fill-sec { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; margin: 12px 24px; background: rgba(167,139,250,0.06); border: 1px dashed rgba(167,139,250,0.3); border-radius: 8px; color: #A78BFA; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: var(--body); }
+.gaby-fill-sec:hover { background: rgba(167,139,250,0.12); border-color: #A78BFA; }
+
 /* Drag and drop */
 .sec-wrap { cursor: grab; }
 .sec-wrap.dragging { opacity: 0.3; cursor: grabbing; }
@@ -222,6 +229,7 @@ body { display: flex; }
     <div class="top-status"><select id="topStatus" onchange="changeStatus(this.value)"><option value="draft">Draft</option><option value="in_review">In Review</option><option value="approved">Approved</option><option value="sent">Sent</option><option value="archived">Archived</option></select></div>
     <div class="top-actions">
       <span class="save-ind" id="saveInd">Saved ✓</span>
+      <button class="gaby-fill-all" id="gabyFillAll" onclick="gabyFillAll()">🤖 Gaby Fill All</button>
       <button class="top-btn" onclick="refreshProposal()">↻ Refresh</button>
       <button class="top-btn" onclick="exportPDF()">Export PDF</button>
       <button class="top-btn primary" onclick="generateShareLink()">Share Link</button>
@@ -312,9 +320,35 @@ function renderNav() {
   }).join('');
 }
 
+function isSectionEmpty(s) {
+  if (s.content_type === 'cover' || s.content_type === 'divider') return false;
+  if (s.content_type === 'text' || s.content_type === 'callout') {
+    var c = (s.content || '').trim();
+    return !c || c.startsWith('Enter ') || c.startsWith('Describe ') || c.startsWith('Detail ') || c.startsWith('Define ') || c.startsWith('Present ') || c.startsWith('Explain ') || c.startsWith('Outline ') || c.startsWith('Client quote');
+  }
+  if (s.content_type === 'metrics') {
+    var md = s.metrics_data || s.content_json || {};
+    var arr = Array.isArray(md) ? md : (md.metrics || []);
+    return !arr.length || (arr.length && arr[0] && arr[0].value === '0');
+  }
+  if (s.content_type === 'timeline') {
+    var td = s.timeline_data || s.content_json || {};
+    var phases = Array.isArray(td) ? td : (td.phases || []);
+    return !phases.length;
+  }
+  if (s.content_type === 'table' || s.content_type === 'pricing') {
+    var tb = s.table_data || s.content_json || {};
+    return !(tb.rows && tb.rows.length);
+  }
+  if (s.content_type === 'image') return !s.image_url;
+  return false;
+}
+
 function renderPreview() {
-  var h = '', num = 0;
+  var h = '', num = 0, emptyCount = 0;
   secs.forEach(function(s) {
+    var empty = isSectionEmpty(s);
+    if (empty) emptyCount++;
     h += '<div class="sec-wrap'+(s.id===activeSecId?' active':'')+'" data-id="'+s.id+'" draggable="true" onclick="selectSection(\''+s.id+'\')" ondragstart="dragStart(event,\''+s.id+'\')" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondrop="dropSec(event,\''+s.id+'\')">';
     if (s.content_type === 'cover') {
       h += renderSectionContent(s, P);
@@ -326,12 +360,21 @@ function renderPreview() {
       h += '<div class="section-heading"><div class="section-num">'+String(num).padStart(2,'0')+'</div>';
       h += '<h2 class="section-title-text">'+esc(s.title||'')+'</h2></div>';
       h += renderSectionContent(s, P);
+      if (empty) {
+        h += '<div class="gaby-fill-sec" onclick="event.stopPropagation();gabyFillSection(\''+s.id+'\')">🤖 Ask Gaby to fill this section</div>';
+      }
       h += '</div>';
     }
     h += '<div class="sec-strip '+s.status+'"></div></div>';
   });
   if (!secs.length) h = '<div style="text-align:center;padding:80px 0"><div style="font-size:48px;opacity:0.3">📝</div><p style="color:#64748B;margin:16px 0">No sections yet.</p><button class="sp-btn save" onclick="openAddModal()">+ Add Section</button></div>';
   document.getElementById('previewInner').innerHTML = h;
+  // Show/hide Gaby Fill All button
+  var fillAllBtn = document.getElementById('gabyFillAll');
+  if (fillAllBtn) {
+    if (emptyCount > 0) fillAllBtn.classList.add('visible');
+    else fillAllBtn.classList.remove('visible');
+  }
 }
 
 // ═══ Side Panel ═══
@@ -710,6 +753,35 @@ function doExportPDF(){
 async function generateShareLink(){
   try{var t=P.share_token;if(!t){t=crypto.randomUUID();await updateProposal(P.id,{share_token:t});P.share_token=t;}
   await navigator.clipboard.writeText(location.origin+'/proposal-view.html?token='+t);showToast('Share link copied!','success');}catch(e){showToast('Failed','error');}
+}
+
+// ═══ Gaby Fill ═══
+async function gabyFillSection(id) {
+  var s = secs.find(function(x){return x.id===id;});
+  if (!s) return;
+  var msg = 'GABY FILL: Please generate compelling, professional content for the "' + (s.title||'Untitled') + '" section (type: ' + s.content_type + '). This is for the proposal "' + (P.title||'') + '" for client "' + (P.client_name||'') + '". Make it design-agency quality with real data and persuasive copy.';
+  try {
+    var cr = await createChangeRequest(id, P.id, msg, 'Yousra');
+    crs.push(cr); s.status = 'change_requested';
+    renderAll(); showToast('Sent to Gaby — she will fill this section', 'success');
+  } catch(e) { showToast('Failed: ' + e.message, 'error'); }
+}
+
+async function gabyFillAll() {
+  var empties = secs.filter(isSectionEmpty);
+  if (!empties.length) { showToast('All sections already have content', 'success'); return; }
+  if (!confirm('Send ' + empties.length + ' section(s) to Gaby for content generation?')) return;
+  var sent = 0;
+  for (var i = 0; i < empties.length; i++) {
+    var s = empties[i];
+    var msg = 'GABY FILL: Please generate compelling, professional content for the "' + (s.title||'Untitled') + '" section (type: ' + s.content_type + '). This is for the proposal "' + (P.title||'') + '" for client "' + (P.client_name||'') + '". Make it design-agency quality.';
+    try {
+      var cr = await createChangeRequest(s.id, P.id, msg, 'Yousra');
+      crs.push(cr); s.status = 'change_requested'; sent++;
+    } catch(e) { console.error('Failed to send CR for section:', s.title, e); }
+  }
+  renderAll();
+  showToast(sent + ' section(s) sent to Gaby for filling', 'success');
 }
 
 function showToast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast '+(t||'success')+' show';setTimeout(function(){el.classList.remove('show');},3000);}
