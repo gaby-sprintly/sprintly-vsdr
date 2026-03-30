@@ -1,0 +1,57 @@
+/* ══════════════════════════════════════════
+   Proposal Print / PDF Styles
+   ══════════════════════════════════════════ */
+
+@media print {
+  body { background: #fff !important; color: #0F172A !important; }
+  .download-bar, .sidebar, .hamburger, .sidebar-backdrop { display: none !important; }
+  .main { margin-left: 0 !important; padding: 0 !important; }
+
+  .cover-page { page-break-after: always; min-height: 100vh; }
+  .proposal-section { page-break-inside: avoid; }
+
+  .sec-table { font-size: 12px; }
+  .sec-callout { break-inside: avoid; }
+  .metric-card { break-inside: avoid; }
+}
+
+/* PDF-specific overrides (applied via class during export) */
+.pdf-mode {
+  background: #fff;
+  color: #0F172A;
+  font-family: 'General Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.pdf-mode .cover-page {
+  background: linear-gradient(135deg, #0F1923 0%, #162030 50%, #1a2942 100%) !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  page-break-after: always;
+  min-height: 100vh;
+}
+
+.pdf-mode .proposal-section {
+  padding: 32px 0;
+  page-break-inside: avoid;
+}
+
+.pdf-mode .sec-table th,
+.pdf-mode .sec-table td {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.pdf-mode .metric-card {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  page-break-inside: avoid;
+}
+
+.pdf-mode .sec-gantt {
+  page-break-inside: avoid;
+}
+
+.pdf-mode .gantt-bar {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
