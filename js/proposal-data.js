@@ -53,7 +53,7 @@ async function fetchProposal(id) {
 
 async function fetchProposalByToken(token) {
   try {
-    const proposals = await sbGet('proposals', 'share_token=eq.' + token);
+    const proposals = await sbGet('proposals', 'share_token=eq.' + encodeURIComponent(token));
     if (!proposals || !proposals.length) return null;
     const p = proposals[0];
     const sections = await sbGet('proposal_sections', 'proposal_id=eq.' + p.id + '&order=sort_order.asc');
@@ -90,9 +90,7 @@ async function createSection(proposalId, data) {
     proposal_id: proposalId,
     id: data.id || crypto.randomUUID()
   });
-  console.log('[createSection] Inserting:', section);
   const rows = await sbInsert('proposal_sections', section, { returnData: true });
-  console.log('[createSection] Result:', rows);
   return rows && rows.length ? rows[0] : (rows || null);
 }
 

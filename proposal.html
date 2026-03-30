@@ -555,7 +555,7 @@ function saveTable(id){
 }
 
 function trigImg(id){document.getElementById('imgIn-'+id).click();}
-function doImg(id,input){if(input.files[0]){var r=new FileReader();r.onload=function(e){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=e.target.result;qSave(id,{image_url:e.target.result});renderPreview();openPanel(id);};r.readAsDataURL(input.files[0]);}}
+function doImg(id,input){if(input.files[0]){var r=new FileReader();r.onload=function(e){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=e.target.result;qSave(id,{image_url:e.target.result});renderPreview();openPanel(id);};r.onerror=function(){showToast('Image read failed','error');};r.readAsDataURL(input.files[0]);}}
 function rmImg(id){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=null;qSave(id,{image_url:null});renderPreview();openPanel(id);}
 
 async function approveSec(id){
@@ -567,12 +567,12 @@ async function changeStatus(v){
 }
 
 async function sendCR(id){
-  var input=document.getElementById('crIn-'+id);var msg=input.value.trim();if(!msg)return;
+  var input=document.getElementById('crIn-'+id);if(!input)return;var msg=input.value.trim();if(!msg)return;
   try{var cr=await createChangeRequest(id,P.id,msg,'Yousra');crs.push(cr);var s=secs.find(function(x){return x.id===id;});if(s)s.status='change_requested';renderAll();openPanel(id);showToast('Sent to Gaby','success');}catch(e){showToast('Failed: '+e.message,'error');}
 }
 
 async function sendComment(id){
-  var input=document.getElementById('cmtIn-'+id);var msg=input.value.trim();if(!msg)return;
+  var input=document.getElementById('cmtIn-'+id);if(!input)return;var msg=input.value.trim();if(!msg)return;
   try{
     var rows=await createComment(P.id,id,msg,'Yousra');
     if(rows&&rows.length) comments.push(rows[0]);
@@ -723,8 +723,10 @@ async function dropSec(e, targetId) {
 // Auto-save queue
 function qSave(id,fields){saveQ.set(id,Object.assign(saveQ.get(id)||{},fields));saving();clearTimeout(saveTmr);saveTmr=setTimeout(flushQ,2000);}
 async function flushQ(){
-  for(var pair of saveQ){try{await updateSection(pair[0],pair[1]);var s=secs.find(function(x){return x.id===pair[0];});if(s)Object.assign(s,pair[1]);}catch(e){offlineSaved();return;}}
-  saveQ.clear();saved();
+  var failed=0;
+  for(var pair of saveQ){try{await updateSection(pair[0],pair[1]);var s=secs.find(function(x){return x.id===pair[0];});if(s)Object.assign(s,pair[1]);}catch(e){failed++;console.error('Save failed for section:',pair[0],e);}}
+  saveQ.clear();
+  if(failed){offlineSaved();showToast(failed+' save(s) failed — will retry','error');}else{saved();}
 }
 function saved(){var el=document.getElementById('saveInd');el.textContent='Saved ✓';el.className='save-ind show';setTimeout(function(){el.classList.remove('show');},2000);}
 function saving(){var el=document.getElementById('saveInd');el.textContent='Saving...';el.className='save-ind show';}

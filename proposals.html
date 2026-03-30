@@ -218,7 +218,7 @@ function renderCard(p) {
   '</div>';
 }
 
-function escHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function renderGrid(proposals) {
   const grid = document.getElementById('proposalsGrid');
@@ -298,6 +298,9 @@ async function handleCreateProposal() {
   const clientName = document.getElementById('inputClientName').value.trim();
   const description = document.getElementById('inputDescription').value.trim();
   if (!clientName) { showToast('Please enter a client name', 'error'); return; }
+  if (clientName.length > 200) { showToast('Client name too long (max 200 chars)', 'error'); return; }
+  if (description.length > 2000) { showToast('Description too long (max 2000 chars)', 'error'); return; }
+  if (!selectedType) { showToast('Please select a proposal type', 'error'); return; }
 
   const btn = document.getElementById('btnGenerate');
   btn.disabled = true;
