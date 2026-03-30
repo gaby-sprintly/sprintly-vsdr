@@ -448,6 +448,208 @@ a { text-decoration: none; color: inherit; }
   opacity: 0.85;
 }
 
+/* ── Suggested Intros ── */
+.intro-card {
+  position: relative;
+}
+
+.intro-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.intro-person {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--n50);
+}
+
+.intro-connector {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(45,212,191,0.15);
+  color: var(--teal);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.intro-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.intro-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.intro-status.draft {
+  background: rgba(245,158,11,0.12);
+  color: var(--amber);
+  box-shadow: 0 0 8px rgba(245,158,11,0.15);
+}
+
+.intro-status.approved {
+  background: rgba(78,203,113,0.12);
+  color: var(--green);
+  box-shadow: 0 0 8px rgba(78,203,113,0.15);
+}
+
+.intro-status.sent {
+  background: rgba(78,203,113,0.12);
+  color: var(--green);
+  box-shadow: 0 0 8px rgba(78,203,113,0.15);
+}
+
+.intro-status.declined {
+  background: rgba(148,163,184,0.12);
+  color: var(--n400);
+}
+
+.intro-id {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--n400);
+  opacity: 0.6;
+}
+
+.intro-rationale {
+  font-size: 14px;
+  color: var(--n400);
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+.intro-email-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n400);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.intro-email-toggle:hover {
+  color: var(--n50);
+  background: rgba(255,255,255,0.06);
+}
+
+.intro-email-toggle .toggle-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-size: 10px;
+}
+
+.intro-email-toggle.open .toggle-arrow {
+  transform: rotate(90deg);
+}
+
+.intro-email-body {
+  display: none;
+  margin-top: 12px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.02);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 2px 2px 0;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 13px;
+  color: var(--n400);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.intro-email-body.open {
+  display: block;
+}
+
+.intro-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-approve {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: rgba(78,203,113,0.15);
+  border: 1px solid rgba(78,203,113,0.3);
+  color: var(--green);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-approve:hover {
+  background: rgba(78,203,113,0.25);
+  border-color: rgba(78,203,113,0.5);
+}
+
+.btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--n400);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.btn-edit:hover {
+  color: var(--n50);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.section-subtitle {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--n400);
+  margin-top: -12px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.border-bar.draft { background: var(--amber); box-shadow: 0 0 8px rgba(245,158,11,0.3); }
+.border-bar.approved, .border-bar.sent { background: var(--green); box-shadow: 0 0 8px rgba(78,203,113,0.3); }
+.border-bar.declined { background: var(--n400); box-shadow: 0 0 4px rgba(148,163,184,0.2); }
+
 /* ── Data Health ── */
 .health-bars {
   display: flex;
@@ -748,6 +950,13 @@ a { text-decoration: none; color: inherit; }
         <div id="introsList"></div>
       </div>
 
+      <!-- Suggested Introductions -->
+      <div class="section" id="sectionSuggestedIntros">
+        <h3 class="section-title">Suggested Introductions <span class="count-badge" id="suggestedIntrosCount">0</span></h3>
+        <p class="section-subtitle">AI-matched connections from your network. Review the draft, then tell Gaby to approve or edit.</p>
+        <div id="suggestedIntrosList"></div>
+      </div>
+
       <!-- Network Data Health -->
       <div class="section" id="sectionHealth">
         <h3 class="section-title">Network Data Health</h3>
@@ -826,6 +1035,9 @@ a { text-decoration: none; color: inherit; }
 
     // Intros
     renderIntros(data.potential_intros || []);
+
+    // Suggested Intros
+    renderSuggestedIntros(data.suggested_intros || []);
 
     // Health
     renderHealth(h, data.needs_enrichment || []);
@@ -931,6 +1143,55 @@ a { text-decoration: none; color: inherit; }
         '<div class="followup-content">' +
           '<div class="followup-name">' + esc(item.person_a || '') + ' → ' + esc(item.person_b || '') + '</div>' +
           '<div class="followup-reason">' + esc(item.context || '') + '</div>' +
+        '</div>' +
+      '</div></div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function renderSuggestedIntros(items) {
+    var container = document.getElementById('suggestedIntrosList');
+    document.getElementById('suggestedIntrosCount').textContent = items.length;
+
+    if (items.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>No suggested introductions yet. Gaby will match connections from your network.</p></div>';
+      return;
+    }
+
+    var html = '';
+    items.forEach(function(item) {
+      var statusClass = (item.status || 'draft').toLowerCase();
+      var statusLabel = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
+      var statusIcon = statusClass === 'sent' ? ' ✓' : '';
+      var borderClass = statusClass;
+
+      var personALabel = esc(item.person_a.name) + ' (' + esc(item.person_a.company) + ')';
+      var personBLabel = esc(item.person_b.name) + ' (' + esc(item.person_b.company) + ')';
+
+      var toggleId = 'email-toggle-' + esc(item.id);
+      var bodyId = 'email-body-' + esc(item.id);
+
+      html += '<div class="glass-card intro-card"><div class="followup-card">' +
+        '<div class="border-bar ' + borderClass + '"></div>' +
+        '<div class="followup-content">' +
+          '<div class="intro-header">' +
+            '<span class="intro-person">' + personALabel + '</span>' +
+            '<span class="intro-connector">×</span>' +
+            '<span class="intro-person">' + personBLabel + '</span>' +
+          '</div>' +
+          '<div class="intro-meta-row">' +
+            '<span class="intro-status ' + statusClass + '">' + statusLabel + statusIcon + '</span>' +
+            '<span class="intro-id">' + esc(item.id) + '</span>' +
+          '</div>' +
+          '<div class="intro-rationale">' + esc(item.rationale) + '</div>' +
+          '<button class="intro-email-toggle" id="' + toggleId + '" onclick="(function(e){var b=document.getElementById(\'' + bodyId + '\');var t=document.getElementById(\'' + toggleId + '\');b.classList.toggle(\'open\');t.classList.toggle(\'open\')})()">' +
+            '<span class="toggle-arrow">▶</span> View Draft Email' +
+          '</button>' +
+          '<div class="intro-email-body" id="' + bodyId + '">' + esc(item.draft_email) + '</div>' +
+          '<div class="intro-actions">' +
+            '<button class="btn-approve">✓ Approve</button>' +
+            '<button class="btn-edit">✎ Edit</button>' +
+          '</div>' +
         '</div>' +
       '</div></div>';
     });

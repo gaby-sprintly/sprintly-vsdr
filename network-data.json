@@ -1,5 +1,5 @@
 {
-  "last_synced": "2026-03-30T10:33:47.977049Z",
+  "last_synced": "2026-03-30T12:41:22Z",
   "vips": [
     {
       "name": "Ahmed Gaballah",
@@ -236,6 +236,84 @@
         "Region",
         "Tags"
       ]
+    }
+  ],
+  "suggested_intros": [
+    {
+      "id": "intro-001",
+      "status": "draft",
+      "created": "2026-03-30",
+      "person_a": {
+        "name": "Heba Alashry",
+        "company": "AAST Entrepreneurship Center",
+        "title": "Co-Founder & Director",
+        "email": "heba.m.alashry@gmail.com"
+      },
+      "person_b": {
+        "name": "Sohayb Baset",
+        "company": "Sahat Venture Studio",
+        "title": "Vice President",
+        "email": "sohaybbaset@gmail.com"
+      },
+      "rationale": "AAST is already a Sprintly partner for founder mentorship (Arab League). Sahat Venture Studio is a venture builder that could co-invest or refer founders to MENA to the Valley. Connecting Heba with Sohayb creates a pipeline bridge: AAST graduates -> Sahat validation -> Sprintly acceleration.",
+      "draft_email": "Hi Heba, Hi Sohayb,\n\nI wanted to connect you both. Heba runs the AAST Entrepreneurship Center in partnership with the Arab League, building some of the strongest early-stage founders in Egypt. Sohayb leads Sahat Venture Studio, working with ventures at the studio/validation stage.\n\nI think there is a natural overlap here: AAST graduates who need venture validation support, and Sahat ventures that could benefit from AAST's ecosystem and mentorship network.\n\nWould love for you both to explore how you might collaborate.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
+    },
+    {
+      "id": "intro-002",
+      "status": "draft",
+      "created": "2026-03-30",
+      "person_a": {
+        "name": "Mazen Wahdan",
+        "company": "Money Fellows",
+        "title": "Senior Product Manager",
+        "email": "mazen.wahdan@gmail.com"
+      },
+      "person_b": {
+        "name": "Jonathan Wan",
+        "company": "Ironmind.ai",
+        "title": "CEO and Co-Founder (Draper & BT150 Alumni)",
+        "email": "jwan415@gmail.com"
+      },
+      "rationale": "Money Fellows is actively exploring US market entry (2 meetings on Yousra's calendar this week). Jonathan is a Draper University and BT150 alumni with deep Silicon Valley connections. As an AI CEO, he understands fintech infrastructure. This intro could help Money Fellows navigate the SV ecosystem for their US expansion.",
+      "draft_email": "Hi Mazen, Hi Jonathan,\n\nI wanted to introduce you both. Mazen is a Senior Product Manager at Money Fellows, one of Egypt's leading fintech platforms. They are actively exploring US market entry.\n\nJonathan is the CEO of Ironmind.ai and a Draper University and BT150 alumni with strong Silicon Valley roots.\n\nGiven Money Fellows' US expansion plans and Jonathan's experience building in the Valley, I thought this connection could be valuable for both of you.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
+    },
+    {
+      "id": "intro-003",
+      "status": "draft",
+      "created": "2026-03-30",
+      "person_a": {
+        "name": "Mehdi Legroune",
+        "company": "B8 Business Angels",
+        "title": "Vice President",
+        "email": "mlegroune@cycle-family.com"
+      },
+      "person_b": {
+        "name": "Tamer Hegazy",
+        "company": "Opel Ventures",
+        "title": "President and CEO",
+        "email": "hon.thegazy@outlook.com"
+      },
+      "rationale": "Two investor-side contacts who should know each other. B8 Business Angels (North Africa/Morocco) and Opel Ventures could co-invest in MENA startups coming through the Valley program. Cross-border angel/VC connections strengthen Sprintly's investor arm and deal flow.",
+      "draft_email": "Hi Mehdi, Hi Tamer,\n\nI wanted to connect two investors I respect in the MENA ecosystem. Mehdi is Vice President at B8 Business Angels, active in North Africa. Tamer leads Opel Ventures as President and CEO.\n\nI believe there is strong potential for cross-border deal flow and co-investment between your organizations, particularly around MENA startups scaling globally.\n\nI will let you both take it from here.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
+    },
+    {
+      "id": "intro-004",
+      "status": "draft",
+      "created": "2026-03-30",
+      "person_a": {
+        "name": "Shimaa El-Sheikh",
+        "company": "ITIDA",
+        "title": "Partnerships and Communication Lead, CREATIVA Hubs",
+        "email": "shymaa54@icloud.com"
+      },
+      "person_b": {
+        "name": "Hasan Jabarti",
+        "company": "Bridging to Saudi",
+        "title": "Founding Partner",
+        "email": "hasan@jabarti.net"
+      },
+      "rationale": "ITIDA is a Sprintly ecosystem partner. Shimaa leads partnerships at CREATIVA Hubs (Egypt's innovation hubs network). Hasan runs 'Bridging to Saudi,' which aligns perfectly with Sprintly's cross-border mission. Connecting Egypt's innovation infrastructure with a Saudi bridge operator creates a new referral channel for the MENA to the Valley program.",
+      "draft_email": "Hi Shimaa, Hi Hasan,\n\nI wanted to introduce you both. Shimaa leads Partnerships and Communication at ITIDA's CREATIVA Hubs, Egypt's innovation hub network supporting tech entrepreneurs. Hasan is the Founding Partner of Bridging to Saudi, facilitating cross-border business between markets.\n\nGiven the growing Egypt-Saudi startup corridor, I thought connecting CREATIVA's founder community with Hasan's Saudi bridge could create valuable opportunities for both ecosystems.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
     }
   ]
 }
