@@ -365,6 +365,111 @@ curl -X DELETE "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
 3. Set section status to "edited"
 4. If there was an open CR about this, resolve it with a response
 
+### When told "scan the knowledge base" or "use KB for this proposal":
+1. Query `knowledge_base` for relevant entries: `GET /knowledge_base?content_type=eq.case_study`
+2. Use KB content to populate proposal sections with real data
+3. Reference the KB entry source in section metadata
+
+---
+
+## Knowledge Base (Google Drive Integration)
+
+### Table: `knowledge_base`
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Auto-generated |
+| title | TEXT | Entry title |
+| source | TEXT | 'google_drive', 'manual', 'url' |
+| source_id | TEXT | Google Drive file ID |
+| source_url | TEXT | Original URL |
+| folder_id | TEXT | Google Drive folder ID |
+| content | TEXT | Extracted text content |
+| content_type | TEXT | 'text', 'metrics', 'case_study', 'methodology', 'pitch', 'bio', 'testimonial' |
+| tags | JSONB | Searchable tags array |
+| metadata | JSONB | Extra info (word count, last scanned, etc.) |
+| created_by | TEXT | 'gaby' |
+| created_at | TIMESTAMPTZ | Auto |
+| updated_at | TIMESTAMPTZ | Auto |
+
+### KB API Operations
+
+```bash
+# List all KB entries
+curl "${BASE_URL}/knowledge_base?select=id,title,source,content_type,tags,created_at&order=created_at.desc" \
+  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+
+# Search KB by keyword (title or content)
+curl "${BASE_URL}/knowledge_base?or=(title.ilike.*keyword*,content.ilike.*keyword*)&order=created_at.desc" \
+  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+
+# Get KB entries by type
+curl "${BASE_URL}/knowledge_base?content_type=eq.case_study&order=created_at.desc" \
+  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+
+# Get KB entries from a specific Drive folder
+curl "${BASE_URL}/knowledge_base?folder_id=eq.<FOLDER_ID>&order=created_at.desc" \
+  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+
+# Add a KB entry (from scanned Drive doc)
+curl -X POST "${BASE_URL}/knowledge_base" \
+  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" -H "Prefer: return=representation" \
+  -d '{
+    "title": "MENA Market Report 2025",
+    "source": "google_drive",
+    "source_id": "<GOOGLE_DRIVE_FILE_ID>",
+    "source_url": "https://docs.google.com/document/d/<ID>/edit",
+    "folder_id": "<PARENT_FOLDER_ID>",
+    "content": "Extracted text content from the document...",
+    "content_type": "text",
+    "tags": ["mena", "market-report", "2025"],
+    "metadata": {"word_count": 1500, "scanned_at": "2026-03-30T19:00:00Z"}
+  }'
+
+# Update a KB entry
+curl -X PATCH "${BASE_URL}/knowledge_base?id=eq.<KB_ID>" \
+  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" -H "Prefer: return=representation" \
+  -d '{"content": "Updated content...", "updated_at": "2026-03-30T19:00:00Z"}'
+
+# Delete a KB entry
+curl -X DELETE "${BASE_URL}/knowledge_base?id=eq.<KB_ID>" \
+  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+```
+
+### Google Drive Scanning Workflow
+
+**When told "scan the Drive folder" or "update knowledge base from Drive":**
+
+1. Use Google Drive MCP tool or API to list files in the configured folder
+2. For each document (Google Doc, PDF, etc.):
+   a. Read/extract the text content
+   b. Classify the content type (case_study, methodology, metrics, pitch, bio, testimonial, text)
+   c. Extract relevant tags from the content
+   d. Check if a KB entry with the same `source_id` already exists
+   e. If exists: UPDATE the content and `updated_at`
+   f. If new: INSERT a new KB entry
+3. Report back: "Scanned X documents, added Y new entries, updated Z existing"
+
+**When creating proposals from KB:**
+
+1. CEO says "create a proposal for X using our case studies"
+2. Query KB: `GET /knowledge_base?content_type=eq.case_study`
+3. Select relevant entries based on tags or content matching
+4. Create proposal sections populated with real KB content instead of placeholders
+5. Set section status to 'edited' (not placeholder)
+
+**Content type classification guide:**
+| Drive Doc Contains | KB content_type |
+|-------------------|----------------|
+| Client success stories | case_study |
+| How we work / process docs | methodology |
+| KPIs, numbers, performance data | metrics |
+| Company overview / one-pagers | pitch |
+| Team bios / leadership profiles | bio |
+| Client quotes / endorsements | testimonial |
+| General reference material | text |
+
 ---
 
 ## Live URLs

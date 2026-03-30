@@ -19,11 +19,12 @@ async function sbFetch(path, options = {}) {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
+    console.error('[Supabase Error]', res.status, path, text);
     throw new Error('Supabase ' + res.status + ': ' + text);
   }
-  const ct = res.headers.get('content-type') || '';
-  if (ct.includes('json')) return res.json();
-  return null;
+  const text = await res.text();
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return null; }
 }
 
 async function sbGet(table, query) {

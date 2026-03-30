@@ -966,6 +966,8 @@ a.project-card:hover .view-details {
   </div>
 </div>
 
+<script src="js/supabase-client.js"></script>
+<script src="js/proposal-data.js"></script>
 <script>
 (function() {
   var hamburger = document.getElementById('hamburger');
@@ -1005,71 +1007,55 @@ function openProposal(projectName) {
 
 var createdProposalId = null;
 
-var SUPABASE_URL = 'https://gxunrnyehltpbgdodkkm.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
-var LS_KEY = 'vsdr-proposals';
-
-function lsGetProposals() {
-  try { var raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; }
-}
-function lsSaveProposals(proposals) { localStorage.setItem(LS_KEY, JSON.stringify(proposals)); }
-
-function generateIndex(proposals) {
-  var year = new Date().getFullYear();
-  var nums = (proposals || []).map(function(p) {
-    var m = (p.proposal_index || '').match(/SP-\d+-(\d+)/);
-    return m ? parseInt(m[1]) : 0;
-  });
-  var max = nums.length ? Math.max.apply(null, nums) : 0;
-  return 'SP-' + year + '-' + String(max + 1).padStart(3, '0');
-}
-
 function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-function confirmProposal() {
+async function confirmProposal() {
   var btn = document.getElementById('confirmProposalBtn');
   btn.textContent = 'Creating...';
   btn.disabled = true;
 
   var projectName = currentProposalProject;
   var projectId = slugify(projectName);
-  var proposals = lsGetProposals();
-  var proposalIndex = generateIndex(proposals);
-  var id = crypto.randomUUID();
-  var now = new Date().toISOString();
 
-  var newProposal = {
-    id: id,
-    project_id: projectId,
-    title: 'Proposal for ' + projectName,
-    client_name: projectName,
-    client_contact: '',
-    proposal_type: 'full',
-    proposal_index: proposalIndex,
-    slug: projectId,
-    description: '',
-    status: 'draft',
-    share_token: null,
-    sections: [],
-    comments: [],
-    metadata: { created_by: 'yousra' },
-    created_at: now,
-    updated_at: now
-  };
+  try {
+    // Get existing proposals for index generation
+    var existing = await fetchProposals();
+    var proposalIndex = generateProposalIndex(existing);
 
-  proposals.unshift(newProposal);
-  lsSaveProposals(proposals);
-  createdProposalId = id;
+    // Create proposal in Supabase
+    var proposal = await createProposal({
+      title: 'Full Proposal — ' + projectName,
+      client_name: projectName,
+      proposal_type: 'Full Proposal',
+      proposal_index: proposalIndex,
+      slug: projectId + '-' + Date.now(),
+      description: 'Full proposal for ' + projectName,
+      status: 'draft',
+      metadata: { created_by: 'yousra', version: 1 }
+    });
 
-  document.getElementById('proposalStep1').style.display = 'none';
-  document.getElementById('proposalStep2').style.display = 'block';
-  btn.textContent = 'Create Draft in Proposal Lab';
-  btn.disabled = false;
+    if (!proposal) throw new Error('Failed to create proposal');
 
-  // Update card badges
-  loadProposalBadges();
+    // Auto-generate Full Proposal template sections in Supabase
+    var templateSections = getTemplateSections('Full Proposal', projectName);
+    await createSectionsBatch(proposal.id, templateSections);
+
+    createdProposalId = proposal.id;
+
+    document.getElementById('proposalStep1').style.display = 'none';
+    document.getElementById('proposalStep2').style.display = 'block';
+
+    // Update card badges
+    loadProposalBadges();
+  } catch(e) {
+    console.error('Create proposal failed:', e);
+    alert('Failed to create proposal: ' + e.message);
+  } finally {
+    btn.textContent = 'Create Draft in Proposal Lab';
+    btn.disabled = false;
+  }
 }
 
 function openCreatedProposal() {
@@ -1111,20 +1097,21 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ── Load proposal badges from localStorage ──
-function loadProposalBadges() {
+async function loadProposalBadges() {
   try {
-    var proposals = lsGetProposals();
+    var proposals = await fetchProposals();
 
-    // Build map: project_id -> proposal (most recent per project)
+    // Build map: slug -> proposal (most recent per project)
     var map = {};
     proposals.forEach(function(p) {
-      if (!map[p.project_id]) map[p.project_id] = p;
+      var key = (p.slug || '').replace(/-\d+$/, ''); // strip timestamp suffix
+      if (!map[key]) map[key] = p;
     });
 
     // Find all proposal buttons and their project names
     document.querySelectorAll('.btn-proposal[data-project]').forEach(function(btn) {
       var projectId = btn.getAttribute('data-project');
-      var proposal = map[projectId];
+      var proposal = map[projectId] || map[projectId.replace(/-/g, '-')];
       var card = btn.closest('.project-card');
       if (!card) return;
 
