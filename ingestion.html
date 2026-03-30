@@ -116,6 +116,93 @@ a { text-decoration: none; color: inherit; }
   .form-row { grid-template-columns: 1fr; }
   .tabs { flex-wrap: wrap; }
 }
+
+    /* ── Light theme overrides ── */
+    .theme-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-family: var(--body, 'General Sans', sans-serif);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--n400);
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .theme-btn:hover {
+      color: var(--n50);
+      border-color: var(--n400);
+    }
+    .theme-icon { font-size: 14px; }
+
+    html[data-theme="light"] {
+      --green: #2EA84E;
+      --charcoal: #F8FAFC;
+      --teal: #0D9488;
+      --amber: #D97706;
+      --coral: #DC2626;
+      --gold: #CA8A04;
+      --n50: #0F172A;
+      --n400: #64748B;
+      --n800: #FFFFFF;
+      --surface: rgba(0,0,0,0.02);
+      --border: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] body {
+      background: #F1F5F9;
+      color: #0F172A;
+    }
+    html[data-theme="light"] .sidebar {
+      background: #FFFFFF;
+      border-right-color: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] .sidebar-logo,
+    html[data-theme="light"] .page-header {
+      color: #0F172A;
+    }
+    html[data-theme="light"] .nav-item:hover {
+      color: #0F172A;
+    }
+    html[data-theme="light"] .nav-item.active {
+      color: #0F172A;
+      background: rgba(46,168,78,0.06);
+    }
+    html[data-theme="light"] .card,
+    html[data-theme="light"] .stat-block,
+    html[data-theme="light"] .contact-card,
+    html[data-theme="light"] .diagram-card,
+    html[data-theme="light"] .spec-card {
+      background: #FFFFFF;
+      border-color: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] .search-input,
+    html[data-theme="light"] select,
+    html[data-theme="light"] textarea,
+    html[data-theme="light"] input[type="text"],
+    html[data-theme="light"] input[type="date"],
+    html[data-theme="light"] input[type="email"] {
+      background: #FFFFFF;
+      border-color: rgba(0,0,0,0.12);
+      color: #0F172A;
+    }
+    html[data-theme="light"] .enrich-modal-card,
+    html[data-theme="light"] .sync-modal-card,
+    html[data-theme="light"] .modal-card {
+      background: rgba(255,255,255,0.97);
+      border-color: rgba(0,0,0,0.1);
+    }
+    html[data-theme="light"] .hamburger {
+      background: #FFFFFF;
+      border-color: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] .sidebar-backdrop {
+      background: rgba(0,0,0,0.3);
+    }
 </style>
 </head>
 <body>
@@ -147,7 +234,13 @@ a { text-decoration: none; color: inherit; }
     <a href="ingestion.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>Ingestion</a>
     <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
   </nav>
-  <div class="sidebar-version">v2.0</div>
+        <div class="theme-toggle" style="padding: 0 24px; margin-bottom: 12px;">
+        <button id="themeToggle" class="theme-btn" title="Toggle theme">
+          <span class="theme-icon">☀️</span>
+          <span class="theme-label">Light Mode</span>
+        </button>
+      </div>
+<div class="sidebar-version">v2.0</div>
 </aside>
 
 <main class="main">
@@ -541,5 +634,39 @@ function clearHistory() {
 
 renderHistory();
 </script>
+
+  <!-- Theme toggle -->
+  <script>
+  (function() {
+    var saved = localStorage.getItem('vsdr-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateThemeBtn(saved);
+
+    var btn = document.getElementById('themeToggle');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('vsdr-theme', next);
+        updateThemeBtn(next);
+      });
+    }
+
+    function updateThemeBtn(theme) {
+      var btn = document.getElementById('themeToggle');
+      if (!btn) return;
+      var icon = btn.querySelector('.theme-icon');
+      var label = btn.querySelector('.theme-label');
+      if (theme === 'light') {
+        icon.textContent = '\u{1F319}';
+        label.textContent = 'Dark Mode';
+      } else {
+        icon.textContent = '\u2600\uFE0F';
+        label.textContent = 'Light Mode';
+      }
+    }
+  })();
+  </script>
 </body>
 </html>

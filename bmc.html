@@ -625,6 +625,106 @@
     
   .btn-sync { background: transparent; border: 1px solid #2DD4BF; color: #2DD4BF; font-family: inherit; font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 2px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
   .btn-sync:hover { background: rgba(45,212,191,0.1); }
+
+    /* ── Light theme overrides ── */
+    .theme-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-family: var(--body, 'General Sans', sans-serif);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--n400);
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .theme-btn:hover {
+      color: var(--n50);
+      border-color: var(--n400);
+    }
+    .theme-icon { font-size: 14px; }
+
+    html[data-theme="light"] {
+      --green: #2EA84E;
+      --charcoal: #F8FAFC;
+      --teal: #0D9488;
+      --amber: #D97706;
+      --coral: #DC2626;
+      --gold: #CA8A04;
+      --n50: #0F172A;
+      --n400: #64748B;
+      --n800: #FFFFFF;
+      --surface: rgba(0,0,0,0.02);
+      --border: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] body {
+      background: #F1F5F9;
+      color: #0F172A;
+    }
+    html[data-theme="light"] .sidebar {
+      background: #FFFFFF;
+      border-right-color: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] .sidebar-logo,
+    html[data-theme="light"] .page-header {
+      color: #0F172A;
+    }
+    html[data-theme="light"] .nav-item:hover {
+      color: #0F172A;
+    }
+    html[data-theme="light"] .nav-item.active {
+      color: #0F172A;
+      background: rgba(46,168,78,0.06);
+    }
+    html[data-theme="light"] .card,
+    html[data-theme="light"] .stat-block,
+    html[data-theme="light"] .contact-card,
+    html[data-theme="light"] .diagram-card,
+    html[data-theme="light"] .spec-card {
+      background: #FFFFFF;
+      border-color: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] .search-input,
+    html[data-theme="light"] select,
+    html[data-theme="light"] textarea,
+    html[data-theme="light"] input[type="text"],
+    html[data-theme="light"] input[type="date"],
+    html[data-theme="light"] input[type="email"] {
+      background: #FFFFFF;
+      border-color: rgba(0,0,0,0.12);
+      color: #0F172A;
+    }
+    html[data-theme="light"] .enrich-modal-card,
+    html[data-theme="light"] .sync-modal-card,
+    html[data-theme="light"] .modal-card {
+      background: rgba(255,255,255,0.97);
+      border-color: rgba(0,0,0,0.1);
+    }
+    html[data-theme="light"] .hamburger {
+      background: #FFFFFF;
+      border-color: rgba(0,0,0,0.08);
+    }
+    html[data-theme="light"] .sidebar-backdrop {
+      background: rgba(0,0,0,0.3);
+    }
+    html[data-theme="light"] {
+      --bg-primary: #F1F5F9;
+      --bg-secondary: #FFFFFF;
+      --bg-card: rgba(0,0,0,0.03);
+      --bg-card-hover: rgba(0,0,0,0.06);
+      --text-primary: #0F172A;
+      --text-secondary: #64748B;
+      --text-muted: #94A3B8;
+      --accent: #2EA84E;
+      --accent-dim: rgba(46,168,78,0.12);
+      --accent-glow: rgba(46,168,78,0.2);
+      --border: rgba(0,0,0,0.08);
+    }
 </style>
 </head>
 <body>
@@ -697,7 +797,13 @@
       Settings
     </a>
   </nav>
-      <div class="sidebar-version">v2.0</div>
+            <div class="theme-toggle" style="padding: 0 24px; margin-bottom: 12px;">
+        <button id="themeToggle" class="theme-btn" title="Toggle theme">
+          <span class="theme-icon">☀️</span>
+          <span class="theme-label">Light Mode</span>
+        </button>
+      </div>
+<div class="sidebar-version">v2.0</div>
     </aside>
 
     <!-- Progress Bar -->
@@ -1220,5 +1326,39 @@
     </div>
   </div>
 </div>
+
+  <!-- Theme toggle -->
+  <script>
+  (function() {
+    var saved = localStorage.getItem('vsdr-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateThemeBtn(saved);
+
+    var btn = document.getElementById('themeToggle');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('vsdr-theme', next);
+        updateThemeBtn(next);
+      });
+    }
+
+    function updateThemeBtn(theme) {
+      var btn = document.getElementById('themeToggle');
+      if (!btn) return;
+      var icon = btn.querySelector('.theme-icon');
+      var label = btn.querySelector('.theme-label');
+      if (theme === 'light') {
+        icon.textContent = '\u{1F319}';
+        label.textContent = 'Dark Mode';
+      } else {
+        icon.textContent = '\u2600\uFE0F';
+        label.textContent = 'Light Mode';
+      }
+    }
+  })();
+  </script>
 </body>
 </html>
