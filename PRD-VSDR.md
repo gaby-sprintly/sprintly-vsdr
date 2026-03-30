@@ -72,57 +72,27 @@ A purpose-built web application that:
 
 ### 4.2 System Architecture Diagram
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    VSDR Frontend                     │
-│              (Static HTML on Vercel)                 │
-│                                                      │
-│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐     │
-│  │ Home │ │ BMC  │ │Goals │ │Pipe- │ │Net-  │     │
-│  │      │ │      │ │      │ │line  │ │work  │     │
-│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘     │
-│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐     │
-│  │Match │ │Inter-│ │Out-  │ │Analy-│ │Rep-  │     │
-│  │es    │ │act.  │ │reach │ │tics  │ │orts  │     │
-│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘     │
-│  ┌──────┐ ┌──────┐ ┌──────┐                        │
-│  │Inges-│ │Sett- │ │Cont- │                        │
-│  │tion  │ │ings  │ │act   │                        │
-│  └──────┘ └──────┘ └──────┘                        │
-└──────────────────────┬──────────────────────────────┘
-                       │ REST API
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│                  Supabase (PostgreSQL)                │
-│                                                      │
-│  contacts (5,952 rows)                               │
-│  + 9 supporting tables                               │
-└──────────────────────┬──────────────────────────────┘
-                       │ Sync (daily 6 AM + on-demand)
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│                    Airtable                           │
-│           Network Database (tblllCSH6H33t6JVN)       │
-│           Introductions & Follow-Ups                  │
-└─────────────────────────────────────────────────────┘
-```
+![VSDR System Architecture](vsdr-system-architecture.png)
+
+The system follows a three-tier architecture: static frontend on Vercel, Supabase PostgreSQL backend, and Airtable as the source of truth. Gaby (AI Operator) orchestrates sync, enrichment, and deployments across all layers.
 
 ### 4.3 Data Flow
 
-```
-GitHub Push → Vercel Auto-Deploy → vsdr.vercel.app
-                                        │
-                                   Browser loads
-                                        │
-                                   JS fetches from
-                                        │
-                                   Supabase REST API
-                                        │
-                              ┌─────────┴─────────┐
-                              │                     │
-                         Live queries          Airtable Sync
-                         (real-time)           (daily + manual)
-```
+![VSDR Data Flow](vsdr-data-flow.png)
+
+Data flows from Airtable (source of truth) through Gaby's sync engine into Supabase, which serves the VSDR frontend via REST API. GitHub pushes trigger auto-deployment through Vercel. Cron jobs handle scheduled syncs, enrichment, and briefings.
+
+### 4.4 Database Schema
+
+![VSDR Database Schema](vsdr-database-schema.png)
+
+The primary `contacts` table (26 columns) in Supabase maps to Airtable's Network table. Interactions, outreach drafts, and settings currently use localStorage (Phase 4: migrate to Supabase).
+
+### 4.5 Deployment & Sync Pipeline
+
+![VSDR Deployment Pipeline](vsdr-deployment-pipeline.png)
+
+Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and Data Sync (Airtable → Gaby → Supabase → Frontend). Sync triggers: daily 6 AM Cairo, on-demand via sync button, event-driven.
 
 ---
 
