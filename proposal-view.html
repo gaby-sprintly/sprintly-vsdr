@@ -4,526 +4,1021 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Proposal — Sprintly Partners</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
+/* ═══════════════════════════════════════════════
+   RESET & VARIABLES
+   ═══════════════════════════════════════════════ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
   --green: #4ECB71;
   --charcoal: #0F1923;
-  --body-font: 'General Sans', sans-serif;
+  --teal: #2DD4BF;
+  --amber: #F59E0B;
+  --red: #EF4444;
+  --body-font: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --display-font: 'Space Grotesk', sans-serif;
 }
 
-html { background: #ffffff; }
+html { background: #fff; scroll-behavior: smooth; }
 
 body {
   font-family: var(--body-font);
-  background: #ffffff;
-  color: #1a202c;
-  min-height: 100vh;
-  line-height: 1.6;
+  background: #fff;
+  color: #1e293b;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── BRAND BAR ── */
-.brand-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 48px;
-  border-bottom: 1px solid #e2e8f0;
-  max-width: 800px;
-  margin: 0 auto;
+/* ═══════════════════════════════════════════════
+   LOADING STATE
+   ═══════════════════════════════════════════════ */
+.loading-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--charcoal);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: opacity 0.5s, visibility 0.5s;
 }
-
-.brand-logo {
-  font-family: var(--display-font);
-  font-weight: 700;
-  font-size: 20px;
-  color: #1a202c;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.loading-logo {
+  font-family: var(--display-font); font-weight: 700; font-size: 24px; color: #fff;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 32px;
 }
+.loading-logo .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); animation: pulse-dot 1.5s infinite; }
+.loading-bar-track { width: 200px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+.loading-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--teal)); border-radius: 3px; animation: load-fill 1.8s ease-out forwards; }
+@keyframes load-fill { to { width: 100%; } }
+@keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
 
-.brand-dot {
-  width: 10px;
-  height: 10px;
-  background: var(--green);
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
+/* ═══════════════════════════════════════════════
+   FIXED DOWNLOAD BAR
+   ═══════════════════════════════════════════════ */
+.download-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(15, 25, 35, 0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(78, 203, 113, 0.15);
+  padding: 14px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: transform 0.3s;
 }
-
-.confidential-badge {
-  font-family: var(--body-font);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: #94a3b8;
-  border: 1px solid #e2e8f0;
-  padding: 4px 10px;
-  border-radius: 2px;
+.download-bar.exporting { display: none !important; }
+.download-bar .bar-logo {
+  font-family: var(--display-font); font-weight: 700; font-size: 18px; color: #fff;
+  display: flex; align-items: center; gap: 10px; letter-spacing: -0.3px;
 }
-
-/* ── MAIN CONTAINER ── */
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 48px 48px 80px;
+.download-bar .bar-logo .pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+  animation: pulse-dot 2s infinite; box-shadow: 0 0 8px rgba(78,203,113,0.5);
 }
-
-@media (max-width: 768px) {
-  .brand-bar { padding: 20px 24px; }
-  .container { padding: 32px 24px 64px; }
+.download-bar .pdf-btn {
+  font-family: var(--display-font); font-weight: 600; font-size: 14px;
+  background: var(--green); color: var(--charcoal); border: none;
+  padding: 10px 28px; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s;
 }
+.download-bar .pdf-btn:hover { background: #3db85e; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(78,203,113,0.3); }
+.download-bar .pdf-btn:active { transform: translateY(0); }
+.download-bar .pdf-btn svg { width: 16px; height: 16px; }
+.download-bar .pdf-btn.exporting { opacity: 0.6; pointer-events: none; }
 
-/* ── PROPOSAL HEADER ── */
-.proposal-header { margin-bottom: 40px; }
+@media print { .download-bar { display: none !important; } }
 
-.proposal-title {
-  font-family: var(--display-font);
-  font-weight: 700;
-  font-size: 40px;
-  line-height: 1.2;
-  color: #0f172a;
-  margin-bottom: 16px;
-}
+body { padding-top: 60px; }
 
-@media (max-width: 600px) {
-  .proposal-title { font-size: 28px; }
-}
-
-.proposal-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  color: #64748b;
-  font-size: 14px;
-  padding: 20px 0;
-  border-top: 1px solid #f1f5f9;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.meta-item { display: flex; align-items: center; gap: 6px; }
-.meta-label { font-weight: 600; color: #374151; }
-
-/* ── DIVIDER ── */
-.green-divider {
-  height: 3px;
-  background: linear-gradient(90deg, var(--green), transparent);
-  border-radius: 2px;
-  margin: 32px 0;
-}
-
-/* ── TABLE OF CONTENTS ── */
-.toc {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 24px 28px;
-  margin-bottom: 48px;
-}
-
-.toc-title {
-  font-family: var(--display-font);
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: #94a3b8;
-  margin-bottom: 16px;
-}
-
-.toc-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.toc-item { display: flex; align-items: center; gap: 8px; }
-.toc-num {
-  font-family: var(--display-font);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--green);
-  min-width: 20px;
-}
-.toc-link {
-  font-size: 14px;
-  color: #374151;
-  text-decoration: none;
-  transition: color 0.15s;
-}
-.toc-link:hover { color: var(--green); }
-
-/* ── SECTION ── */
-.proposal-section {
-  margin-bottom: 48px;
-  scroll-margin-top: 24px;
-}
-
-.section-heading {
-  font-family: var(--display-font);
-  font-weight: 700;
-  font-size: 22px;
-  color: #0f172a;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #f1f5f9;
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.section-num {
-  font-size: 14px;
-  color: var(--green);
-  font-weight: 700;
-}
-
-.section-text {
-  font-size: 16px;
-  color: #374151;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.section-divider {
-  height: 2px;
-  background: linear-gradient(90deg, var(--green), #e2e8f0);
-  border-radius: 1px;
-  margin: 32px 0;
-}
-
-.section-image {
-  width: 100%;
-  border-radius: 8px;
-  margin-top: 16px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  display: block;
-}
-
-/* ── TABLE ── */
-.section-table-wrap {
-  overflow-x: auto;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.section-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.section-table th {
-  background: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
-  padding: 12px 16px;
-  text-align: left;
-  font-family: var(--display-font);
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.section-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #374151;
-  vertical-align: top;
-}
-
-.section-table tr:last-child td { border-bottom: none; }
-.section-table tr:nth-child(even) td { background: #f8fafc; }
-
-/* ── FOOTER ── */
-.proposal-footer {
-  margin-top: 64px;
-  padding-top: 24px;
-  border-top: 2px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.footer-text {
-  font-size: 13px;
-  color: #94a3b8;
-  line-height: 1.6;
-}
-
-.footer-brand {
-  font-family: var(--display-font);
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
-/* ── DOWNLOAD BUTTON ── */
-.download-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
-  background: var(--green);
-  border: none;
-  border-radius: 4px;
-  color: #0f172a;
-  font-family: var(--display-font);
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.15s;
-  margin-top: 32px;
-}
-
-.download-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-/* ── ERROR STATE ── */
+/* ═══════════════════════════════════════════════
+   ERROR STATE
+   ═══════════════════════════════════════════════ */
 .error-state {
-  min-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 48px;
-  max-width: 600px;
-  margin: 0 auto;
+  min-height: 80vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; padding: 40px;
+}
+.error-state .error-icon { font-size: 48px; margin-bottom: 20px; }
+.error-state h2 { font-family: var(--display-font); font-size: 28px; font-weight: 700; color: var(--charcoal); margin-bottom: 8px; }
+.error-state p { color: #64748b; font-size: 16px; max-width: 400px; }
+
+/* ═══════════════════════════════════════════════
+   COVER PAGE
+   ═══════════════════════════════════════════════ */
+.cover-page {
+  min-height: 100vh; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #0F1923 0%, #0b2621 40%, #0a2e28 70%, #0d3830 100%);
+  display: flex; flex-direction: column; justify-content: space-between;
+  page-break-after: always; break-after: page;
+}
+.cover-page::before {
+  content: ''; position: absolute; top: -20%; right: -10%; width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(78,203,113,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cover-page::after {
+  content: ''; position: absolute; bottom: -10%; left: 20%; width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(45,212,191,0.06) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.error-icon { font-size: 64px; margin-bottom: 24px; }
-.error-title { font-family: var(--display-font); font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
-.error-msg { font-size: 16px; color: #64748b; line-height: 1.6; }
+.cover-top {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 48px 72px;
+  position: relative; z-index: 2;
+}
+.cover-logo {
+  font-family: var(--display-font); font-weight: 700; font-size: 22px; color: #fff;
+  display: flex; align-items: center; gap: 10px; letter-spacing: -0.3px;
+}
+.cover-logo .logo-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--green), var(--teal));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; color: var(--charcoal);
+}
+.cover-confidential {
+  font-family: var(--display-font); font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px;
+  padding: 6px 16px; border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 100px;
+}
 
-/* ── LOADING ── */
-.loading-state { padding: 64px 48px; max-width: 800px; margin: 0 auto; }
-.skel { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
-@keyframes shimmer { 0%{background-position:-200% 0}100%{background-position:200% 0} }
+.cover-content {
+  padding: 0 72px 0 72px;
+  position: relative; z-index: 2;
+  max-width: 800px;
+}
+.cover-tagline {
+  font-family: var(--display-font); font-size: 13px; font-weight: 600;
+  color: var(--green); text-transform: uppercase; letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+.cover-title {
+  font-family: var(--display-font); font-size: clamp(36px, 5vw, 64px);
+  font-weight: 800; color: #fff; line-height: 1.1;
+  margin-bottom: 20px; letter-spacing: -1px;
+}
+.cover-client {
+  font-family: var(--display-font); font-size: 20px; font-weight: 600;
+  color: var(--teal); margin-bottom: 8px;
+}
+.cover-contact {
+  font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 48px;
+}
 
-/* ── PRINT / PDF ── */
+.cover-meta {
+  display: flex; gap: 48px; flex-wrap: wrap;
+  padding: 0 72px 48px;
+  position: relative; z-index: 2;
+}
+.cover-meta-item .meta-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.5px; color: rgba(255,255,255,0.35); margin-bottom: 4px;
+}
+.cover-meta-item .meta-value {
+  font-family: var(--display-font); font-size: 15px; font-weight: 600; color: #fff;
+}
+
+.cover-bar {
+  height: 6px; width: 100%;
+  background: linear-gradient(90deg, var(--green), var(--teal));
+}
+
+/* ═══════════════════════════════════════════════
+   TABLE OF CONTENTS
+   ═══════════════════════════════════════════════ */
+.toc-page {
+  background: #fff; padding: 80px 72px;
+  page-break-after: always; break-after: page;
+}
+.toc-header {
+  display: flex; align-items: center; gap: 24px; margin-bottom: 48px;
+}
+.toc-header h2 {
+  font-family: var(--display-font); font-size: 14px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 3px; color: var(--charcoal);
+  white-space: nowrap;
+}
+.toc-header .toc-line {
+  flex: 1; height: 1px; background: linear-gradient(90deg, #e2e8f0, transparent);
+}
+
+.toc-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+}
+.toc-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px; border-radius: 10px; border: 1px solid transparent;
+  cursor: pointer; transition: all 0.2s;
+  text-decoration: none; color: inherit;
+}
+.toc-item:hover { background: #f8fafc; border-color: #e2e8f0; }
+.toc-number {
+  font-family: var(--display-font); font-size: 20px; font-weight: 700;
+  color: var(--green); min-width: 36px;
+}
+.toc-title {
+  font-family: var(--display-font); font-size: 16px; font-weight: 600;
+  color: var(--charcoal);
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION DIVIDER
+   ═══════════════════════════════════════════════ */
+.section-divider {
+  height: 3px;
+  background: linear-gradient(90deg, var(--green), var(--teal), transparent);
+}
+
+/* ═══════════════════════════════════════════════
+   DOCUMENT SECTIONS
+   ═══════════════════════════════════════════════ */
+.doc-section {
+  padding: 72px 72px; position: relative;
+  page-break-inside: avoid;
+}
+.doc-section:nth-child(odd) { background: #fff; }
+.doc-section:nth-child(even) { background: #f8fafc; }
+
+.section-header {
+  display: flex; align-items: flex-start; gap: 28px; margin-bottom: 40px;
+}
+.section-circle {
+  width: 48px; height: 48px; min-width: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--teal));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display-font); font-weight: 700; font-size: 18px;
+  color: #fff; margin-top: 4px;
+}
+.section-heading { position: relative; padding-left: 20px; }
+.section-heading::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, var(--green), var(--teal));
+  border-radius: 3px;
+}
+.section-label {
+  font-family: var(--display-font); font-size: 12px; font-weight: 700;
+  color: var(--green); text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.section-title {
+  font-family: var(--display-font); font-size: 28px; font-weight: 700;
+  color: var(--charcoal); line-height: 1.2; letter-spacing: -0.5px;
+}
+
+.section-body { padding-left: 76px; }
+
+/* ── TEXT CONTENT ── */
+.text-content {
+  font-size: 16px; line-height: 1.8; color: #334155;
+  white-space: pre-wrap; max-width: 720px;
+}
+.text-content + .section-image { margin-top: 32px; }
+.section-image {
+  width: 100%; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.section-image img { width: 100%; display: block; }
+
+/* ── CALLOUT BOX ── */
+.callout-box {
+  border-left: 4px solid var(--green);
+  background: linear-gradient(135deg, rgba(78,203,113,0.06), rgba(45,212,191,0.04));
+  border-radius: 0 12px 12px 0;
+  padding: 28px 32px; margin-bottom: 28px;
+  max-width: 720px;
+}
+.callout-quote {
+  font-family: var(--display-font); font-size: 18px; font-weight: 600;
+  font-style: italic; color: var(--charcoal); line-height: 1.6;
+}
+.callout-attribution {
+  font-size: 14px; font-weight: 600; color: var(--green);
+  margin-top: 12px;
+}
+
+/* ── METRIC CARDS ── */
+.metrics-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.metric-card {
+  background: #fff; border-radius: 12px; padding: 28px 24px;
+  border: 1px solid #e2e8f0; position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.metric-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.metric-card .accent-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+}
+.metric-card .metric-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.metric-card .metric-icon svg { width: 20px; height: 20px; }
+.metric-card .metric-value {
+  font-family: var(--display-font); font-size: 36px; font-weight: 800;
+  color: var(--charcoal); line-height: 1.1; margin-bottom: 6px;
+}
+.metric-card .metric-label {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: #64748b;
+}
+.metric-card .metric-sub {
+  font-size: 13px; color: #94a3b8; margin-top: 4px;
+}
+
+/* ── ROI CARDS ── */
+.roi-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.roi-card {
+  border-radius: 16px; padding: 32px 28px; text-align: center;
+  border: 1px solid transparent; transition: transform 0.2s;
+}
+.roi-card:hover { transform: translateY(-3px); }
+
+.roi-card.conservative { background: #f8fafc; border-color: #e2e8f0; }
+.roi-card.conservative .roi-tier { color: #64748b; }
+.roi-card.conservative .roi-value { color: #475569; }
+
+.roi-card.target {
+  background: linear-gradient(135deg, rgba(78,203,113,0.08), rgba(78,203,113,0.04));
+  border-color: rgba(78,203,113,0.3);
+  box-shadow: 0 8px 32px rgba(78,203,113,0.12);
+}
+.roi-card.target .roi-tier { color: var(--green); }
+.roi-card.target .roi-value { color: var(--charcoal); }
+
+.roi-card.stretch {
+  background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.04));
+  border-color: rgba(245,158,11,0.3);
+}
+.roi-card.stretch .roi-tier { color: var(--amber); }
+.roi-card.stretch .roi-value { color: var(--charcoal); }
+
+.roi-tier {
+  font-family: var(--display-font); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
+}
+.roi-value {
+  font-family: var(--display-font); font-size: 36px; font-weight: 800;
+  margin-bottom: 6px;
+}
+.roi-sub { font-size: 13px; color: #94a3b8; }
+
+.roi-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  margin-top: 28px; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+.roi-table th, .roi-table td {
+  padding: 14px 20px; text-align: center; font-size: 15px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.roi-table th {
+  font-family: var(--display-font); font-weight: 700; font-size: 13px;
+  text-transform: uppercase; letter-spacing: 1px; background: #f8fafc;
+  color: #64748b;
+}
+.roi-table th:first-child, .roi-table td:first-child { text-align: left; font-weight: 600; color: #475569; }
+.roi-table th.col-conservative { color: #64748b; }
+.roi-table th.col-target { background: linear-gradient(135deg, var(--green), var(--teal)); color: var(--charcoal); }
+.roi-table th.col-stretch { color: var(--amber); }
+.roi-table td.col-target { background: rgba(78,203,113,0.06); font-weight: 700; color: var(--charcoal); }
+.roi-table tr:last-child td { border-bottom: none; }
+
+/* ── TIMELINE / GANTT ── */
+.gantt-container {
+  border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+  background: #fff;
+}
+.gantt-header {
+  display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc;
+}
+.gantt-header .gantt-phase-label {
+  width: 180px; min-width: 180px; padding: 14px 20px;
+  font-family: var(--display-font); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; color: #64748b;
+  border-right: 1px solid #e2e8f0;
+}
+.gantt-header .gantt-weeks {
+  flex: 1; display: flex; position: relative;
+}
+.gantt-tick {
+  flex: 1; text-align: center; padding: 14px 4px;
+  font-size: 11px; font-weight: 600; color: #94a3b8;
+  border-left: 1px solid #f1f5f9;
+}
+.gantt-row {
+  display: flex; border-bottom: 1px solid #f1f5f9;
+}
+.gantt-row:last-child { border-bottom: none; }
+.gantt-row .gantt-phase-name {
+  width: 180px; min-width: 180px; padding: 16px 20px;
+  font-family: var(--display-font); font-size: 14px; font-weight: 600;
+  color: var(--charcoal); border-right: 1px solid #e2e8f0;
+  display: flex; align-items: center;
+}
+.gantt-row .gantt-track {
+  flex: 1; padding: 12px 8px; position: relative;
+  display: flex; align-items: center;
+}
+.gantt-track-bg {
+  position: absolute; inset: 12px 8px; background: #f1f5f9; border-radius: 6px;
+}
+.gantt-bar {
+  position: absolute; top: 12px; bottom: 12px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff;
+  z-index: 1; min-width: 50px; letter-spacing: 0.3px;
+}
+
+/* ── TABLE (pricing) ── */
+.pricing-table-wrapper {
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  border: 1px solid #e2e8f0;
+}
+.pricing-table {
+  width: 100%; border-collapse: collapse;
+}
+.pricing-table th, .pricing-table td {
+  padding: 16px 24px; text-align: center; font-size: 15px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.pricing-table thead th {
+  font-family: var(--display-font); font-weight: 700; font-size: 14px;
+  background: #f8fafc; color: #475569; position: relative;
+}
+.pricing-table thead th:first-child {
+  text-align: left; background: #f1f5f9; color: #64748b; font-size: 12px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.pricing-table thead th.rec-col {
+  background: linear-gradient(135deg, var(--green), var(--teal));
+  color: var(--charcoal);
+}
+.pricing-table thead th.rec-col .rec-badge {
+  display: inline-block; background: var(--amber); color: #fff;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px; margin-bottom: 6px;
+}
+.pricing-table tbody td:first-child {
+  text-align: left; background: #fafbfc; font-weight: 600;
+  font-size: 14px; color: #64748b;
+}
+.pricing-table tbody td.rec-cell {
+  background: rgba(78,203,113,0.06); font-weight: 700;
+  color: var(--charcoal); font-size: 16px;
+}
+.pricing-table tbody tr.price-row td {
+  font-family: var(--display-font); font-weight: 800; font-size: 20px;
+  color: var(--charcoal); padding: 20px 24px;
+}
+.pricing-table tbody tr.price-row td:first-child {
+  font-size: 14px; font-weight: 600;
+}
+.pricing-table tbody tr.price-row td.rec-cell {
+  font-size: 22px; color: var(--green);
+}
+.pricing-table tbody tr:last-child td { border-bottom: none; }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .cover-top, .cover-content, .cover-meta { padding-left: 32px; padding-right: 32px; }
+  .toc-page { padding: 48px 32px; }
+  .toc-grid { grid-template-columns: 1fr; }
+  .doc-section { padding: 48px 32px; }
+  .section-body { padding-left: 0; }
+  .section-header { flex-direction: column; gap: 16px; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .roi-grid { grid-template-columns: 1fr; }
+  .gantt-row .gantt-phase-name, .gantt-header .gantt-phase-label { width: 120px; min-width: 120px; font-size: 12px; }
+  .download-bar { padding: 12px 20px; }
+}
+@media (max-width: 480px) {
+  .metrics-grid { grid-template-columns: 1fr; }
+  .cover-meta { flex-direction: column; gap: 20px; }
+}
+
+/* ── PRINT ── */
 @media print {
-  .download-btn, .brand-bar .confidential-badge { display: none; }
+  body { padding-top: 0; }
+  .doc-section { page-break-inside: avoid; }
 }
+
+/* ── PDF EXPORT TWEAKS ── */
+body.exporting .download-bar { display: none !important; }
+body.exporting { padding-top: 0; }
 </style>
 </head>
 <body>
 
-<div class="brand-bar" id="brandBar">
-  <div class="brand-logo">
-    <span class="brand-dot"></span> Sprintly Partners
-  </div>
-  <span class="confidential-badge">Confidential</span>
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo"><span class="dot"></span> Sprintly Partners</div>
+  <div class="loading-bar-track"><div class="loading-bar-fill"></div></div>
 </div>
 
-<div id="appRoot">
-  <!-- Loading skeleton -->
-  <div class="loading-state" id="loadingState">
-    <div class="skel" style="height:44px;width:70%;margin-bottom:16px;"></div>
-    <div class="skel" style="height:18px;width:40%;margin-bottom:32px;"></div>
-    <div class="skel" style="height:12px;width:100%;margin-bottom:8px;"></div>
-    <div class="skel" style="height:12px;width:85%;margin-bottom:8px;"></div>
-    <div class="skel" style="height:12px;width:90%;margin-bottom:8px;"></div>
-    <div class="skel" style="height:12px;width:60%;"></div>
+<!-- FIXED DOWNLOAD BAR -->
+<div class="download-bar" id="downloadBar">
+  <div class="bar-logo">
+    <span class="pulse-dot"></span>
+    Sprintly Partners
   </div>
+  <button class="pdf-btn" id="pdfBtn" onclick="exportPDF()">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0L5 7m3 3l3-3M3 12v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V12"/></svg>
+    Download PDF
+  </button>
+</div>
+
+<!-- PROPOSAL CONTENT (rendered by JS) -->
+<div id="proposalContent"></div>
+
+<!-- ERROR STATE -->
+<div class="error-state" id="errorState" style="display:none;">
+  <div class="error-icon">📄</div>
+  <h2>Proposal Not Found</h2>
+  <p>This proposal link may have expired or the proposal has been removed.</p>
 </div>
 
 <script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
 const SUPABASE_URL = 'https://gxunrnyehltpbgdodkkm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v';
 const LS_KEY = 'vsdr-proposals';
 
-const params = new URLSearchParams(window.location.search);
-const TOKEN = params.get('token');
+// ═══════════════════════════════════════════════
+// ICON SVGs
+// ═══════════════════════════════════════════════
+const ICONS = {
+  rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  network: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="3"/><circle cx="19" cy="17" r="3"/><circle cx="5" cy="17" r="3"/><path d="M12 8v4m4.5 2.1L14 12m-6.5 2.1L10 12"/></svg>',
+  default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'
+};
 
-let proposalData = null;
+const ICON_NAMES = ['rocket', 'chart', 'target', 'network'];
+const ACCENT_COLORS = ['#4ECB71', '#2DD4BF', '#F59E0B', '#EF4444'];
+
+function getIcon(name) {
+  return ICONS[name] || ICONS[ICON_NAMES[Math.floor(Math.random() * ICON_NAMES.length)]] || ICONS.default;
+}
+
+// ═══════════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════════
+function getParams() {
+  const p = new URLSearchParams(window.location.search);
+  return { token: p.get('token'), id: p.get('id'), autoexport: p.get('autoexport') === '1' };
+}
 
 function lsGetProposals() {
-  try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; }
+  try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function formatDate(str) {
-  if (!str) return '';
-  try { return new Date(str).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); }
-  catch { return ''; }
-}
-
-function showError(msg) {
-  document.getElementById('appRoot').innerHTML = `
-    <div class="error-state">
-      <div class="error-icon">🔒</div>
-      <div class="error-title">Proposal Not Found</div>
-      <div class="error-msg">${escapeHtml(msg)}</div>
-    </div>`;
-}
-
-function renderSection(sec, i) {
-  if (sec.content_type === 'divider') {
-    return `<div class="section-divider"></div>`;
-  }
-
-  let contentHtml = '';
-
-  if (sec.content_type === 'table' && sec.table_data) {
-    const { headers, rows } = sec.table_data;
-    contentHtml = `<div class="section-table-wrap"><table class="section-table">
-      <thead><tr>${(headers || []).map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>
-      <tbody>${(rows || []).map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</tbody>
-    </table></div>`;
-  } else if (sec.content_type === 'image') {
-    const imgHtml = sec.image_url ? `<img src="${escapeHtml(sec.image_url)}" class="section-image" alt="${escapeHtml(sec.title)}" />` : '';
-    const textHtml = sec.content ? `<div class="section-text">${escapeHtml(sec.content)}</div>` : '';
-    contentHtml = textHtml + imgHtml;
-  } else {
-    // text
-    contentHtml = `<div class="section-text">${escapeHtml(sec.content || '')}</div>`;
-    if (sec.image_url) {
-      contentHtml += `<img src="${escapeHtml(sec.image_url)}" class="section-image" alt="" />`;
-    }
-  }
-
-  return `<section class="proposal-section" id="sec-view-${i}">
-    <h2 class="section-heading">
-      <span class="section-num">${String(i+1).padStart(2,'0')}</span>
-      ${escapeHtml(sec.title || `Section ${i+1}`)}
-    </h2>
-    ${contentHtml}
-  </section>`;
-}
-
-function renderProposal(p) {
-  proposalData = p;
-  document.title = `${p.title || 'Proposal'} — Sprintly Partners`;
-  const sections = (p.sections || []).filter(s => s.content_type !== undefined);
-  const createdDate = formatDate(p.created_at);
-
-  const tocItems = sections.map((s, i) => {
-    if (s.content_type === 'divider') return '';
-    return `<li class="toc-item">
-      <span class="toc-num">${String(i+1).padStart(2,'0')}</span>
-      <a href="#sec-view-${i}" class="toc-link">${escapeHtml(s.title || `Section ${i+1}`)}</a>
-    </li>`;
-  }).filter(Boolean).join('');
-
-  const sectionsHtml = sections.map((s, i) => renderSection(s, i)).join('');
-  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
-  document.getElementById('appRoot').innerHTML = `
-    <div class="container" id="proposalDoc">
-      <div class="proposal-header">
-        <h1 class="proposal-title">${escapeHtml(p.title || 'Proposal')}</h1>
-        <div class="proposal-meta">
-          <div class="meta-item"><span class="meta-label">Prepared for:</span> ${escapeHtml(p.client_name || '—')}</div>
-          ${p.client_contact ? `<div class="meta-item"><span class="meta-label">Attention:</span> ${escapeHtml(p.client_contact)}</div>` : ''}
-          <div class="meta-item"><span class="meta-label">Date:</span> ${createdDate || today}</div>
-          ${p.proposal_index ? `<div class="meta-item"><span class="meta-label">Ref:</span> ${escapeHtml(p.proposal_index)}</div>` : ''}
-          ${p.proposal_type ? `<div class="meta-item"><span class="meta-label">Type:</span> ${escapeHtml(p.proposal_type)}</div>` : ''}
-        </div>
-        ${p.description ? `<p style="margin-top:20px;font-size:16px;color:#64748b;line-height:1.7;">${escapeHtml(p.description)}</p>` : ''}
-      </div>
-
-      <div class="green-divider"></div>
-
-      ${sections.length ? `
-      <div class="toc">
-        <div class="toc-title">Table of Contents</div>
-        <ul class="toc-list">${tocItems}</ul>
-      </div>` : ''}
-
-      ${sectionsHtml}
-
-      <div class="proposal-footer">
-        <div class="footer-brand"><span class="brand-dot" style="width:8px;height:8px;"></span> Sprintly Partners</div>
-        <div class="footer-text">Prepared by Sprintly Partners | ${today} | yousra@sprintlypartners.com</div>
-        <div class="footer-text">This document is confidential and intended solely for ${escapeHtml(p.client_name || 'the recipient')}.</div>
-      </div>
-
-      <button class="download-btn" onclick="downloadPDF()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download PDF
-      </button>
-    </div>`;
-}
-
-async function downloadPDF() {
-  const el = document.getElementById('proposalDoc');
-  const btn = document.querySelector('.download-btn');
-  if (btn) { btn.textContent = 'Generating\u2026'; btn.disabled = true; }
-  const opt = {
-    margin: [16, 20],
-    filename: `${proposalData ? proposalData.title : 'proposal'}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+function normalizeFromSupabase(row) {
+  let c = {};
+  try { c = typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {}); } catch {}
+  return {
+    id: row.id, project_id: row.project_id || c.slug || '',
+    title: row.title || 'Untitled', client_name: c.client_name || '', client_contact: c.client_contact || '',
+    proposal_type: c.proposal_type || 'full', proposal_index: c.proposal_index || '', slug: c.slug || '',
+    description: c.description || '', status: row.status || 'draft', share_token: c.share_token || null,
+    sections: c.sections || [], comments: c.comments || [], metadata: c.metadata || {},
+    created_at: row.created_at || new Date().toISOString(), updated_at: row.updated_at || new Date().toISOString()
   };
+}
+
+async function sbFetchProposals() {
   try {
-    await html2pdf().set(opt).from(el).save();
-  } finally {
-    if (btn) { btn.innerHTML = '\u2b07 Download PDF'; btn.disabled = false; }
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/vsdr_proposals?select=*&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) return [];
+    return (await res.json()) || [];
+  } catch { return []; }
+}
+
+async function loadProposal() {
+  const { token, id } = getParams();
+
+  // Try localStorage first
+  const lsData = lsGetProposals();
+  if (lsData && lsData.length > 0) {
+    let found = null;
+    if (token) found = lsData.find(p => p.share_token === token);
+    if (!found && id) found = lsData.find(p => p.id === id || p.slug === id);
+    if (!found && !token && !id) found = lsData[0]; // default to first
+    if (found) return found;
+  }
+
+  // Fallback to Supabase
+  const sbData = await sbFetchProposals();
+  if (sbData.length > 0) {
+    const normalized = sbData.map(normalizeFromSupabase);
+    let found = null;
+    if (token) found = normalized.find(p => p.share_token === token);
+    if (!found && id) found = normalized.find(p => p.id === id || p.slug === id);
+    if (!found && !token && !id) found = normalized[0];
+    return found || null;
+  }
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════
+// RENDER HELPERS
+// ═══════════════════════════════════════════════
+function formatDate(iso) {
+  try {
+    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  } catch { return iso || ''; }
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
+}
+
+function renderCover(p) {
+  const dateStr = formatDate(p.created_at);
+  const preparedBy = (p.metadata && p.metadata.created_by) ? p.metadata.created_by : 'Sprintly Partners';
+  const typeLabel = (p.proposal_type || 'proposal').replace(/_/g, ' ');
+
+  return `
+  <div class="cover-page">
+    <div class="cover-top">
+      <div class="cover-logo">
+        <div class="logo-mark">S</div>
+        Sprintly Partners
+      </div>
+      <div class="cover-confidential">Confidential</div>
+    </div>
+    <div class="cover-content">
+      <div class="cover-tagline">PROPOSAL · ${escHtml(typeLabel.toUpperCase())}</div>
+      <h1 class="cover-title">${escHtml(p.title)}</h1>
+      <div class="cover-client">${escHtml(p.client_name)}</div>
+      ${p.client_contact ? `<div class="cover-contact">${escHtml(p.client_contact)}</div>` : ''}
+    </div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="meta-label">Date</div>
+        <div class="meta-value">${dateStr}</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="meta-label">Reference</div>
+        <div class="meta-value">${escHtml(p.proposal_index) || 'SP-2026'}</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="meta-label">Prepared by</div>
+        <div class="meta-value">${escHtml(preparedBy)}</div>
+      </div>
+    </div>
+    <div class="cover-bar"></div>
+  </div>`;
+}
+
+function renderTOC(sections) {
+  const items = sections.map((s, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    return `<a class="toc-item" href="#section-${i}">
+      <span class="toc-number">${num}</span>
+      <span class="toc-title">${escHtml(s.title)}</span>
+    </a>`;
+  }).join('');
+
+  return `
+  <div class="toc-page">
+    <div class="toc-header">
+      <h2>Table of Contents</h2>
+      <div class="toc-line"></div>
+    </div>
+    <div class="toc-grid">${items}</div>
+  </div>`;
+}
+
+// ── CONTENT RENDERERS ──
+
+function renderTextContent(sec) {
+  let html = '';
+  if (sec.callout_text) {
+    html += `<div class="callout-box">
+      <div class="callout-quote">"${escHtml(sec.callout_text)}"</div>
+      ${sec.callout_attribution ? `<div class="callout-attribution">— ${escHtml(sec.callout_attribution)}</div>` : ''}
+    </div>`;
+  }
+  if (sec.content) {
+    html += `<div class="text-content">${escHtml(sec.content)}</div>`;
+  }
+  if (sec.image_url) {
+    html += `<div class="section-image"><img src="${escHtml(sec.image_url)}" alt="${escHtml(sec.title)}" loading="lazy"></div>`;
+  }
+  return html;
+}
+
+function renderMetricsContent(sec) {
+  const data = sec.metrics_data || [];
+  if (!data.length) return '';
+
+  // Detect ROI section
+  const isROI = data.some(m =>
+    (m.label || '').toLowerCase().match(/conservative|target|stretch/)
+  );
+
+  if (isROI) {
+    const tierMap = {};
+    data.forEach(m => {
+      const lbl = (m.label || '').toLowerCase();
+      let tier = 'target';
+      if (lbl.includes('conservative')) tier = 'conservative';
+      else if (lbl.includes('stretch')) tier = 'stretch';
+      tierMap[tier] = m;
+    });
+
+    const cards = ['conservative', 'target', 'stretch'].map(tier => {
+      const m = tierMap[tier];
+      if (!m) return '';
+      return `<div class="roi-card ${tier}">
+        <div class="roi-tier">${tier}</div>
+        <div class="roi-value">${escHtml(m.value)}</div>
+        ${m.sub ? `<div class="roi-sub">${escHtml(m.sub)}</div>` : ''}
+      </div>`;
+    }).join('');
+
+    return `<div class="roi-grid">${cards}</div>`;
+  }
+
+  // Regular metrics
+  const cards = data.map((m, i) => {
+    const color = ACCENT_COLORS[i % ACCENT_COLORS.length];
+    const iconName = m.icon || ICON_NAMES[i % ICON_NAMES.length];
+    const iconSvg = getIcon(iconName);
+    return `<div class="metric-card">
+      <div class="accent-bar" style="background:${color}"></div>
+      <div class="metric-icon" style="background:${color}15; color:${color}">${iconSvg}</div>
+      <div class="metric-value">${escHtml(m.value)}</div>
+      <div class="metric-label">${escHtml(m.label)}</div>
+      ${m.sub ? `<div class="metric-sub">${escHtml(m.sub)}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  return `<div class="metrics-grid">${cards}</div>`;
+}
+
+function renderTimelineContent(sec) {
+  const data = sec.timeline_data || [];
+  if (!data.length) return '';
+
+  // Parse week ranges
+  let maxWeek = 0;
+  const parsed = data.map(item => {
+    const match = (item.weeks || '').match(/(\d+)\s*[-–]\s*(\d+)/);
+    let start = 1, end = 1;
+    if (match) { start = parseInt(match[1]); end = parseInt(match[2]); }
+    else {
+      const single = (item.weeks || '').match(/(\d+)/);
+      if (single) { start = end = parseInt(single[1]); }
+    }
+    if (end > maxWeek) maxWeek = end;
+    return { ...item, start, end };
+  });
+
+  const totalWeeks = maxWeek || 12;
+  const tickCount = Math.min(totalWeeks, 8);
+  const tickInterval = Math.ceil(totalWeeks / tickCount);
+
+  // Build ticks
+  let ticks = '';
+  for (let i = 0; i < tickCount; i++) {
+    const wk = i * tickInterval + 1;
+    ticks += `<div class="gantt-tick">Wk ${wk}</div>`;
+  }
+
+  // Build rows
+  const rows = parsed.map(item => {
+    const leftPct = ((item.start - 1) / totalWeeks * 100).toFixed(1);
+    const widthPct = ((item.end - item.start + 1) / totalWeeks * 100).toFixed(1);
+    const color = item.color || ACCENT_COLORS[parsed.indexOf(item) % ACCENT_COLORS.length];
+    const label = `Wk ${item.start}–${item.end}`;
+
+    return `<div class="gantt-row">
+      <div class="gantt-phase-name">${escHtml(item.phase)}</div>
+      <div class="gantt-track">
+        <div class="gantt-track-bg"></div>
+        <div class="gantt-bar" style="left:calc(${leftPct}% + 8px); width:calc(${widthPct}% - 16px); background:${color};">${label}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="gantt-container">
+    <div class="gantt-header">
+      <div class="gantt-phase-label">Phase</div>
+      <div class="gantt-weeks">${ticks}</div>
+    </div>
+    ${rows}
+  </div>`;
+}
+
+function renderTableContent(sec) {
+  const td = sec.table_data;
+  if (!td || !td.headers || !td.rows) return '';
+
+  const headers = td.headers;
+  const rows = td.rows;
+  const recommended = td.recommended || '';
+
+  // Find recommended column index
+  let recIdx = -1;
+  if (recommended) recIdx = headers.indexOf(recommended);
+  if (recIdx < 0) recIdx = headers.findIndex(h => h.includes('(Rec.)') || h.includes('Rec.'));
+
+  // Detect if this is a ROI-style table (headers contain Conservative/Target/Stretch)
+  const hasROICols = headers.some(h => /conservative|target|stretch/i.test(h));
+
+  if (hasROICols) {
+    // ROI table with colored columns
+    const consIdx = headers.findIndex(h => /conservative/i.test(h));
+    const targIdx = headers.findIndex(h => /target/i.test(h));
+    const strIdx = headers.findIndex(h => /stretch/i.test(h));
+
+    let thHtml = headers.map((h, i) => {
+      let cls = '';
+      if (i === targIdx) cls = 'col-target';
+      else if (i === consIdx) cls = 'col-conservative';
+      else if (i === strIdx) cls = 'col-stretch';
+      return `<th class="${cls}">${escHtml(h)}</th>`;
+    }).join('');
+
+    let tbHtml = rows.map(row => {
+      const cells = row.map((cell, i) => {
+        let cls = i === targIdx ? 'col-target' : '';
+        return `<td class="${cls}">${escHtml(cell)}</td>`;
+      }).join('');
+      return `<tr>${cells}</tr>`;
+    }).join('');
+
+    return `<div class="pricing-table-wrapper">
+      <table class="roi-table"><thead><tr>${thHtml}</tr></thead><tbody>${tbHtml}</tbody></table>
+    </div>`;
+  }
+
+  // Pricing table
+  let thHtml = headers.map((h, i) => {
+    if (i === 0) return `<th>${escHtml(h) || ''}</th>`;
+    const isRec = i === recIdx;
+    if (isRec) {
+      return `<th class="rec-col"><div class="rec-badge">✦ Recommended</div>${escHtml(h)}</th>`;
+    }
+    return `<th>${escHtml(h)}</th>`;
+  }).join('');
+
+  let tbHtml = rows.map(row => {
+    const isPrice = /investment|price|fee/i.test(row[0] || '');
+    const trCls = isPrice ? 'price-row' : '';
+    const cells = row.map((cell, i) => {
+      const isRec = i === recIdx;
+      const cls = isRec ? 'rec-cell' : '';
+      return `<td class="${cls}">${escHtml(cell)}</td>`;
+    }).join('');
+    return `<tr class="${trCls}">${cells}</tr>`;
+  }).join('');
+
+  return `<div class="pricing-table-wrapper">
+    <table class="pricing-table"><thead><tr>${thHtml}</tr></thead><tbody>${tbHtml}</tbody></table>
+  </div>`;
+}
+
+function renderCalloutContent(sec) {
+  return `<div class="callout-box">
+    <div class="callout-quote">"${escHtml(sec.content)}"</div>
+    ${sec.callout_attribution ? `<div class="callout-attribution">— ${escHtml(sec.callout_attribution)}</div>` : ''}
+  </div>`;
+}
+
+function renderImageContent(sec) {
+  if (!sec.image_url) return '';
+  return `<div class="section-image"><img src="${escHtml(sec.image_url)}" alt="${escHtml(sec.title)}" loading="lazy"></div>`;
+}
+
+function renderSectionContent(sec) {
+  switch (sec.content_type) {
+    case 'text': return renderTextContent(sec);
+    case 'metrics': return renderMetricsContent(sec);
+    case 'timeline': return renderTimelineContent(sec);
+    case 'table': return renderTableContent(sec);
+    case 'callout': return renderCalloutContent(sec);
+    case 'image': return renderImageContent(sec);
+    default: return sec.content ? `<div class="text-content">${escHtml(sec.content)}</div>` : '';
   }
 }
 
-async function loadByToken() {
-  if (!TOKEN) {
-    showError('No share token provided. Please check the link you were sent.');
-    return;
-  }
-
-  // Primary: localStorage
-  const proposals = lsGetProposals();
-  let found = proposals.find(p => p.share_token === TOKEN) || null;
-
-  if (!found) {
-    // Fallback: Supabase (may return empty due to RLS — that's OK)
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/vsdr_proposals?select=*&order=created_at.desc`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        for (const row of (data || [])) {
-          try {
-            let c = {};
-            try { c = typeof row.content === 'string' ? JSON.parse(row.content) : (row.content || {}); } catch {}
-            if (c.share_token === TOKEN) {
-              found = {
-                id: row.id, project_id: row.project_id || '', title: row.title || 'Untitled',
-                client_name: c.client_name || '', client_contact: c.client_contact || '',
-                proposal_type: c.proposal_type || '', proposal_index: c.proposal_index || '',
-                slug: c.slug || '', description: c.description || '',
-                status: row.status || 'draft', share_token: TOKEN,
-                sections: c.sections || [], comments: c.comments || [], metadata: c.metadata || {},
-                created_at: row.created_at || new Date().toISOString(), updated_at: row.updated_at || new Date().toISOString()
-              };
-              break;
-            }
-          } catch {}
-        }
-      }
-    } catch {}
-  }
-
-  if (!found) {
-    showError('This proposal link is invalid or has expired. Please contact yousra@sprintlypartners.com for a new link.');
-    return;
-  }
-
-  renderProposal(found);
+function renderSections(sections) {
+  return sections.map((sec, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    return `
+    <div class="section-divider"></div>
+    <div class="doc-section" id="section-${i}">
+      <div class="section-header">
+        <div class="section-circle">${i + 1}</div>
+        <div class="section-heading">
+          <div class="section-label">Section ${num}</div>
+          <h2 class="section-title">${escHtml(sec.title)}</h2>
+        </div>
+      </div>
+      <div class="section-body">
+        ${renderSectionContent(sec)}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-loadByToken();
+// ═══════════════════════════════════════════════
+// RENDER FULL PROPOSAL
+// ═══════════════════════════════════════════════
+function renderProposal(p) {
+  const container = document.getElementById('proposalContent');
+  const sections = (p.sections || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+  container.innerHTML = renderCover(p) + renderTOC(sections) + renderSections(sections);
+
+  // Update page title
+  document.title = `${p.title} — Sprintly Partners`;
+}
+
+// ═══════════════════════════════════════════════
+// PDF EXPORT
+// ═══════════════════════════════════════════════
+async function exportPDF() {
+  const btn = document.getElementById('pdfBtn');
+  const bar = document.getElementById('downloadBar');
+  const content = document.getElementById('proposalContent');
+
+  btn.classList.add('exporting');
+  btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="animation:spin 1s linear infinite"><circle cx="8" cy="8" r="6" stroke-dasharray="28" stroke-dashoffset="8"/></svg> Generating...';
+
+  document.body.classList.add('exporting');
+
+  try {
+    const opt = {
+      margin: 0,
+      filename: (document.title || 'Proposal') + '.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    await html2pdf().set(opt).from(content).save();
+  } catch (e) {
+    console.error('PDF export failed:', e);
+  }
+
+  document.body.classList.remove('exporting');
+  btn.classList.remove('exporting');
+  btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8m0 0L5 7m3 3l3-3M3 12v1.5a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V12"/></svg> Download PDF';
+}
+
+// Spin animation for the button
+const spinStyle = document.createElement('style');
+spinStyle.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(spinStyle);
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+async function init() {
+  const proposal = await loadProposal();
+  const loading = document.getElementById('loadingScreen');
+
+  if (!proposal) {
+    loading.classList.add('hidden');
+    document.getElementById('proposalContent').style.display = 'none';
+    document.getElementById('errorState').style.display = 'flex';
+    return;
+  }
+
+  renderProposal(proposal);
+
+  // Hide loading
+  setTimeout(() => loading.classList.add('hidden'), 600);
+
+  // Auto-export if requested
+  const { autoexport } = getParams();
+  if (autoexport) {
+    setTimeout(() => exportPDF(), 1500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>

@@ -357,25 +357,89 @@ var SEED_PROPOSAL = {
   title: 'Growth Partnership Proposal \u2014 NovaTech Ventures',
   client_name: 'NovaTech Ventures',
   client_contact: 'Sarah Al-Rashid, Managing Partner',
-  proposal_type: 'full',
+  proposal_type: 'Full Proposal',
   proposal_index: 'SP-2026-001',
   slug: 'novatech-growth-2026',
   description: '12-month growth partnership for portfolio companies',
   status: 'approved',
   share_token: null,
   sections: [
-    {id:'s1',sort_order:1,title:'Executive Summary',content_type:'text',content:'NovaTech Ventures is building the most ambitious deep-tech portfolio in the MENA region, with 23 companies across AI, climate-tech, and fintech. Your portfolio companies have strong technology but face a consistent gap: scaling revenue and building enterprise partnerships in North America and Europe.\n\nWe propose a 12-month Growth Partnership where Sprintly Partners embeds a dedicated growth squad within your portfolio, delivering hands-on market entry support, enterprise sales enablement, and Silicon Valley network access for your top 8 portfolio companies.\n\nExpected outcome: 40+ qualified enterprise pipeline opportunities, 3-5 signed partnerships, and a repeatable go-to-market playbook for each company within 12 months.',status:'approved',image_url:null},
-    {id:'s2',sort_order:2,title:'Sprintly Track Record',content_type:'text',content:'12 startups scaled cross-border in 2025. $47M in follow-on funding raised by portfolio companies. 73% follow-on funding rate for 2025 MENA to the Valley cohort. 200+ enterprise introductions facilitated. 6,000+ curated contacts in active network.',status:'approved',image_url:'https://vsdr.vercel.app/proposal-metrics-v2.png'},
-    {id:'s3',sort_order:3,title:'The Opportunity',content_type:'text',content:'MENA deep-tech companies raised $2.1B in 2025 (+34% YoY). Only 12% establish recurring revenue outside the region within 3 years. The gap is not product quality. It is market access, positioning, and the right introductions at the right time.\n\nThree of your portfolio companies are raising Series A rounds in Q3 2026. International traction is the single strongest signal for global VCs.',status:'approved',image_url:null},
-    {id:'s4',sort_order:4,title:'Our 4-Phase Methodology',content_type:'text',content:'Phase 1: Diagnostic and Selection (Weeks 1-3) \u2014 Assess all 23 companies, score readiness, select top 8, deliver GTM reports.\n\nPhase 2: Positioning and Enablement (Weeks 4-8) \u2014 Rebuild positioning, create sales collateral, build 400 target accounts, train teams.\n\nPhase 3: Market Activation (Weeks 9-36) \u2014 Execute outreach, facilitate intros, provide deal support, organize 2 Silicon Valley trips.\n\nPhase 4: Measurement and Playbook (Weeks 37-48) \u2014 Compile results, deliver reusable Growth Playbook, present to investment committee.',status:'approved',image_url:'https://vsdr.vercel.app/proposal-methodology-v2.png'},
-    {id:'s5',sort_order:5,title:'Timeline',content_type:'text',content:'12-month engagement.\nWeeks 1-3: Diagnostic and Selection.\nWeeks 4-8: Positioning and Enablement.\nWeeks 9-36: Market Activation.\nWeeks 37-48: Measurement and Playbook.\nSilicon Valley Trip 1: June 2-8, 2026.\nSilicon Valley Trip 2: November 3-9, 2026.',status:'approved',image_url:'https://vsdr.vercel.app/proposal-gantt-v2.png'},
-    {id:'s6',sort_order:6,title:'Investment',content_type:'table',content:null,table_data:{headers:['','Pilot','Full Partnership (Rec.)','Sprint'],rows:[['Companies','2','8','4'],['Duration','3 months','12 months','6 months'],['SV Trips','0','2','1'],['Investment','$90,000','$480,000','$280,000'],['Per Company','$45,000','$60,000 ($5K/mo)','$70,000'],['Payment','100% upfront','25% + quarterly','50/50']]},status:'approved',image_url:'https://vsdr.vercel.app/proposal-pricing-v2.png'},
-    {id:'s7',sort_order:7,title:'Why Sprintly',content_type:'text',content:'We do not advise. We execute. Sprintly operators work alongside your founders, not above them.\n\nNetwork depth, not breadth. Our 6,000+ contacts are relationships, not a database. Every intro is warm.\n\nAI-powered operations. Our VSDR platform provides real-time pipeline tracking, smart matching, and automated enrichment.\n\nMENA-native, Silicon Valley-connected. We speak both languages, literally and culturally.',status:'approved',image_url:null},
-    {id:'s8',sort_order:8,title:'Expected ROI',content_type:'table',content:null,table_data:{headers:['Metric','Conservative','Target','Stretch'],rows:[['Pipeline opps','30','40+','60+'],['Signed partnerships','2','3-5','7+'],['Pipeline value','$2M','$5M+','$10M+'],['Follow-on lift','20%','40%','60%'],['Cost per intro','$1,200','$800','$500']]},status:'approved',image_url:null},
-    {id:'s9',sort_order:9,title:'Next Steps',content_type:'text',content:'We propose a 45-minute call to walk through this proposal together and discuss which option fits NovaTech.\n\nSuggested date: Week of April 7, 2026.\n\nTo schedule: Yousra Gaballah (yousra@sprintlypartners.com) or Gaby (gaby@sprintlypartners.com).\n\nThis proposal is valid until April 14, 2026.',status:'approved',image_url:null}
+    {
+      id: 's1', sort_order: 1, title: 'Executive Summary', content_type: 'text', status: 'approved',
+      callout_text: 'The gap is not product quality \u2014 it is market access, positioning, and the right introductions at the right time.',
+      callout_attribution: 'Sprintly Partners Thesis, 2026',
+      content: 'NovaTech Ventures is building the most ambitious deep-tech portfolio in the MENA region, with 23 companies across AI, climate-tech, and fintech. Your portfolio companies have strong technology but face a consistent gap: scaling revenue and building enterprise partnerships in North America and Europe.\n\nWe propose a 12-month Growth Partnership where Sprintly Partners embeds a dedicated growth squad within your portfolio, delivering hands-on market entry support, enterprise sales enablement, and Silicon Valley network access for your top 8 portfolio companies.\n\nExpected outcome: 40+ qualified enterprise pipeline opportunities, 3-5 signed partnerships, and a repeatable go-to-market playbook for each company within 12 months.',
+      image_url: null
+    },
+    {
+      id: 's2', sort_order: 2, title: 'Sprintly Track Record', content_type: 'metrics', status: 'approved',
+      content: null, image_url: null,
+      metrics_data: [
+        { label: 'Startups Scaled', value: '12', icon: 'rocket', sub: 'Cross-border in 2025' },
+        { label: 'Follow-on Funding', value: '$47M', icon: 'chart', sub: 'Raised by portfolio' },
+        { label: 'Funding Rate', value: '73%', icon: 'target', sub: 'MENA to Valley cohort' },
+        { label: 'Enterprise Intros', value: '200+', icon: 'network', sub: 'Active network: 6,000+' }
+      ]
+    },
+    {
+      id: 's3', sort_order: 3, title: 'The Opportunity', content_type: 'text', status: 'approved',
+      content: 'MENA deep-tech companies raised $2.1B in 2025 (+34% YoY). Only 12% establish recurring revenue outside the region within 3 years. The gap is not product quality. It is market access, positioning, and the right introductions at the right time.\n\nThree of your portfolio companies are raising Series A rounds in Q3 2026. International traction is the single strongest signal for global VCs.\n\nThe window is now. Companies that establish US/EU anchor customers before their Series A close at significantly higher valuations and with stronger syndicate interest.',
+      image_url: null
+    },
+    {
+      id: 's4', sort_order: 4, title: 'Our 4-Phase Methodology', content_type: 'text', status: 'approved',
+      content: 'Phase 1: Diagnostic and Selection (Weeks 1-3)\nAssess all 23 companies, score GTM readiness, select top 8, deliver detailed market entry reports for each.\n\nPhase 2: Positioning and Enablement (Weeks 4-8)\nRebuild positioning for global audiences, create enterprise sales collateral, build 400 target account lists, train founding teams on outbound motion.\n\nPhase 3: Market Activation (Weeks 9-36)\nExecute outreach campaigns, facilitate warm introductions from network, provide active deal support, organize 2 Silicon Valley trips with curated meetings.\n\nPhase 4: Measurement and Playbook (Weeks 37-48)\nCompile results, deliver reusable Growth Playbook per company, present full impact report to NovaTech investment committee.',
+      image_url: null
+    },
+    {
+      id: 's5', sort_order: 5, title: 'Engagement Timeline', content_type: 'timeline', status: 'approved',
+      content: null, image_url: null,
+      timeline_data: [
+        { phase: 'Diagnostic', weeks: '1-3', color: '#4ECB71' },
+        { phase: 'Enablement', weeks: '4-8', color: '#2DD4BF' },
+        { phase: 'Activation', weeks: '9-36', color: '#F59E0B' },
+        { phase: 'Playbook', weeks: '37-48', color: '#EF4444' }
+      ]
+    },
+    {
+      id: 's6', sort_order: 6, title: 'Investment', content_type: 'table', status: 'approved',
+      content: null, image_url: null,
+      table_data: {
+        headers: ['', 'Pilot', 'Full Partnership (Rec.)', 'Sprint'],
+        recommended: 'Full Partnership (Rec.)',
+        rows: [
+          ['Companies', '2', '8', '4'],
+          ['Duration', '3 months', '12 months', '6 months'],
+          ['SV Trips', '0', '2', '1'],
+          ['Investment', '$90,000', '$480,000', '$280,000'],
+          ['Per Company', '$45,000', '$60,000 ($5K/mo)', '$70,000'],
+          ['Payment', '100% upfront', '25% + quarterly', '50/50']
+        ]
+      }
+    },
+    {
+      id: 's7', sort_order: 7, title: 'Why Sprintly', content_type: 'text', status: 'approved',
+      callout_text: 'We do not advise. We execute. Sprintly operators work alongside your founders, not above them.',
+      content: 'Network depth, not breadth. Our 6,000+ contacts are relationships, not a database. Every intro is warm, every connection is pre-qualified.\n\nAI-powered operations. Our VSDR platform provides real-time pipeline tracking, smart matching, and automated contact enrichment.\n\nMENA-native, Silicon Valley-connected. We speak both languages \u2014 literally and culturally. We know what resonates with US VCs and enterprise buyers.\n\nProven playbook. Across 12 portfolio companies in 2025, we developed a repeatable GTM methodology that works specifically for MENA deep-tech in global markets.',
+      image_url: null
+    },
+    {
+      id: 's8', sort_order: 8, title: 'Expected ROI', content_type: 'metrics', status: 'approved',
+      content: null, image_url: null,
+      metrics_data: [
+        { label: 'Conservative', value: '$2M+', sub: '30 pipeline opps\n2 signed partnerships\n20% follow-on lift' },
+        { label: 'Target', value: '$5M+', sub: '40+ pipeline opps\n3-5 signed partnerships\n40% follow-on lift' },
+        { label: 'Stretch', value: '$10M+', sub: '60+ pipeline opps\n7+ signed partnerships\n60% follow-on lift' }
+      ]
+    },
+    {
+      id: 's9', sort_order: 9, title: 'Next Steps', content_type: 'text', status: 'approved',
+      content: 'We propose a 45-minute call to walk through this proposal together and discuss which option fits NovaTech best.\n\nSuggested date: Week of April 7, 2026.\n\nTo schedule: Yousra Gaballah (yousra@sprintlypartners.com) or Gaby (gaby@sprintlypartners.com).\n\nThis proposal is valid until April 14, 2026.',
+      image_url: null
+    }
   ],
   comments: [],
-  metadata: {created_by:'gaby',version:1},
+  metadata: {created_by:'gaby',version:2},
   created_at: '2026-03-30T14:00:00Z',
   updated_at: '2026-03-30T14:00:00Z'
 };
