@@ -83,7 +83,7 @@ body { display: flex; }
 .section-num { font-family: var(--display); font-weight: 700; font-size: 14px; color: #4ECB71; background: rgba(78,203,113,0.1); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .section-title-text { font-family: var(--display); font-weight: 700; font-size: 28px; color: #0F172A; }
 
-.sec-text p { font-size: 16px; line-height: 1.9; color: #334155; margin-bottom: 16px; }
+.sec-text p { font-size: 16px; line-height: 1.9; color: #334155; margin-bottom: 16px; text-align: left; }
 .sec-text p:last-child { margin-bottom: 0; }
 .sec-callout-inline { border-left: 3px solid #F59E0B; padding: 16px 20px; margin: 24px 0; background: rgba(245,158,11,0.06); border-radius: 0 4px 4px 0; }
 .sec-callout-inline p { font-style: italic; color: #334155; margin: 0; }
@@ -124,7 +124,7 @@ body { display: flex; }
 .gantt-marker { position: absolute; font-size: 10px; color: #94A3B8; transform: translateX(-50%); }
 .sec-callout { border-left: 4px solid #F59E0B; padding: 28px 32px; background: rgba(245,158,11,0.04); border-radius: 0 8px 8px 0; position: relative; }
 .callout-mark { font-family: Georgia, serif; font-size: 72px; color: rgba(245,158,11,0.15); position: absolute; top: -12px; left: 16px; line-height: 1; }
-.sec-callout p { font-size: 20px; font-style: italic; line-height: 1.7; color: #334155; margin: 0; position: relative; z-index: 1; }
+.sec-callout p { font-size: 20px; font-style: italic; line-height: 1.7; color: #334155; margin: 0; position: relative; z-index: 1; text-align: left; }
 .sec-callout cite { display: block; margin-top: 16px; font-size: 15px; color: #64748B; font-style: normal; position: relative; z-index: 1; }
 .sec-image img { width: 100%; height: auto; border-radius: 8px; }
 .sec-image figcaption { font-size: 13px; color: #94A3B8; margin-top: 8px; text-align: center; }
@@ -247,7 +247,7 @@ body { display: flex; }
       <div class="sec-nav-add" onclick="openAddModal()">+ Add Section</div>
     </div>
     <div class="editor-preview" id="editorPreview">
-      <div class="preview-inner" id="previewInner" style="text-align:center;padding:80px 0;color:#94A3B8">Loading...</div>
+      <div class="preview-inner" id="previewInner" style="text-align:left;padding:80px 0;color:#94A3B8">Loading...</div>
     </div>
   </div>
 </main>
