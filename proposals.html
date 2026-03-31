@@ -43,6 +43,10 @@
 .btn-delete-card:hover { opacity: 1 !important; color: var(--coral); background: rgba(239,68,68,0.1); }
 .btn-delete-card svg { width: 16px; height: 16px; }
 
+.btn-draft-email { padding: 6px 12px; background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.25); border-radius: 6px; color: var(--teal); font-family: var(--body); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 5px; }
+.btn-draft-email:hover { background: rgba(45,212,191,0.15); border-color: var(--teal); transform: translateY(-1px); }
+.btn-draft-email:active { transform: translateY(0); }
+
 /* Type grid in modal */
 .type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
 .type-option { padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.15s; text-align: center; }
@@ -214,13 +218,51 @@ function renderCard(p) {
       '<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + pct + '%"></div></div>' +
     '</div>' +
     '<div class="card-footer">' +
-      '<span></span>' +
+      (p.status === 'approved' || p.status === 'sent' ?
+        '<button class="btn-draft-email" onclick="event.stopPropagation();draftEmail(\'' + p.id + '\',\'' + escHtml(p.title || '') + '\',\'' + escHtml(p.client_name || '') + '\',\'' + escHtml(p.client_contact || '') + '\')">✉ Draft Email</button>' :
+        '<span></span>') +
       '<a href="proposal.html?id=' + p.id + '" class="btn-open">Open →</a>' +
     '</div>' +
   '</div>';
 }
 
 function escHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function draftEmail(proposalId, title, clientName, clientContact) {
+  // Get or generate the share link
+  var proposal = allProposals.find(function(p) { return p.id === proposalId; });
+  var shareToken = proposal && proposal.share_token;
+  var shareUrl = shareToken ? 'https://vsdr.vercel.app/proposal-view.html?token=' + shareToken : null;
+
+  // If no share token, generate one first
+  if (!shareUrl) {
+    shareToken = crypto.randomUUID();
+    await sbUpdate('proposals', proposalId, { share_token: shareToken });
+    shareUrl = 'https://vsdr.vercel.app/proposal-view.html?token=' + shareToken;
+  }
+
+  // Create a CR for Gaby to draft the email
+  var message = '[DRAFT-EMAIL] Please draft an email to send this proposal.\n' +
+    'From: Yousra@sprintlypartners.com\n' +
+    'Client: ' + clientName + '\n' +
+    'Contact: ' + clientContact + '\n' +
+    'Proposal: ' + title + '\n' +
+    'Share Link: ' + shareUrl + '\n' +
+    'Instructions: Draft a professional, warm email introducing this proposal. Include the share link. Subject should reference the proposal title and client name.';
+
+  try {
+    await sbInsert('proposal_change_requests', {
+      proposal_id: proposalId,
+      section_id: proposalId,
+      author: 'Yousra',
+      message: message,
+      status: 'open'
+    });
+    alert('Email draft request sent to Gaby! She will draft it on Yousra@sprintlypartners.com shortly.');
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
 
 function renderGrid(proposals) {
   const grid = document.getElementById('proposalsGrid');

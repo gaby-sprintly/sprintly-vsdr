@@ -165,6 +165,55 @@
     </div>
   </div>
 
+  <!-- Proposal Analytics -->
+  <h2 class="section-title">Proposal Analytics</h2>
+  <div class="report-grid">
+    <div class="card">
+      <div class="card-title">Proposal Pipeline</div>
+      <div class="health-bar-wrap">
+        <div class="health-bar-label"><span>Draft</span><span id="propDraft">—</span></div>
+        <div class="health-bar"><div class="health-bar-fill" id="barPropDraft" style="width:0%;background:var(--n400)"></div></div>
+      </div>
+      <div class="health-bar-wrap">
+        <div class="health-bar-label"><span>In Review</span><span id="propReview">—</span></div>
+        <div class="health-bar"><div class="health-bar-fill" id="barPropReview" style="width:0%;background:var(--amber)"></div></div>
+      </div>
+      <div class="health-bar-wrap">
+        <div class="health-bar-label"><span>Approved</span><span id="propApproved">—</span></div>
+        <div class="health-bar"><div class="health-bar-fill" id="barPropApproved" style="width:0%;background:var(--green)"></div></div>
+      </div>
+      <div class="health-bar-wrap">
+        <div class="health-bar-label"><span>Sent</span><span id="propSent">—</span></div>
+        <div class="health-bar"><div class="health-bar-fill" id="barPropSent" style="width:0%;background:var(--teal)"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Proposal Status Distribution</div>
+      <div class="chart-wrap"><canvas id="proposalChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Section Approval Rate</div>
+      <div class="health-bar-wrap">
+        <div class="health-bar-label"><span>Sections Approved</span><span id="secApproved">—</span></div>
+        <div class="health-bar"><div class="health-bar-fill" id="barSecApproved" style="width:0%;background:var(--green)"></div></div>
+      </div>
+      <div class="health-bar-wrap">
+        <div class="health-bar-label"><span>Pending Review</span><span id="secPending">—</span></div>
+        <div class="health-bar"><div class="health-bar-fill" id="barSecPending" style="width:0%;background:var(--amber)"></div></div>
+      </div>
+      <div class="health-bar-wrap">
+        <div class="health-bar-label"><span>Change Requested</span><span id="secCR">—</span></div>
+        <div class="health-bar"><div class="health-bar-fill" id="barSecCR" style="width:0%;background:var(--coral)"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recent Proposals</div>
+      <div id="recentProposals" style="display:flex;flex-direction:column;gap:8px">
+        <div style="color:var(--n400);font-size:13px">Loading...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Export Section -->
   <h2 class="section-title">Exports</h2>
   <div class="export-row">
@@ -389,7 +438,80 @@ async function exportCSV() {
   }
 }
 
+let proposalChartInst;
+
+async function loadProposalAnalytics() {
+  try {
+    const pRes = await sbFetch('proposals?select=id,title,client_name,status,created_at&order=created_at.desc');
+    const proposals = await pRes.json();
+    if (!Array.isArray(proposals)) return;
+
+    const sRes = await sbFetch('proposal_sections?select=id,proposal_id,status');
+    const sections = await sRes.json();
+
+    // Pipeline bars
+    const total = proposals.length || 1;
+    const draft = proposals.filter(p => p.status === 'draft').length;
+    const review = proposals.filter(p => p.status === 'in_review').length;
+    const approved = proposals.filter(p => p.status === 'approved').length;
+    const sent = proposals.filter(p => p.status === 'sent').length;
+
+    document.getElementById('propDraft').textContent = draft;
+    document.getElementById('barPropDraft').style.width = Math.round(draft / total * 100) + '%';
+    document.getElementById('propReview').textContent = review;
+    document.getElementById('barPropReview').style.width = Math.round(review / total * 100) + '%';
+    document.getElementById('propApproved').textContent = approved;
+    document.getElementById('barPropApproved').style.width = Math.round(approved / total * 100) + '%';
+    document.getElementById('propSent').textContent = sent;
+    document.getElementById('barPropSent').style.width = Math.round(sent / total * 100) + '%';
+
+    // Section approval rate
+    if (Array.isArray(sections)) {
+      const secTotal = sections.length || 1;
+      const secAppr = sections.filter(s => s.status === 'approved').length;
+      const secPend = sections.filter(s => s.status === 'pending' || s.status === 'edited').length;
+      const secCr = sections.filter(s => s.status === 'change_requested').length;
+      document.getElementById('secApproved').textContent = secAppr + '/' + sections.length;
+      document.getElementById('barSecApproved').style.width = Math.round(secAppr / secTotal * 100) + '%';
+      document.getElementById('secPending').textContent = secPend;
+      document.getElementById('barSecPending').style.width = Math.round(secPend / secTotal * 100) + '%';
+      document.getElementById('secCR').textContent = secCr;
+      document.getElementById('barSecCR').style.width = Math.round(secCr / secTotal * 100) + '%';
+    }
+
+    // Doughnut chart
+    if (proposalChartInst) proposalChartInst.destroy();
+    proposalChartInst = new Chart(document.getElementById('proposalChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Draft', 'In Review', 'Approved', 'Sent', 'Archived'],
+        datasets: [{
+          data: [draft, review, approved, sent, proposals.filter(p => p.status === 'archived').length],
+          backgroundColor: ['#94A3B8', '#F59E0B', '#4ECB71', '#2DD4BF', 'rgba(148,163,184,0.3)'],
+          borderWidth: 0
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#94A3B8', padding: 12, font: { size: 12 } } } } }
+    });
+
+    // Recent proposals list
+    var recent = proposals.slice(0, 5);
+    var html = recent.map(function(p) {
+      var badge = '<span class="status-badge status-' + p.status + '">' + p.status.replace('_', ' ') + '</span>';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">' +
+        '<div><div style="font-size:14px;font-weight:500;color:var(--n50)">' + (p.title || 'Untitled').substring(0, 40) + '</div>' +
+        '<div style="font-size:12px;color:var(--n400)">' + (p.client_name || '—') + '</div></div>' +
+        badge + '</div>';
+    }).join('');
+    document.getElementById('recentProposals').innerHTML = html || '<div style="color:var(--n400);font-size:13px">No proposals yet</div>';
+
+  } catch (e) {
+    console.error('Proposal analytics error:', e);
+  }
+}
+
 loadAll();
+loadProposalAnalytics();
 </script>
 
   <!-- Theme toggle -->
