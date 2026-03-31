@@ -1065,14 +1065,21 @@ async function toggleVip(contactId, airtableId, makeVip, btnEl) {
     else card.classList.remove('vip-card');
   }
 
-  // Update Supabase
+  // Update Supabase (refresh auth first)
   try {
     if (typeof requireAuth === 'function') await requireAuth();
-    await fetch(SUPABASE_URL + '/rest/v1/contacts?id=eq.' + contactId, {
+    var resp = await fetch(SUPABASE_URL + '/rest/v1/contacts?id=eq.' + contactId, {
       method: 'PATCH',
-      headers: { ...SB_HEADERS },
+      headers: { ...SB_HEADERS, 'Prefer': 'return=representation' },
       body: JSON.stringify({ vip: makeVip })
     });
+    if (!resp.ok) {
+      var errText = await resp.text();
+      console.error('Supabase VIP update failed:', resp.status, errText);
+    } else {
+      var result = await resp.json();
+      console.log('VIP updated in Supabase:', result.length ? result[0].vip : 'no result');
+    }
   } catch (e) {
     console.error('Supabase VIP update failed:', e);
   }

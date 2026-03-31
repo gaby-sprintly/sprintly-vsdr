@@ -1024,13 +1024,10 @@ a { text-decoration: none; color: inherit; }
     log.unshift({date: new Date().toISOString(), trigger: 'Manual', status: 'pending', count: '—'});
     localStorage.setItem('vsdr_sync_log', JSON.stringify(log.slice(0, 10)));
   }
-  document.getElementById('syncModal').addEventListener('click', function(e) {
-    if (e.target === this) closeSyncModal();
-  });
 </script>
 
 <!-- Sync Modal -->
-<div class="modal-overlay" id="syncModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;padding:24px;">
+<div class="modal-overlay" id="syncModal" onclick="if(event.target===this)closeSyncModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;padding:24px;">
   <div style="background:#162030;border:1px solid rgba(255,255,255,0.06);border-radius:2px;padding:32px;width:100%;max-width:440px;">
     <div id="syncModalContent">
       <h3 style="font-family:var(--display,'Space Grotesk',sans-serif);font-size:20px;margin-bottom:12px;color:#F8FAFC;">Sync Airtable ↔ Supabase</h3>
