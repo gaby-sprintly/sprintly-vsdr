@@ -1210,7 +1210,7 @@ async function confirmEnrichContact() {
     // Write enrichment task as a change request (knowledge_base has RLS issues)
     await fetch(SUPABASE_URL + '/rest/v1/proposal_change_requests', {
       method: 'POST',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' },
+      headers: { ...SB_HEADERS },
       body: JSON.stringify({
         proposal_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
         section_id: '11111111-1111-1111-1111-111111111105',
