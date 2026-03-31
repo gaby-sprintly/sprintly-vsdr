@@ -89,6 +89,21 @@ a { text-decoration: none; color: inherit; }
 
 .btn-small.danger:hover { color: var(--coral); border-color: var(--coral); }
 
+.btn-small.send-gaby { border-color: rgba(78,203,113,0.3); color: var(--green); }
+.btn-small.send-gaby:hover { background: rgba(78,203,113,0.1); border-color: var(--green); color: var(--green); }
+
+.btn-small.draft-yousra { border-color: rgba(45,212,191,0.3); color: var(--teal); }
+.btn-small.draft-yousra:hover { background: rgba(45,212,191,0.1); border-color: var(--teal); color: var(--teal); }
+
+/* Confirmation toast inside card */
+.card-toast { 
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); 
+  background: var(--n800); border: 1px solid var(--green); border-radius: 4px;
+  padding: 6px 14px; font-size: 12px; color: var(--green); white-space: nowrap;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 10;
+}
+.card-toast.show { opacity: 1; }
+
 /* ── MODAL ── */
 
 .modal-box {
@@ -782,7 +797,7 @@ function render() {
   }
 
   grid.innerHTML = filtered.map(item => `
-    <div class="outreach-card">
+    <div class="outreach-card" style="position:relative;">
       <div class="outreach-top">
         <div>
           <div class="outreach-recipient">${esc(item.recipient)}</div>
@@ -795,8 +810,10 @@ function render() {
       <div class="outreach-footer">
         <span class="outreach-date">${formatDate(item.date)}</span>
         <div class="outreach-actions">
+          <button class="btn-small send-gaby" onclick="sendFromGaby('${item.id}')" title="Send from gaby@sprintlypartners.com">✉ Send</button>
+          <button class="btn-small draft-yousra" onclick="draftInYousra('${item.id}')" title="Draft in Yousra's inbox">📝 Draft</button>
           <button class="btn-small" onclick="openEditModal('${item.id}')">Edit</button>
-          <button class="btn-small danger" onclick="deleteOutreach('${item.id}')">Delete</button>
+          <button class="btn-small danger" onclick="deleteOutreach('${item.id}')">✕</button>
         </div>
       </div>
     </div>
@@ -879,6 +896,100 @@ async function searchContacts(query) {
   } catch (err) {
     autocompleteList.style.display = 'none';
   }
+}
+
+// ── Send from Gaby (gaby@sprintlypartners.com) ──
+async function sendFromGaby(id) {
+  const data = loadOutreach();
+  const item = data.find(d => d.id === id);
+  if (!item) return;
+
+  if (!confirm('This will ask Gaby to send this email from gaby@sprintlypartners.com to ' + item.recipient + '. Proceed?')) return;
+
+  const message = '[SEND-EMAIL] Send this outreach email from Gaby.\n' +
+    'From: gaby@sprintlypartners.com\n' +
+    'To: ' + (item.recipient || '') + ' at ' + (item.company || '') + '\n' +
+    'Subject: ' + (item.subject || '') + '\n' +
+    'Body:\n' + (item.body || '') + '\n' +
+    'Instructions: Send this email from gaby@sprintlypartners.com. Show Yousra the draft first for approval before actually sending.';
+
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/proposal_change_requests', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        proposal_id: '00000000-0000-0000-0000-000000000000',
+        section_id: '00000000-0000-0000-0000-000000000000',
+        author: 'Yousra',
+        message: message,
+        status: 'open'
+      })
+    });
+
+    // Update local status
+    const idx = data.findIndex(d => d.id === id);
+    if (idx !== -1) { data[idx].status = 'queued'; saveData(data); }
+    render();
+    showToast('Send request sent to Gaby! She\'ll show you the draft before sending.');
+  } catch (e) {
+    showToast('Error: ' + e.message, true);
+  }
+}
+
+// ── Draft in Yousra's inbox ──
+async function draftInYousra(id) {
+  const data = loadOutreach();
+  const item = data.find(d => d.id === id);
+  if (!item) return;
+
+  const message = '[DRAFT-EMAIL] Create a draft in Yousra\'s Gmail inbox.\n' +
+    'Account: yousra@sprintlypartners.com\n' +
+    'To: ' + (item.recipient || '') + ' at ' + (item.company || '') + '\n' +
+    'Subject: ' + (item.subject || '') + '\n' +
+    'Body:\n' + (item.body || '') + '\n' +
+    'Instructions: Create this as a DRAFT in Yousra\'s Gmail (do NOT send). Use GMAIL_CREATE_EMAIL_DRAFT via Composio. Confirm back to Yousra when done.';
+
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/proposal_change_requests', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        proposal_id: '00000000-0000-0000-0000-000000000000',
+        section_id: '00000000-0000-0000-0000-000000000000',
+        author: 'Yousra',
+        message: message,
+        status: 'open'
+      })
+    });
+
+    showToast('Draft request sent to Gaby! She\'ll create it in your inbox.');
+  } catch (e) {
+    showToast('Error: ' + e.message, true);
+  }
+}
+
+// ── Toast helper ──
+function showToast(msg, isError) {
+  let t = document.getElementById('outreachToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'outreachToast';
+    t.style.cssText = 'position:fixed;bottom:32px;right:32px;background:var(--n800);border:1px solid var(--green);border-radius:4px;padding:14px 20px;font-size:14px;color:var(--n50);z-index:1000;transform:translateY(80px);opacity:0;transition:all 0.3s;display:flex;align-items:center;gap:10px;max-width:400px;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.borderColor = isError ? 'var(--coral)' : 'var(--green)';
+  t.style.transform = 'translateY(0)';
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.transform = 'translateY(80px)'; t.style.opacity = '0'; }, 4000);
 }
 
 // ── Init ──

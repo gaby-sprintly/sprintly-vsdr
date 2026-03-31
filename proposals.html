@@ -237,18 +237,20 @@ async function draftEmail(proposalId, title, clientName, clientContact) {
   // If no share token, generate one first
   if (!shareUrl) {
     shareToken = crypto.randomUUID();
-    await sbUpdate('proposals', proposalId, { share_token: shareToken });
+    await sbUpdate('proposals', 'id=eq.' + proposalId, { share_token: shareToken });
     shareUrl = 'https://vsdr.vercel.app/proposal-view.html?token=' + shareToken;
+    // Update local cache too
+    if (proposal) proposal.share_token = shareToken;
   }
 
-  // Create a CR for Gaby to draft the email
+  // Create a CR for Gaby to draft the email in Yousra's inbox
   var message = '[DRAFT-EMAIL] Please draft an email to send this proposal.\n' +
-    'From: Yousra@sprintlypartners.com\n' +
+    'From: yousra@sprintlypartners.com\n' +
     'Client: ' + clientName + '\n' +
     'Contact: ' + clientContact + '\n' +
     'Proposal: ' + title + '\n' +
     'Share Link: ' + shareUrl + '\n' +
-    'Instructions: Draft a professional, warm email introducing this proposal. Include the share link. Subject should reference the proposal title and client name.';
+    'Instructions: Create a draft in Yousra\'s Gmail (do NOT send). Professional, warm email introducing this proposal. Include the share link. Subject should reference the proposal title and client name. Then share the proposal link with Yousra.';
 
   try {
     await sbInsert('proposal_change_requests', {
@@ -258,9 +260,9 @@ async function draftEmail(proposalId, title, clientName, clientContact) {
       message: message,
       status: 'open'
     });
-    alert('Email draft request sent to Gaby! She will draft it on Yousra@sprintlypartners.com shortly.');
+    showToast('Draft request sent to Gaby! She\'ll create the draft in your inbox and share the link.', 'success');
   } catch (e) {
-    alert('Error: ' + e.message);
+    showToast('Error: ' + e.message, 'error');
   }
 }
 
