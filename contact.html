@@ -1251,7 +1251,7 @@ async function toggleContactFollowUp(btnEl) {
         supabaseId: cd.id,
         supabaseFields: { follow_up_date: followUpDate, follow_up_reason: makeFollowUp ? 'Manual flag from VSDR' : null },
         airtableId: cd.airtable_id || undefined,
-        fields: cd.airtable_id ? { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : '' } : undefined
+        fields: cd.airtable_id ? { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : null } : undefined
       })
     });
     cd.follow_up_date = followUpDate;
@@ -1269,7 +1269,7 @@ async function setContactTypeDetail(newType, btnEl) {
   var isActive = btnEl.classList.contains('type-active');
   var typeValue = isActive ? 'other' : newType;
 
-  var airtableTypeMap = { 'founder': 'Founder', 'investor': 'Investor - VC', 'corporate': 'Corporate', 'other': '' };
+  var airtableTypeMap = { 'founder': 'Founder', 'investor': 'Investor - VC', 'corporate': 'Corporate', 'other': null };
 
   // Deactivate all type buttons, activate clicked one
   document.querySelectorAll('.type-btn').forEach(function(b) {
@@ -1293,7 +1293,7 @@ async function setContactTypeDetail(newType, btnEl) {
         supabaseId: cd.id,
         supabaseFields: { contact_type: typeValue },
         airtableId: cd.airtable_id || undefined,
-        fields: cd.airtable_id ? { 'Contact Type': airtableTypeMap[typeValue] || '' } : undefined
+        fields: cd.airtable_id ? { 'Contact Type': airtableTypeMap[typeValue] !== undefined ? airtableTypeMap[typeValue] : null } : undefined
       })
     });
     cd.contact_type = typeValue;

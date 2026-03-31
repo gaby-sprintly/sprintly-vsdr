@@ -1163,7 +1163,7 @@ async function setContactType(contactId, airtableId, newType, btnEl) {
     'founder': 'Founder',
     'investor': 'Investor - VC',
     'corporate': 'Corporate',
-    'other': ''
+    'other': null
   };
 
   try {
@@ -1173,7 +1173,7 @@ async function setContactType(contactId, airtableId, newType, btnEl) {
     };
     if (airtableId) {
       payload.airtableId = airtableId;
-      payload.fields = { 'Contact Type': airtableTypeMap[typeValue] || '' };
+      payload.fields = { 'Contact Type': airtableTypeMap[typeValue] !== undefined ? airtableTypeMap[typeValue] : null };
     }
     await fetch('/api/airtable-sync', {
       method: 'POST',
@@ -1210,7 +1210,7 @@ async function toggleFollowUp(contactId, airtableId, makeFollowUp, btnEl) {
     };
     if (airtableId) {
       payload.airtableId = airtableId;
-      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : '' };
+      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : null };
     }
     await fetch('/api/airtable-sync', {
       method: 'POST',
