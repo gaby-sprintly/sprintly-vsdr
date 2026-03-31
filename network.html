@@ -1096,6 +1096,9 @@ async function toggleVip(contactId, airtableId, makeVip, btnEl) {
       console.error('Airtable VIP sync failed:', e);
     }
   }
+
+  // Refresh VIP section and stats
+  if (typeof window.initPage === 'function') window.initPage();
 }
 
 function closeEnrich() {
