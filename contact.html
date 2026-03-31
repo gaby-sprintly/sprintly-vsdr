@@ -842,6 +842,8 @@ a { text-decoration: none; color: inherit; }
   }
 
   var contactData = null;
+  // Expose contactData globally so modal handlers can access it
+  window._vsdrContactData = function() { return contactData; };
 
   function esc(str) {
     if (!str) return '';
@@ -1193,7 +1195,8 @@ function showModalSuccess(id) {
 }
 
 async function confirmEnrichContact() {
-  if (!contactData) return;
+  var contactData = window._vsdrContactData ? window._vsdrContactData() : null;
+  if (!contactData) { console.error('No contact data loaded'); return; }
   var cName = ((contactData.first_name || '') + ' ' + (contactData.last_name || '')).trim();
 
   // Show success state
