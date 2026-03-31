@@ -22,10 +22,15 @@ body { background: var(--charcoal); color: #F8FAFC; font-family: var(--body); di
 .form-input { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: #F8FAFC; font-family: var(--body); font-size: 15px; outline: none; transition: border-color 0.15s; }
 .form-input:focus { border-color: var(--green); }
 .form-input::placeholder { color: rgba(148,163,184,0.4); }
-.btn-login { width: 100%; padding: 14px; background: var(--green); border: none; border-radius: 6px; color: var(--charcoal); font-family: var(--body); font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
-.btn-login:hover { opacity: 0.9; }
-.btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-login { width: 100%; padding: 14px; background: var(--green); border: none; border-radius: 6px; color: var(--charcoal); font-family: var(--body); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(78,203,113,0.15); }
+.btn-login:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(78,203,113,0.25); }
+.btn-login:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(78,203,113,0.15); }
+.btn-login:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .error-msg { color: #EF4444; font-size: 13px; text-align: center; margin-top: 16px; min-height: 20px; }
+.success-msg { color: var(--green); font-size: 13px; text-align: center; margin-top: 16px; }
+.toggle-mode { text-align: center; margin-top: 20px; font-size: 13px; color: #64748B; }
+.toggle-mode a { color: var(--green); text-decoration: none; cursor: pointer; font-weight: 500; }
+.toggle-mode a:hover { text-decoration: underline; }
 .login-footer { text-align: center; margin-top: 24px; font-size: 12px; color: #64748B; }
 .login-footer a { color: var(--green); text-decoration: none; }
 </style>
@@ -36,6 +41,7 @@ body { background: var(--charcoal); color: #F8FAFC; font-family: var(--body); di
     <div class="login-logo"><span>VSDR</span></div>
     <div class="login-sub">Sprintly Partners Command Center</div>
   </div>
+  <!-- Sign In Form -->
   <form id="loginForm" onsubmit="handleLogin(event)">
     <div class="form-group">
       <label class="form-label">Email</label>
@@ -47,7 +53,29 @@ body { background: var(--charcoal); color: #F8FAFC; font-family: var(--body); di
     </div>
     <button class="btn-login" type="submit" id="btnLogin">Sign In</button>
     <div class="error-msg" id="errorMsg"></div>
+    <div class="toggle-mode">No account? <a onclick="showSignup()">Create one</a></div>
   </form>
+
+  <!-- Sign Up Form (hidden by default) -->
+  <form id="signupForm" style="display:none" onsubmit="handleSignup(event)">
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="signupEmail" placeholder="you@sprintlypartners.com" required autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="signupPassword" placeholder="Min 6 characters" required autocomplete="new-password" minlength="6">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm Password</label>
+      <input class="form-input" type="password" id="signupConfirm" placeholder="Confirm password" required autocomplete="new-password" minlength="6">
+    </div>
+    <button class="btn-login" type="submit" id="btnSignup">Create Account</button>
+    <div class="error-msg" id="signupError"></div>
+    <div class="success-msg" id="signupSuccess" style="display:none"></div>
+    <div class="toggle-mode">Already have an account? <a onclick="showLogin()">Sign in</a></div>
+  </form>
+
   <div class="login-footer">VSDR v2.2 — Secured by Supabase Auth</div>
 </div>
 
@@ -59,6 +87,43 @@ body { background: var(--charcoal); color: #F8FAFC; font-family: var(--body); di
   var s = getSession();
   if (s && s.access_token) location.href = 'index.html';
 })();
+
+function showSignup() {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('signupForm').style.display = 'block';
+  document.getElementById('signupError').textContent = '';
+  document.getElementById('signupSuccess').style.display = 'none';
+  document.querySelector('.login-sub').textContent = 'Create your account';
+}
+function showLogin() {
+  document.getElementById('signupForm').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('errorMsg').textContent = '';
+  document.querySelector('.login-sub').textContent = 'Sprintly Partners Command Center';
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  var btn = document.getElementById('btnSignup');
+  var err = document.getElementById('signupError');
+  var suc = document.getElementById('signupSuccess');
+  var email = document.getElementById('signupEmail').value.trim();
+  var pw = document.getElementById('signupPassword').value;
+  var confirm = document.getElementById('signupConfirm').value;
+  err.textContent = ''; suc.style.display = 'none';
+  if (pw !== confirm) { err.textContent = 'Passwords do not match'; return; }
+  if (pw.length < 6) { err.textContent = 'Password must be at least 6 characters'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  try {
+    await authSignUp(email, pw);
+    suc.textContent = 'Account created! You can now sign in.';
+    suc.style.display = 'block';
+    setTimeout(function() { showLogin(); document.getElementById('email').value = email; }, 2000);
+  } catch(ex) {
+    err.textContent = ex.message;
+  }
+  btn.disabled = false; btn.textContent = 'Create Account';
+}
 
 async function handleLogin(e) {
   e.preventDefault();

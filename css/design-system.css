@@ -91,20 +91,25 @@ html[data-theme="light"] .page-header { color: #0F172A; }
 
 /* ── Filter Pills ── */
 .filter-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
-.pill { padding: 7px 16px; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--n400); font-family: var(--body); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
-.pill:hover { color: #fff; border-color: rgba(255,255,255,0.15); }
-.pill.active { background: var(--green); border-color: var(--green); color: #0F1923; font-weight: 600; }
+.pill { padding: 7px 16px; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--n400); font-family: var(--body); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+.pill:hover { color: #fff; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.03); transform: translateY(-1px); }
+.pill:active { transform: translateY(0); }
+.pill.active { background: var(--green); border-color: var(--green); color: #0F1923; font-weight: 600; box-shadow: 0 2px 8px rgba(78,203,113,0.2); }
 
 /* ── Buttons ── */
-.btn-primary { padding: 10px 20px; background: var(--green); border: none; border-radius: 2px; color: #0F1923; font-family: var(--body); font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; display: inline-flex; align-items: center; gap: 8px; }
-.btn-primary:hover { opacity: 0.9; }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-secondary { padding: 10px 16px; background: transparent; border: 1px solid var(--border); border-radius: 2px; color: var(--n400); font-family: var(--body); font-size: 13px; cursor: pointer; transition: all 0.15s; }
-.btn-secondary:hover { color: #fff; border-color: rgba(255,255,255,0.15); }
-.btn-danger { padding: 8px 16px; background: transparent; border: 1px solid rgba(239,68,68,0.3); border-radius: 2px; color: var(--coral); font-family: var(--body); font-size: 13px; cursor: pointer; transition: all 0.15s; }
-.btn-danger:hover { background: rgba(239,68,68,0.1); }
-.btn-sync { padding: 10px 16px; background: transparent; border: 1px solid var(--teal); border-radius: 2px; color: var(--teal); font-family: var(--body); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-.btn-sync:hover { background: rgba(45,212,191,0.1); }
+.btn-primary { padding: 10px 20px; background: var(--green); border: none; border-radius: 6px; color: #0F1923; font-family: var(--body); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 1px 4px rgba(78,203,113,0.15); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(78,203,113,0.25); opacity: 0.95; }
+.btn-primary:active { transform: translateY(0); box-shadow: 0 1px 4px rgba(78,203,113,0.15); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary { padding: 10px 16px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--n400); font-family: var(--body); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+.btn-secondary:hover { color: #fff; border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); transform: translateY(-1px); }
+.btn-secondary:active { transform: translateY(0); }
+.btn-danger { padding: 10px 16px; background: transparent; border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; color: var(--coral); font-family: var(--body); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+.btn-danger:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.5); transform: translateY(-1px); }
+.btn-danger:active { transform: translateY(0); }
+.btn-sync { padding: 10px 16px; background: transparent; border: 1px solid var(--teal); border-radius: 6px; color: var(--teal); font-family: var(--body); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+.btn-sync:hover { background: rgba(45,212,191,0.1); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(45,212,191,0.15); }
+.btn-sync:active { transform: translateY(0); }
 
 /* ── Status Badges ── */
 .status-badge { padding: 4px 10px; border-radius: 2px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; display: inline-block; }
