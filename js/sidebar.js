@@ -56,7 +56,7 @@ function renderSidebar(activePage) {
     '<button class="sidebar-close" id="sidebarClose" aria-label="Close menu">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
     '</button>' +
-    '<div class="sidebar-brand"><div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div></div>' +
+    '<div class="sidebar-brand"><a href="index.html" style="text-decoration:none;color:inherit;"><div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div></a></div>' +
     '<div class="sidebar-sub">Sprintly Partners</div>' +
     '<nav class="sidebar-nav">' + navHtml + '</nav>' +
     '<div class="theme-toggle" style="padding:0 24px;margin-bottom:12px;">' +
