@@ -47,8 +47,11 @@ function renderCoverPage(proposal, section) {
 // ─── Text Section ───
 function renderText(section) {
   const content = section.content || '';
+  const cj = section.content_json || {};
+  const align = cj.text_align || cj.align || '';
+  const alignStyle = align ? ' style="text-align:' + align + '"' : '';
   const paragraphs = content.split('\n\n').filter(Boolean);
-  let html = '<div class="sec-text">';
+  let html = '<div class="sec-text"' + alignStyle + '>';
   html += paragraphs.map(p => '<p>' + escHtml(p).replace(/\n/g, '<br>') + '</p>').join('');
 
   if (section.callout_text || (section.content_json && section.content_json.callout_text)) {
@@ -234,7 +237,10 @@ function renderTimeline(section) {
 function renderCallout(section) {
   const content = section.content || section.callout_text || '';
   const attr = section.callout_attribution || (section.content_json && section.content_json.attribution) || '';
-  return '<blockquote class="sec-callout">' +
+  const cj = section.content_json || {};
+  const align = cj.text_align || cj.align || '';
+  const alignStyle = align ? ' style="text-align:' + align + '"' : '';
+  return '<blockquote class="sec-callout"' + alignStyle + '>' +
     '<div class="callout-mark">"</div>' +
     '<p>' + escHtml(content) + '</p>' +
     (attr ? '<cite>— ' + escHtml(attr) + '</cite>' : '') +
