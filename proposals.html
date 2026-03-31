@@ -229,9 +229,15 @@ function renderCard(p) {
 function escHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 async function draftEmail(proposalId, title, clientName, clientContact) {
-  // Get or generate the share link
+  // Get proposal and its sections
   var proposal = allProposals.find(function(p) { return p.id === proposalId; });
-  var shareToken = proposal && proposal.share_token;
+  if (!proposal) { showToast('Proposal not found', 'error'); return; }
+
+  var sections = proposal._sections || [];
+  if (!sections.length) { showToast('Proposal has no sections — cannot create draft request', 'error'); return; }
+  var firstSectionId = sections[0].id;
+
+  var shareToken = proposal.share_token;
   var shareUrl = shareToken ? 'https://vsdr.vercel.app/proposal-view.html?token=' + shareToken : null;
 
   // If no share token, generate one first
@@ -239,11 +245,10 @@ async function draftEmail(proposalId, title, clientName, clientContact) {
     shareToken = crypto.randomUUID();
     await sbUpdate('proposals', 'id=eq.' + proposalId, { share_token: shareToken });
     shareUrl = 'https://vsdr.vercel.app/proposal-view.html?token=' + shareToken;
-    // Update local cache too
-    if (proposal) proposal.share_token = shareToken;
+    proposal.share_token = shareToken;
   }
 
-  // Create a CR for Gaby to draft the email in Yousra's inbox
+  // Create a CR using a real section_id (first section)
   var message = '[DRAFT-EMAIL] Please draft an email to send this proposal.\n' +
     'From: yousra@sprintlypartners.com\n' +
     'Client: ' + clientName + '\n' +
@@ -255,7 +260,7 @@ async function draftEmail(proposalId, title, clientName, clientContact) {
   try {
     await sbInsert('proposal_change_requests', {
       proposal_id: proposalId,
-      section_id: proposalId,
+      section_id: firstSectionId,
       author: 'Yousra',
       message: message,
       status: 'open'

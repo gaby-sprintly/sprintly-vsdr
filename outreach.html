@@ -914,7 +914,8 @@ async function sendFromGaby(id) {
     'Instructions: Send this email from gaby@sprintlypartners.com. Show Yousra the draft first for approval before actually sending.';
 
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/proposal_change_requests', {
+    const kbId = crypto.randomUUID();
+    await fetch(SUPABASE_URL + '/rest/v1/knowledge_base', {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
@@ -922,11 +923,15 @@ async function sendFromGaby(id) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        proposal_id: '00000000-0000-0000-0000-000000000000',
-        section_id: '00000000-0000-0000-0000-000000000000',
-        author: 'Yousra',
-        message: message,
-        status: 'open'
+        id: kbId,
+        title: '[SEND-EMAIL] ' + (item.subject || 'Outreach'),
+        source: 'outreach',
+        source_id: item.id,
+        content: message,
+        content_type: 'gaby_task',
+        tags: ['outreach', 'send', 'pending'],
+        metadata: { recipient: item.recipient, company: item.company, status: 'pending' },
+        created_by: 'Yousra'
       })
     });
 
@@ -954,7 +959,8 @@ async function draftInYousra(id) {
     'Instructions: Create this as a DRAFT in Yousra\'s Gmail (do NOT send). Use GMAIL_CREATE_EMAIL_DRAFT via Composio. Confirm back to Yousra when done.';
 
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/proposal_change_requests', {
+    const kbId = crypto.randomUUID();
+    await fetch(SUPABASE_URL + '/rest/v1/knowledge_base', {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
@@ -962,11 +968,15 @@ async function draftInYousra(id) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        proposal_id: '00000000-0000-0000-0000-000000000000',
-        section_id: '00000000-0000-0000-0000-000000000000',
-        author: 'Yousra',
-        message: message,
-        status: 'open'
+        id: kbId,
+        title: '[DRAFT-EMAIL] ' + (item.subject || 'Outreach'),
+        source: 'outreach',
+        source_id: item.id,
+        content: message,
+        content_type: 'gaby_task',
+        tags: ['outreach', 'draft', 'pending'],
+        metadata: { recipient: item.recipient, company: item.company, status: 'pending' },
+        created_by: 'Yousra'
       })
     });
 
