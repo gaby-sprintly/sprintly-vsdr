@@ -5,20 +5,25 @@ You are Gaby, the Strategic Operator for Sprintly Partners. This skill gives you
 
 ## Supabase Connection
 
+**IMPORTANT: RLS is configured so that reads are public (anon key works) but writes require authentication. Gaby must use the service_role key for ALL write operations (INSERT, UPDATE, DELETE).**
+
 ```
 BASE_URL: https://gxunrnyehltpbgdodkkm.supabase.co/rest/v1
-API_KEY:  sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v
+ANON_KEY:  sb_publishable_fipkXCnAvAV-om1bXwAfYA_4b3KRu0v
+SERVICE_ROLE_KEY: <your service_role key from Supabase Dashboard → Settings → API>
 
-Headers (all requests):
-  apikey: <API_KEY>
-  Authorization: Bearer <API_KEY>
+Headers for READ operations:
+  apikey: <ANON_KEY>
+  Authorization: Bearer <ANON_KEY>
+
+Headers for WRITE operations (INSERT, UPDATE, DELETE):
+  apikey: <ANON_KEY>
+  Authorization: Bearer <SERVICE_ROLE_KEY>
   Content-Type: application/json
-```
-
-For write operations, also add:
-```
   Prefer: return=representation
 ```
+
+> The service_role key bypasses RLS entirely. The anon key in the `apikey` header is still required for routing. The `Authorization` header determines the role.
 
 ## Tables
 
@@ -74,6 +79,56 @@ For write operations, also add:
 | created_at | TIMESTAMPTZ | Auto |
 | resolved_at | TIMESTAMPTZ | When resolved |
 
+### `proposal_comments`
+Non-actionable notes/discussion (NOT change requests — these are just sticky notes).
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID (PK) | Auto-generated |
+| proposal_id | UUID (FK) | References proposals.id |
+| section_id | UUID (FK) | References proposal_sections.id (CASCADE delete) |
+| author | TEXT | Who posted it (Yousra, Gaby, etc.) |
+| message | TEXT | Comment text |
+| created_at | TIMESTAMPTZ | Auto |
+
+---
+
+## Text Styling via content_json
+
+When Gaby creates or edits sections, use `content_json` to control visual styling. The renderers read these properties:
+
+```json
+{
+  "text_align": "left",       // "left", "center", "right"
+  "align": "center",          // alias for text_align (either works)
+  "callout_text": "Quote",    // optional inline callout
+  "callout_attribution": "—Author"
+}
+```
+
+**Example: Create a centered text section:**
+```bash
+curl -X POST "${BASE_URL}/proposal_sections" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
+  -H "Content-Type: application/json" -H "Prefer: return=representation" \
+  -d '{
+    "proposal_id": "<ID>",
+    "sort_order": 1,
+    "title": "Our Vision",
+    "content_type": "text",
+    "content": "We believe in building lasting partnerships.",
+    "content_json": {"text_align": "center"},
+    "status": "pending"
+  }'
+```
+
+**Example: Update alignment on existing section:**
+```bash
+curl -X PATCH "${BASE_URL}/proposal_sections?id=eq.<SECTION_ID>" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
+  -H "Content-Type: application/json" -H "Prefer: return=representation" \
+  -d '{"content_json": {"text_align": "left"}, "updated_at": "now()"}'
+```
+
 ---
 
 ## API Operations
@@ -82,7 +137,7 @@ For write operations, also add:
 
 ```bash
 curl "${BASE_URL}/proposals?select=id,title,client_name,status,proposal_index,created_at&order=updated_at.desc" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 ```
 
 ### 2. Get a single proposal with all sections and change requests
@@ -90,22 +145,22 @@ curl "${BASE_URL}/proposals?select=id,title,client_name,status,proposal_index,cr
 ```bash
 # Get proposal
 curl "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 
 # Get its sections
 curl "${BASE_URL}/proposal_sections?proposal_id=eq.<PROPOSAL_ID>&order=sort_order.asc" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 
 # Get its change requests
 curl "${BASE_URL}/proposal_change_requests?proposal_id=eq.<PROPOSAL_ID>&order=created_at.asc" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 ```
 
 ### 3. Create a new proposal
 
 ```bash
 curl -X POST "${BASE_URL}/proposals" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "title": "Growth Partnership — ClientName",
@@ -125,7 +180,7 @@ curl -X POST "${BASE_URL}/proposals" \
 ```bash
 # Text section
 curl -X POST "${BASE_URL}/proposal_sections" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "proposal_id": "<PROPOSAL_ID>",
@@ -140,7 +195,7 @@ curl -X POST "${BASE_URL}/proposal_sections" \
 
 # Metrics section
 curl -X POST "${BASE_URL}/proposal_sections" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "proposal_id": "<PROPOSAL_ID>",
@@ -158,7 +213,7 @@ curl -X POST "${BASE_URL}/proposal_sections" \
 
 # Timeline/Gantt section
 curl -X POST "${BASE_URL}/proposal_sections" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "proposal_id": "<PROPOSAL_ID>",
@@ -176,7 +231,7 @@ curl -X POST "${BASE_URL}/proposal_sections" \
 
 # Pricing table section
 curl -X POST "${BASE_URL}/proposal_sections" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "proposal_id": "<PROPOSAL_ID>",
@@ -196,7 +251,7 @@ curl -X POST "${BASE_URL}/proposal_sections" \
 
 # Callout section
 curl -X POST "${BASE_URL}/proposal_sections" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "proposal_id": "<PROPOSAL_ID>",
@@ -210,7 +265,7 @@ curl -X POST "${BASE_URL}/proposal_sections" \
 
 # Cover page section (should be sort_order 0 or 1)
 curl -X POST "${BASE_URL}/proposal_sections" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "proposal_id": "<PROPOSAL_ID>",
@@ -227,7 +282,7 @@ curl -X POST "${BASE_URL}/proposal_sections" \
 
 # Batch add multiple sections at once (POST array)
 curl -X POST "${BASE_URL}/proposal_sections" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '[
     {"proposal_id":"<ID>","sort_order":1,"title":"Executive Summary","content_type":"text","content":"...","status":"pending"},
@@ -240,7 +295,7 @@ curl -X POST "${BASE_URL}/proposal_sections" \
 
 ```bash
 curl -X PATCH "${BASE_URL}/proposal_sections?id=eq.<SECTION_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "content": "Updated text content here...",
@@ -254,7 +309,7 @@ curl -X PATCH "${BASE_URL}/proposal_sections?id=eq.<SECTION_ID>" \
 ```bash
 # Get ALL open change requests across all proposals
 curl "${BASE_URL}/proposal_change_requests?status=eq.open&order=created_at.asc&select=id,proposal_id,section_id,author,message,created_at" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 ```
 
 ### 7. Resolve a change request
@@ -264,7 +319,7 @@ Two-step process — edit the section, then mark the CR resolved:
 ```bash
 # Step 1: Edit the section content based on the request
 curl -X PATCH "${BASE_URL}/proposal_sections?id=eq.<SECTION_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "content": "Updated content addressing the change request...",
@@ -274,7 +329,7 @@ curl -X PATCH "${BASE_URL}/proposal_sections?id=eq.<SECTION_ID>" \
 
 # Step 2: Mark the change request as resolved
 curl -X PATCH "${BASE_URL}/proposal_change_requests?id=eq.<CR_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "status": "resolved",
@@ -288,7 +343,7 @@ curl -X PATCH "${BASE_URL}/proposal_change_requests?id=eq.<CR_ID>" \
 
 ```bash
 curl -X PATCH "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{"status": "in_review", "updated_at": "2026-03-30T19:00:00Z"}'
 ```
@@ -298,7 +353,7 @@ curl -X PATCH "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
 ```bash
 # Set share token on proposal
 curl -X PATCH "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{"share_token": "<GENERATE_UUID>"}'
 
@@ -310,7 +365,7 @@ curl -X PATCH "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
 
 ```bash
 curl -X DELETE "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}"
 ```
 
 ---
@@ -337,6 +392,27 @@ curl -X DELETE "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
 - **Proposal**: draft → in_review → approved → sent → archived
 - **Section**: pending → edited → change_requested → approved
 - **Change Request**: open → in_progress → resolved / dismissed
+
+---
+
+## Comments API (non-actionable notes)
+
+```bash
+# List comments for a section
+curl "${BASE_URL}/proposal_comments?section_id=eq.<SECTION_ID>&order=created_at.asc" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
+
+# Add a comment
+curl -X POST "${BASE_URL}/proposal_comments" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
+  -H "Content-Type: application/json" -H "Prefer: return=representation" \
+  -d '{
+    "proposal_id": "<PROPOSAL_ID>",
+    "section_id": "<SECTION_ID>",
+    "author": "Gaby",
+    "message": "This section uses data from our Q1 2026 report."
+  }'
+```
 
 ---
 
@@ -396,23 +472,23 @@ curl -X DELETE "${BASE_URL}/proposals?id=eq.<PROPOSAL_ID>" \
 ```bash
 # List all KB entries
 curl "${BASE_URL}/knowledge_base?select=id,title,source,content_type,tags,created_at&order=created_at.desc" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 
 # Search KB by keyword (title or content)
 curl "${BASE_URL}/knowledge_base?or=(title.ilike.*keyword*,content.ilike.*keyword*)&order=created_at.desc" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 
 # Get KB entries by type
 curl "${BASE_URL}/knowledge_base?content_type=eq.case_study&order=created_at.desc" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 
 # Get KB entries from a specific Drive folder
 curl "${BASE_URL}/knowledge_base?folder_id=eq.<FOLDER_ID>&order=created_at.desc" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${ANON_KEY}"
 
 # Add a KB entry (from scanned Drive doc)
 curl -X POST "${BASE_URL}/knowledge_base" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{
     "title": "MENA Market Report 2025",
@@ -428,13 +504,13 @@ curl -X POST "${BASE_URL}/knowledge_base" \
 
 # Update a KB entry
 curl -X PATCH "${BASE_URL}/knowledge_base?id=eq.<KB_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" -H "Prefer: return=representation" \
   -d '{"content": "Updated content...", "updated_at": "2026-03-30T19:00:00Z"}'
 
 # Delete a KB entry
 curl -X DELETE "${BASE_URL}/knowledge_base?id=eq.<KB_ID>" \
-  -H "apikey: ${API_KEY}" -H "Authorization: Bearer ${API_KEY}"
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}"
 ```
 
 ### Google Drive Scanning Workflow
@@ -469,6 +545,45 @@ curl -X DELETE "${BASE_URL}/knowledge_base?id=eq.<KB_ID>" \
 | Team bios / leadership profiles | bio |
 | Client quotes / endorsements | testimonial |
 | General reference material | text |
+
+### When handling "Gaby Fill" requests:
+
+The CEO can click "Gaby Fill" on empty sections or "Gaby Fill All" at the top. This creates change requests tagged with `[GABY-FILL]` in the message.
+
+1. Query open CRs: `GET /proposal_change_requests?status=eq.open&message=ilike.*GABY-FILL*`
+2. For each GABY-FILL CR:
+   a. Read the section (get its `content_type` and `title`)
+   b. Read the proposal context (client_name, description, other sections)
+   c. Generate appropriate content based on the section type:
+      - `text`: Write compelling proposal copy with proper paragraphs
+      - `metrics`: Create realistic KPI cards as JSON array
+      - `timeline`: Build phase timeline with colors
+      - `pricing`: Generate pricing table with recommended tier
+      - `callout`: Write an impactful quote
+      - `cover`: Generate cover page data
+   d. PATCH the section with the generated content
+   e. Resolve the CR with response "Filled by Gaby"
+3. If "Gaby Fill All" was used, fill ALL empty sections for the proposal in one pass
+
+**Example: Fill a text section**
+```bash
+curl -X PATCH "${BASE_URL}/proposal_sections?id=eq.<SECTION_ID>" \
+  -H "apikey: ${ANON_KEY}" -H "Authorization: Bearer ${SERVICE_ROLE_KEY}" \
+  -H "Content-Type: application/json" -H "Prefer: return=representation" \
+  -d '{
+    "content": "Your generated proposal text here...\n\nSecond paragraph...",
+    "content_json": {"text_align": "left"},
+    "status": "edited",
+    "updated_at": "2026-03-30T19:00:00Z"
+  }'
+```
+
+### When told to style or format a section:
+
+Gaby can update `content_json` to control rendering:
+- **Align text**: `{"text_align": "left"}` or `"center"` or `"right"`
+- **Add callout**: Include `callout_text` and `callout_attribution` fields in the section
+- **Add image**: Set `image_url` on the section to a URL or base64 data URI
 
 ---
 
