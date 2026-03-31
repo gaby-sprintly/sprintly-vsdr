@@ -62,11 +62,19 @@ function renderSidebar(activePage) {
     '<div class="theme-toggle" style="padding:0 24px;margin-bottom:12px;">' +
       '<button id="themeToggle" class="theme-btn"><span class="theme-icon">☀️</span><span class="theme-label">Light Mode</span></button>' +
     '</div>' +
-    '<div class="sidebar-version">v2.1</div>' +
+    '<div style="padding:0 24px;margin-bottom:8px;">' +
+      '<button id="logoutBtn" class="theme-btn" style="color:#EF4444;border-color:rgba(239,68,68,0.2);" onclick="authSignOut()"><span style="font-size:14px">↪</span><span>Sign Out</span></button>' +
+    '</div>' +
+    '<div class="sidebar-version">v2.2</div>' +
   '</aside>';
 }
 
 function initSidebar(activePage) {
+  // Auth guard — redirect to login if not authenticated
+  if (typeof requireAuth === 'function') {
+    requireAuth();
+  }
+
   // Insert sidebar HTML at start of body
   const container = document.createElement('div');
   container.innerHTML = renderSidebar(activePage);

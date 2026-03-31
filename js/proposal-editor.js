@@ -488,5 +488,27 @@ async function gabyFillAll() {
 // ═══ Toast ═══
 function showToast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast '+(t||'success')+' show';setTimeout(function(){el.classList.remove('show');},3000);}
 
+// ═══ Keyboard Shortcuts (N6) ═══
+document.addEventListener('keydown', function(e) {
+  // Cmd/Ctrl+S — force save
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    clearTimeout(saveTmr);
+    flushQ();
+  }
+  // Escape — close side panel
+  if (e.key === 'Escape') {
+    var panel = document.getElementById('sidePanel');
+    if (panel && panel.classList.contains('open')) { closePanel(); return; }
+    var modal = document.getElementById('addModal');
+    if (modal && modal.classList.contains('open')) { closeAddModal(); return; }
+  }
+  // Cmd/Ctrl+Shift+A — open add section modal
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'a') {
+    e.preventDefault();
+    openAddModal();
+  }
+});
+
 // ═══ Init ═══
 load();

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; font-src https://fonts.gstatic.com https://cdn.fontshare.com; connect-src 'self' https://gxunrnyehltpbgdodkkm.supabase.co; img-src 'self' data: blob: https:;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — VSDR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --green: #4ECB71; --charcoal: #0F1923; --body: 'General Sans', sans-serif; --display: 'Space Grotesk', sans-serif; }
+body { background: var(--charcoal); color: #F8FAFC; font-family: var(--body); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.login-card { width: 100%; max-width: 400px; padding: 48px 36px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; }
+.login-brand { text-align: center; margin-bottom: 40px; }
+.login-logo { font-family: var(--display); font-weight: 700; font-size: 28px; color: #F8FAFC; letter-spacing: 2px; }
+.login-logo span { color: var(--green); }
+.login-sub { font-size: 13px; color: #64748B; margin-top: 6px; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748B; margin-bottom: 6px; font-weight: 600; }
+.form-input { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: #F8FAFC; font-family: var(--body); font-size: 15px; outline: none; transition: border-color 0.15s; }
+.form-input:focus { border-color: var(--green); }
+.form-input::placeholder { color: rgba(148,163,184,0.4); }
+.btn-login { width: 100%; padding: 14px; background: var(--green); border: none; border-radius: 6px; color: var(--charcoal); font-family: var(--body); font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+.btn-login:hover { opacity: 0.9; }
+.btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
+.error-msg { color: #EF4444; font-size: 13px; text-align: center; margin-top: 16px; min-height: 20px; }
+.login-footer { text-align: center; margin-top: 24px; font-size: 12px; color: #64748B; }
+.login-footer a { color: var(--green); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="login-brand">
+    <div class="login-logo"><span>VSDR</span></div>
+    <div class="login-sub">Sprintly Partners Command Center</div>
+  </div>
+  <form id="loginForm" onsubmit="handleLogin(event)">
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="email" placeholder="you@sprintlypartners.com" required autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="password" placeholder="Enter password" required autocomplete="current-password">
+    </div>
+    <button class="btn-login" type="submit" id="btnLogin">Sign In</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </form>
+  <div class="login-footer">VSDR v2.2 — Secured by Supabase Auth</div>
+</div>
+
+<script src="js/supabase-client.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// If already logged in, redirect to home
+(function() {
+  var s = getSession();
+  if (s && s.access_token) location.href = 'index.html';
+})();
+
+async function handleLogin(e) {
+  e.preventDefault();
+  var btn = document.getElementById('btnLogin');
+  var err = document.getElementById('errorMsg');
+  var email = document.getElementById('email').value.trim();
+  var password = document.getElementById('password').value;
+  btn.disabled = true; btn.textContent = 'Signing in...'; err.textContent = '';
+  try {
+    await authSignIn(email, password);
+    location.href = 'index.html';
+  } catch(ex) {
+    err.textContent = ex.message;
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+</script>
+</body>
+</html>
