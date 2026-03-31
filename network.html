@@ -672,6 +672,11 @@ a { text-decoration: none; color: inherit; }
       case 'enrichment': base += '&enrichment_status=neq.enriched'; break;
     }
 
+    // Exclude VIPs from regular grid (they show in the pinned VIP section)
+    if (filter !== 'vip') {
+      base += '&or=(vip.eq.false,vip.is.null)';
+    }
+
     base += '&order=last_name.asc.nullslast,first_name.asc.nullslast';
     base += '&limit=' + limit + '&offset=' + offset;
     return base;
@@ -689,6 +694,13 @@ a { text-decoration: none; color: inherit; }
       case 'followup': params = 'follow_up_date=lte.' + td + '&follow_up_date=not.is.null'; break;
       case 'enrichment': params = 'enrichment_status=neq.enriched'; break;
       default: params = ''; break;
+    }
+
+    // Exclude VIPs from regular count (they're in VIP section)
+    if (filter !== 'vip' && params === '') {
+      params = 'or=(vip.eq.false,vip.is.null)';
+    } else if (filter !== 'vip') {
+      params += '&or=(vip.eq.false,vip.is.null)';
     }
     return params;
   }
