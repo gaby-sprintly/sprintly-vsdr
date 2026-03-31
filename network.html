@@ -971,9 +971,47 @@ function enrichContact(id, name) {
   modal.classList.add('open');
 }
 
-function confirmEnrich() {
+async function confirmEnrich() {
   document.getElementById('enrichStep1').style.display = 'none';
   document.getElementById('enrichStep2').style.display = 'block';
+
+  // Write enrichment task to knowledge_base for Gaby to pick up
+  try {
+    var kbId = crypto.randomUUID();
+    await fetch(SUPABASE_URL + '/rest/v1/knowledge_base', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: kbId,
+        title: '[ENRICH] ' + enrichTargetName,
+        source: 'network',
+        source_id: enrichTargetId,
+        content: '[ENRICH-CONTACT] Please enrich this contact.\nContact ID: ' + enrichTargetId + '\nName: ' + enrichTargetName + '\nInstructions: Research this contact using web search and LinkedIn. Update their Supabase record with: industry, region, email (if findable), title, company details, and add research notes to the gaby_notes field. Set enrichment_status to enriched when done.',
+        content_type: 'gaby_task',
+        tags: JSON.stringify(['enrichment', 'pending']),
+        metadata: JSON.stringify({ contact_id: enrichTargetId, contact_name: enrichTargetName, status: 'pending' }),
+        created_by: 'Yousra'
+      })
+    });
+
+    // Also update contact enrichment_status to 'requested'
+    await fetch(SUPABASE_URL + '/rest/v1/contacts?id=eq.' + enrichTargetId, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ enrichment_status: 'requested' })
+    });
+  } catch (e) {
+    console.error('Enrich request failed:', e);
+  }
+
   // Update the button on the card
   var cards = document.querySelectorAll('.btn-enrich');
   cards.forEach(function(btn) {
