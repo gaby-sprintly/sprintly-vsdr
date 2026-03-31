@@ -219,6 +219,47 @@ a { text-decoration: none; color: inherit; }
   color: var(--n400);
 }
 
+/* ── Quick Label Buttons ── */
+.quick-labels {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-label {
+  font-family: var(--body);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--n400);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.btn-label:hover { color: var(--n50); border-color: var(--n400); }
+
+.btn-label.active { font-weight: 700; }
+
+.btn-label.type-founder.active { background: rgba(78,203,113,0.12); color: var(--green); border-color: rgba(78,203,113,0.3); }
+.btn-label.type-investor.active { background: rgba(45,212,191,0.12); color: var(--teal); border-color: rgba(45,212,191,0.3); }
+.btn-label.type-corporate.active { background: rgba(245,158,11,0.12); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+
+.btn-label.type-founder:hover { color: var(--green); border-color: rgba(78,203,113,0.3); }
+.btn-label.type-investor:hover { color: var(--teal); border-color: rgba(45,212,191,0.3); }
+.btn-label.type-corporate:hover { color: var(--amber); border-color: rgba(245,158,11,0.3); }
+
+.btn-label.followup-btn { border-color: rgba(239,68,68,0.2); }
+.btn-label.followup-btn:hover { color: var(--coral); border-color: rgba(239,68,68,0.3); }
+.btn-label.followup-btn.active { background: rgba(239,68,68,0.12); color: var(--coral); border-color: rgba(239,68,68,0.3); }
+
 .btn-vip {
   background: transparent;
   border: 1px solid var(--border);
@@ -781,6 +822,17 @@ a { text-decoration: none; color: inherit; }
       ? '<button class="btn-vip active" onclick="event.preventDefault();event.stopPropagation();toggleVip(\'' + id + '\',\'' + (c.airtable_id || '') + '\',false,this)" title="Remove VIP">★ VIP</button>'
       : '<button class="btn-vip" onclick="event.preventDefault();event.stopPropagation();toggleVip(\'' + id + '\',\'' + (c.airtable_id || '') + '\',true,this)" title="Add to VIP">☆ VIP</button>';
 
+    var ct = (c.contact_type || '').toLowerCase();
+    var hasFollowUp = !!c.follow_up_date;
+
+    var labelBtns =
+      '<div class="quick-labels">' +
+        '<button class="btn-label followup-btn' + (hasFollowUp ? ' active' : '') + '" onclick="event.preventDefault();event.stopPropagation();toggleFollowUp(\'' + id + '\',\'' + (c.airtable_id || '') + '\',' + !hasFollowUp + ',this)" title="' + (hasFollowUp ? 'Remove follow-up' : 'Flag for follow-up') + '">🔔 Follow Up</button>' +
+        '<button class="btn-label type-founder' + (ct === 'founder' ? ' active' : '') + '" onclick="event.preventDefault();event.stopPropagation();setContactType(\'' + id + '\',\'' + (c.airtable_id || '') + '\',\'founder\',this)">Founder</button>' +
+        '<button class="btn-label type-investor' + (ct === 'investor' ? ' active' : '') + '" onclick="event.preventDefault();event.stopPropagation();setContactType(\'' + id + '\',\'' + (c.airtable_id || '') + '\',\'investor\',this)">Investor</button>' +
+        '<button class="btn-label type-corporate' + (ct === 'corporate' ? ' active' : '') + '" onclick="event.preventDefault();event.stopPropagation();setContactType(\'' + id + '\',\'' + (c.airtable_id || '') + '\',\'corporate\',this)">Corporate</button>' +
+      '</div>';
+
     return '<a href="contact.html?id=' + id + '" class="' + cls + '">' +
       '<div class="card-top">' +
         '<div class="card-name">' + star + escHTML(name) + '</div>' +
@@ -788,6 +840,7 @@ a { text-decoration: none; color: inherit; }
       '</div>' +
       company +
       tags +
+      labelBtns +
       '<div class="card-footer">' +
         '<div class="card-meta">' +
           '<span class="enrichment-dot ' + eDot + '" title="Enrichment: ' + (c.enrichment_status || 'none') + '"></span>' +
@@ -1089,6 +1142,78 @@ async function toggleVip(contactId, airtableId, makeVip, btnEl) {
 
   // Refresh page data (VIP section, stats, cards)
   if (typeof window.initPage === 'function') window.initPage();
+}
+
+// ── Set Contact Type (Founder/Investor/Corporate) ──
+async function setContactType(contactId, airtableId, newType, btnEl) {
+  // Toggle: if already this type, clear it
+  var isActive = btnEl.classList.contains('active');
+  var typeValue = isActive ? 'other' : newType;
+
+  // UI: deactivate all type buttons in this card, activate clicked one
+  var labels = btnEl.parentElement.querySelectorAll('.btn-label:not(.followup-btn)');
+  labels.forEach(function(b) { b.classList.remove('active'); });
+  if (!isActive) btnEl.classList.add('active');
+
+  // Airtable type mapping
+  var airtableTypeMap = {
+    'founder': 'Founder',
+    'investor': 'Investor - VC',
+    'corporate': 'Corporate',
+    'other': ''
+  };
+
+  try {
+    var payload = {
+      supabaseId: contactId,
+      supabaseFields: { contact_type: typeValue }
+    };
+    if (airtableId) {
+      payload.airtableId = airtableId;
+      payload.fields = { 'Contact Type': airtableTypeMap[typeValue] || '' };
+    }
+    await fetch('/api/airtable-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {
+    console.error('Set type failed:', e);
+  }
+}
+
+// ── Toggle Follow-Up ──
+async function toggleFollowUp(contactId, airtableId, makeFollowUp, btnEl) {
+  var followUpDate = null;
+  if (makeFollowUp) {
+    // Set follow-up to 7 days from now
+    var d = new Date();
+    d.setDate(d.getDate() + 7);
+    followUpDate = d.toISOString().split('T')[0];
+    btnEl.classList.add('active');
+    btnEl.title = 'Remove follow-up';
+  } else {
+    btnEl.classList.remove('active');
+    btnEl.title = 'Flag for follow-up';
+  }
+
+  try {
+    var payload = {
+      supabaseId: contactId,
+      supabaseFields: { follow_up_date: followUpDate, follow_up_reason: makeFollowUp ? 'Manual flag from VSDR' : null }
+    };
+    if (airtableId) {
+      payload.airtableId = airtableId;
+      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : '' };
+    }
+    await fetch('/api/airtable-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {
+    console.error('Follow-up toggle failed:', e);
+  }
 }
 
 function closeEnrich() {
