@@ -601,6 +601,7 @@ a { text-decoration: none; color: inherit; }
       <button class="pill" data-filter="vip">VIPs</button>
       <button class="pill" data-filter="followup">Needs Follow-up</button>
       <button class="pill" data-filter="enrichment">Needs Enrichment</button>
+      <button class="pill" data-filter="enriched">Enriched</button>
     </div>
   </div>
 
@@ -711,6 +712,7 @@ a { text-decoration: none; color: inherit; }
       case 'vip': base += '&vip=eq.true'; break;
       case 'followup': base += '&follow_up_date=not.is.null'; break;
       case 'enrichment': base += '&enrichment_status=neq.enriched'; break;
+      case 'enriched': base += '&enrichment_status=eq.enriched'; break;
     }
 
     // Exclude VIPs from regular grid (they show in the pinned VIP section)
@@ -734,6 +736,7 @@ a { text-decoration: none; color: inherit; }
       case 'vip': params = 'vip=eq.true'; break;
       case 'followup': params = 'follow_up_date=not.is.null'; break;
       case 'enrichment': params = 'enrichment_status=neq.enriched'; break;
+      case 'enriched': params = 'enrichment_status=eq.enriched'; break;
       default: params = ''; break;
     }
 
@@ -1006,7 +1009,7 @@ a { text-decoration: none; color: inherit; }
       var labels = {
         all: 'All Contacts', founder: 'Founders', investor: 'Investors',
         corporate: 'Corporate', advisor: 'Advisors', vip: 'VIP Contacts',
-        followup: 'Needs Follow-up', enrichment: 'Needs Enrichment'
+        followup: 'Needs Follow-up', enrichment: 'Needs Enrichment', enriched: 'Enriched'
       };
       document.getElementById('allContactsLabel').textContent = labels[currentFilter] || 'All Contacts';
 
