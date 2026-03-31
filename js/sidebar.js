@@ -87,12 +87,17 @@ function initSidebar(activePage) {
   if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
   if (backdrop) backdrop.addEventListener('click', closeSidebar);
 
-  // Theme toggle
+  // Theme toggle + offline detection
   initTheme();
+  initOfflineDetection();
 }
 
 function initTheme() {
-  var saved = localStorage.getItem('vsdr-theme') || 'dark';
+  // I11: Default to system preference if no saved theme
+  var saved = localStorage.getItem('vsdr-theme');
+  if (!saved) {
+    saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+  }
   document.documentElement.setAttribute('data-theme', saved);
   updateThemeBtn(saved);
   var btn = document.getElementById('themeToggle');
@@ -103,6 +108,39 @@ function initTheme() {
     localStorage.setItem('vsdr-theme', next);
     updateThemeBtn(next);
   });
+  // I10: Sync theme across tabs
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'vsdr-theme' && e.newValue) {
+      document.documentElement.setAttribute('data-theme', e.newValue);
+      updateThemeBtn(e.newValue);
+    }
+  });
+  // I11: React to system theme changes (if user hasn't manually set)
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+      if (!localStorage.getItem('vsdr-theme')) {
+        var theme = e.matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        updateThemeBtn(theme);
+      }
+    });
+  }
+}
+
+// I3: Offline detection — shows indicator on all pages
+function initOfflineDetection() {
+  var indicator = document.createElement('div');
+  indicator.id = 'offlineBar';
+  indicator.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#F59E0B;color:#0F1923;text-align:center;padding:6px 16px;font-size:12px;font-weight:600;font-family:var(--body,sans-serif);';
+  indicator.textContent = 'You are offline — changes will be saved when you reconnect';
+  document.body.appendChild(indicator);
+
+  function update() {
+    indicator.style.display = navigator.onLine ? 'none' : 'block';
+  }
+  window.addEventListener('online', update);
+  window.addEventListener('offline', update);
+  update();
 }
 
 function updateThemeBtn(theme) {
