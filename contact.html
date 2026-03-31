@@ -222,6 +222,10 @@ a { text-decoration: none; color: inherit; }
 
 .action-btn-gold:hover { background: rgba(251,191,36,0.08); border-color: var(--gold); }
 
+.action-btn.followup-active { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: var(--amber); }
+.action-btn.type-active.action-btn-green { background: rgba(78,203,113,0.12); }
+.action-btn.type-active.action-btn-teal { background: rgba(45,212,191,0.12); }
+.action-btn.type-active.action-btn-amber { background: rgba(245,158,11,0.12); }
 .action-btn-gold.vip-active {
   background: rgba(251,191,36,0.15);
   border-color: var(--gold);
@@ -1014,19 +1018,23 @@ a { text-decoration: none; color: inherit; }
 
     html += '</div>';
 
-    // Section 2: Quick Actions
+    // Section 2: Labels
+    var ct = (c.contact_type || '').toLowerCase();
+    var hasFollowUp = !!c.follow_up_date;
+    html += '<div class="section-label">Labels</div>';
+    html += '<div class="actions-grid">';
+    html += '<button class="action-btn ' + (c.vip ? 'action-btn-gold vip-active' : 'action-btn-gold') + '" onclick="toggleContactVip(this)">&#' + (c.vip ? '9733' : '9734') + '; VIP</button>';
+    html += '<button class="action-btn ' + (hasFollowUp ? 'action-btn-amber followup-active' : 'action-btn-neutral') + '" onclick="toggleContactFollowUp(this)">' + (hasFollowUp ? '🔔 Needs Follow-Up' : '🔔 Follow Up') + '</button>';
+    html += '<button class="action-btn ' + (ct === 'founder' ? 'action-btn-green type-active' : 'action-btn-neutral') + ' type-btn" data-type="founder" onclick="setContactTypeDetail(\'founder\',this)">Founder</button>';
+    html += '<button class="action-btn ' + (ct === 'investor' ? 'action-btn-teal type-active' : 'action-btn-neutral') + ' type-btn" data-type="investor" onclick="setContactTypeDetail(\'investor\',this)">Investor</button>';
+    html += '<button class="action-btn ' + (ct === 'corporate' ? 'action-btn-amber type-active' : 'action-btn-neutral') + ' type-btn" data-type="corporate" onclick="setContactTypeDetail(\'corporate\',this)">Corporate</button>';
+    html += '</div>';
+
+    // Section 2b: Quick Actions
     html += '<div class="section-label">Quick Actions</div>';
     html += '<div class="actions-grid">';
     html += '<button class="action-btn action-btn-teal" onclick="openModal(\'draftEmailModal\')">Draft Email</button>';
     html += '<button class="action-btn action-btn-green" onclick="openModal(\'draftIntroModal\')">Draft Intro</button>';
-    html += '<button class="action-btn action-btn-amber" onclick="openModal(\'followUpModal\')">Set Follow-up</button>';
-
-    if (c.vip) {
-      html += '<button class="action-btn action-btn-gold vip-active" onclick="openVipModal()">&#9733; VIP</button>';
-    } else {
-      html += '<button class="action-btn action-btn-gold" onclick="openVipModal()">Mark as VIP</button>';
-    }
-
     html += '<button class="action-btn action-btn-neutral" onclick="openModal(\'enrichModal\')">Request Enrichment</button>';
     html += '</div>';
 
@@ -1192,6 +1200,105 @@ function showModalSuccess(id) {
   if (step1) step1.style.display = 'none';
   if (success) success.style.display = 'block';
   setTimeout(function() { closeModal(id); }, 2000);
+}
+
+// ── Toggle VIP from contact detail ──
+async function toggleContactVip(btnEl) {
+  var cd = window._vsdrContactData ? window._vsdrContactData() : null;
+  if (!cd) return;
+  var makeVip = !cd.vip;
+
+  // UI feedback
+  btnEl.disabled = true;
+  try {
+    await fetch('/api/airtable-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supabaseId: cd.id,
+        supabaseFields: { vip: makeVip },
+        airtableId: cd.airtable_id || undefined,
+        fields: cd.airtable_id ? { VIP: makeVip } : undefined
+      })
+    });
+    cd.vip = makeVip;
+    btnEl.innerHTML = (makeVip ? '&#9733;' : '&#9734;') + ' VIP';
+    if (makeVip) { btnEl.classList.add('vip-active'); }
+    else { btnEl.classList.remove('vip-active'); }
+  } catch (e) { console.error('VIP toggle failed:', e); }
+  btnEl.disabled = false;
+}
+
+// ── Toggle Follow-Up from contact detail ──
+async function toggleContactFollowUp(btnEl) {
+  var cd = window._vsdrContactData ? window._vsdrContactData() : null;
+  if (!cd) return;
+  var hasFollowUp = !!cd.follow_up_date;
+  var makeFollowUp = !hasFollowUp;
+
+  var followUpDate = null;
+  if (makeFollowUp) {
+    var d = new Date(); d.setDate(d.getDate() + 7);
+    followUpDate = d.toISOString().split('T')[0];
+  }
+
+  btnEl.disabled = true;
+  try {
+    await fetch('/api/airtable-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supabaseId: cd.id,
+        supabaseFields: { follow_up_date: followUpDate, follow_up_reason: makeFollowUp ? 'Manual flag from VSDR' : null },
+        airtableId: cd.airtable_id || undefined,
+        fields: cd.airtable_id ? { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : '' } : undefined
+      })
+    });
+    cd.follow_up_date = followUpDate;
+    btnEl.innerHTML = makeFollowUp ? '🔔 Needs Follow-Up' : '🔔 Follow Up';
+    if (makeFollowUp) { btnEl.classList.remove('action-btn-neutral'); btnEl.classList.add('action-btn-amber', 'followup-active'); }
+    else { btnEl.classList.remove('action-btn-amber', 'followup-active'); btnEl.classList.add('action-btn-neutral'); }
+  } catch (e) { console.error('Follow-up toggle failed:', e); }
+  btnEl.disabled = false;
+}
+
+// ── Set Contact Type from contact detail ──
+async function setContactTypeDetail(newType, btnEl) {
+  var cd = window._vsdrContactData ? window._vsdrContactData() : null;
+  if (!cd) return;
+  var isActive = btnEl.classList.contains('type-active');
+  var typeValue = isActive ? 'other' : newType;
+
+  var airtableTypeMap = { 'founder': 'Founder', 'investor': 'Investor - VC', 'corporate': 'Corporate', 'other': '' };
+
+  // Deactivate all type buttons, activate clicked one
+  document.querySelectorAll('.type-btn').forEach(function(b) {
+    b.classList.remove('type-active', 'action-btn-green', 'action-btn-teal', 'action-btn-amber');
+    b.classList.add('action-btn-neutral');
+  });
+  if (!isActive) {
+    btnEl.classList.remove('action-btn-neutral');
+    btnEl.classList.add('type-active');
+    if (newType === 'founder') btnEl.classList.add('action-btn-green');
+    else if (newType === 'investor') btnEl.classList.add('action-btn-teal');
+    else if (newType === 'corporate') btnEl.classList.add('action-btn-amber');
+  }
+
+  btnEl.disabled = true;
+  try {
+    await fetch('/api/airtable-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        supabaseId: cd.id,
+        supabaseFields: { contact_type: typeValue },
+        airtableId: cd.airtable_id || undefined,
+        fields: cd.airtable_id ? { 'Contact Type': airtableTypeMap[typeValue] || '' } : undefined
+      })
+    });
+    cd.contact_type = typeValue;
+  } catch (e) { console.error('Set type failed:', e); }
+  btnEl.disabled = false;
 }
 
 async function confirmEnrichContact() {

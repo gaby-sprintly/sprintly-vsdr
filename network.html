@@ -883,8 +883,8 @@ a { text-decoration: none; color: inherit; }
     var section = document.getElementById('vipSection');
     var grid = document.getElementById('vipGrid');
 
-    // Don't show VIP section when VIP filter is active (they're already in main grid)
-    if (currentFilter === 'vip' || vipContacts.length === 0) {
+    // Only show VIP section on "All" tab. Hide on every other filter.
+    if (currentFilter !== 'all' || vipContacts.length === 0) {
       section.style.display = 'none';
       return;
     }
