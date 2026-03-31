@@ -1,11 +1,11 @@
 # VSDR - Virtual Strategy Data Room
 ## Product Requirements Document (PRD)
 
-**Version:** 2.2
-**Date:** March 30, 2026
+**Version:** 2.3
+**Date:** March 31, 2026
 **Author:** Gaby, Strategic Operator, Sprintly Partners
 **Owner:** Yousra (Youyou), Founder & CEO, Sprintly Partners
-**Status:** Feature-Complete (v2.2) — Proposal Lab Redesign
+**Status:** Feature-Complete (v2.3) — Auth, Proposal Lab Supabase, Design System Overhaul
 **Live URL:** https://vsdr.vercel.app
 **Repository:** github.com/gaby-sprintly/sprintly-vsdr
 
@@ -19,8 +19,10 @@ The VSDR replaces fragmented tools (spreadsheets, CRM dashboards, slide decks) w
 
 **Key metrics:**
 - 5,952 contacts synced from Airtable
-- 20 pages across 12 functional modules
+- 18 pages across 12 functional modules
 - Live Supabase backend with bi-directional Airtable sync
+- Supabase Auth with login/signup flow
+- Proposal Lab fully backed by Supabase (proposals, sections, CRs, comments)
 - Auto-deployed via Vercel from GitHub
 
 ---
@@ -105,11 +107,9 @@ Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and D
 | Theme | Dark mode (charcoal base) |
 | Primary font (display) | Space Grotesk (700, 600, 500) |
 | Secondary font (body) | General Sans (400, 500, 600) |
-| BMC page font (display) | Clash Display |
-| BMC page font (body) | Satoshi |
-| Border radius | 2px (sharp, minimal) |
-| Card elevation | 1px border, no shadows |
-| Transitions | 0.15s ease (interactions), 0.25s ease (navigation) |
+| Border radius | 6px (buttons), 2px (cards) |
+| Card elevation | 1px border, box-shadow on hover for primary buttons |
+| Transitions | 0.2s ease (buttons with translateY lift), 0.15s ease (UI) |
 
 ### 5.2 Color Palette
 
@@ -192,7 +192,7 @@ Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and D
 **Features:**
 - 9-block canvas layout (Key Partners, Key Activities, Key Resources, Value Propositions, Customer Relationships, Channels, Customer Segments, Cost Structure, Revenue Streams)
 - Each block is expandable with detailed content
-- Distinct visual styling (Clash Display + Satoshi fonts)
+- Uses shared design system fonts (Space Grotesk + General Sans)
 - Animated entrance transitions
 
 **Content Source:** Static (manually maintained)
@@ -365,6 +365,11 @@ Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and D
   - Pipeline Status summary
   - Weekly Digest
   - Contact Growth (Chart.js line chart)
+- **Proposal Analytics (v2.3):**
+  - Proposal pipeline status bars (Draft/In Review/Approved/Sent)
+  - Proposal status distribution doughnut chart
+  - Section approval rate bars
+  - Recent proposals list with status badges
 - **Export actions:**
   - "Export Contacts CSV" — downloads real CSV from Supabase data
   - "Export Report PDF" — coming soon placeholder
@@ -435,7 +440,10 @@ Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and D
 - **New Proposal modal:** Client name, proposal type (Full Proposal, Quick Pitch, Program Proposal, Follow-Up, Case Study), description
 - **Seed data:** NovaTech Ventures sample proposal with all rich content types pre-loaded
 
-**Data source:** localStorage (primary), Supabase vsdr_proposals table (sync target)
+**Features (v2.3):**
+- **Draft Email button:** Shows on approved/sent proposals. Creates a change request for Gaby to draft email on Yousra@sprintlypartners.com with proposal share link.
+
+**Data source:** Supabase (proposals, proposal_sections, proposal_change_requests, proposal_comments tables)
 
 ---
 
@@ -460,9 +468,15 @@ Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and D
 - **Status workflow:** Draft → In Review → Approved → Sent. Section-level approval (Approve/Request Changes per section). Final approval requires all sections approved.
 - **Share link:** Generates UUID token, creates shareable client-facing URL
 - **PDF export:** Renders the full proposal-view.html visual style into a hidden div before exporting via html2pdf.js — produces a STUNNING PDF, not a text dump
-- **Auto-save:** Debounced 1.5s save to localStorage with save indicator
+- **Auto-save:** Debounced 1.5s save to Supabase with save indicator
+- **Drag-and-drop reorder:** Sections can be dragged to reorder
+- **Gaby Fill:** Button on empty sections sends a `[GABY-FILL]` change request for Gaby to generate content
+- **Gaby Fill All:** Top bar button fills ALL empty sections in one pass
+- **Comments:** Non-actionable notes separate from Change Requests
+- **Text alignment:** Sections support left/center/right alignment via `content_json.text_align`
+- **WYSIWYG preview:** Editor preview uses the same renderers as the client view (metrics cards, Gantt charts, pricing tables all render identically)
 
-**Data source:** localStorage (primary)
+**Data source:** Supabase (proposals, proposal_sections, proposal_change_requests, proposal_comments)
 
 ---
 
@@ -489,53 +503,86 @@ Two parallel pipelines: Code Deployment (GitHub → Vercel → Production) and D
 - **URL parameters:** `?token=TOKEN` for shared links, `?id=ID` for direct access, `?autoexport=1` triggers automatic PDF download
 - **Print/PDF optimized:** @media print rules ensure cover page fills first page, no mid-section page breaks, proper margins
 
-**Data source:** localStorage (by share_token or id match), Supabase fallback
+**Data source:** Supabase (by share_token or id)
 
 ---
 
-### Proposal Lab — Data Schema
+### Proposal Lab — Database Schema (Supabase)
+
+**4 tables, all with RLS: public reads, authenticated writes. Gaby uses service_role key.**
 
 ```
-Proposal Object (localStorage key: vsdr-proposals)
-├── id: string (UUID)
-├── project_id: string
-├── title: string
-├── client_name: string
-├── client_contact: string
-├── proposal_type: "full" | "quick" | "program" | "followup" | "case_study"
-├── proposal_index: string (e.g., "SP-2026-001")
-├── slug: string
-├── description: string
-├── status: "draft" | "in_review" | "approved" | "sent" | "archived"
-├── share_token: string | null (UUID for client share links)
-├── sections: Array
-│   ├── id: string (UUID)
-│   ├── sort_order: number
-│   ├── title: string
-│   ├── content_type: "text" | "table" | "image" | "metrics" | "timeline" | "callout" | "divider"
-│   ├── content: string (for text/callout types)
-│   ├── callout_text: string (optional pull quote for text sections)
-│   ├── table_data: { headers: string[], rows: string[][], recommended?: string }
-│   ├── metrics_data: Array<{ label: string, value: string, icon: string }>
-│   ├── timeline_data: Array<{ phase: string, weeks: string, color: string }>
-│   ├── image_url: string | null
-│   └── status: "pending" | "edited" | "commented" | "approved"
-├── comments: Array (Change Requests)
-│   ├── id: string (UUID)
-│   ├── section_id: string
-│   ├── author: string
-│   ├── text: string
-│   ├── created_at: string (ISO)
-│   └── resolved: boolean
-├── metadata: { created_by: string, version: number }
-├── created_at: string (ISO)
-└── updated_at: string (ISO)
+proposals
+├── id: UUID (PK)
+├── title: TEXT
+├── client_name: TEXT
+├── client_contact: TEXT
+├── proposal_type: TEXT (Full Proposal, Quick Pitch, Case Study, etc.)
+├── proposal_index: TEXT (e.g., "SP-2026-001")
+├── slug: TEXT
+├── description: TEXT
+├── status: TEXT (draft | in_review | approved | sent | archived)
+├── share_token: TEXT UNIQUE (UUID for client share links)
+├── cover_data: JSONB
+├── metadata: JSONB ({created_by, version})
+├── created_at: TIMESTAMPTZ
+└── updated_at: TIMESTAMPTZ
+
+proposal_sections
+├── id: UUID (PK)
+├── proposal_id: UUID (FK → proposals.id CASCADE)
+├── sort_order: INTEGER
+├── title: TEXT
+├── content_type: TEXT (text | table | image | metrics | timeline | callout | divider | cover | pricing)
+├── content: TEXT (plain text for text/callout types)
+├── content_json: JSONB ({text_align, callout_text, callout_attribution, etc.})
+├── status: TEXT (pending | edited | change_requested | approved)
+├── callout_text: TEXT
+├── callout_attribution: TEXT
+├── image_url: TEXT
+├── table_data: JSONB ({headers:[], rows:[[]], recommended:""})
+├── metrics_data: JSONB ([{label, value, icon, sub}])
+├── timeline_data: JSONB ([{phase, weeks, color}])
+├── created_at: TIMESTAMPTZ
+└── updated_at: TIMESTAMPTZ
+
+proposal_change_requests
+├── id: UUID (PK)
+├── proposal_id: UUID (FK → proposals.id)
+├── section_id: UUID (FK → proposal_sections.id CASCADE)
+├── author: TEXT (Yousra or Gaby)
+├── message: TEXT (prefixed [GABY-FILL] or [DRAFT-EMAIL] for automated workflows)
+├── status: TEXT (open | in_progress | resolved | dismissed)
+├── resolved_by: TEXT
+├── response: TEXT
+├── created_at: TIMESTAMPTZ
+└── resolved_at: TIMESTAMPTZ
+
+proposal_comments (non-actionable notes)
+├── id: UUID (PK)
+├── proposal_id: UUID (FK → proposals.id)
+├── section_id: UUID (FK → proposal_sections.id CASCADE)
+├── author: TEXT
+├── message: TEXT
+└── created_at: TIMESTAMPTZ
+
+knowledge_base
+├── id: UUID (PK)
+├── title: TEXT
+├── source: TEXT (google_drive | manual | url)
+├── source_id: TEXT (Google Drive file ID)
+├── source_url: TEXT
+├── folder_id: TEXT
+├── content: TEXT
+├── content_type: TEXT (text | metrics | case_study | methodology | pitch | bio | testimonial)
+├── tags: JSONB
+├── metadata: JSONB
+├── created_by: TEXT
+├── created_at: TIMESTAMPTZ
+└── updated_at: TIMESTAMPTZ
 ```
 
-**Supabase table (sync target):** vsdr_proposals
-- RLS enabled (currently blocks publishable key reads)
-- Primary storage is localStorage; Gaby syncs server-side
-- Future: fix RLS policies for direct browser access
+**RLS Policy:** Public reads (anon key), authenticated writes (service_role key for Gaby, Supabase Auth for CEO)
 
 ---
 
@@ -731,16 +778,13 @@ Available at vsdr.vercel.app
 
 | Concern | Mitigation |
 |---------|-----------|
-| API key exposure | Publishable key only (read-level), RLS enforced |
-| Data modification | Write operations require service key (server-side only) |
-| Authentication | No user auth required (private URL, Vercel access) |
+| API key exposure | Publishable key (reads only), service_role key (Gaby server-side) |
+| Data modification | Proposal writes require Supabase Auth (authenticated role) |
+| Authentication | Supabase Auth with email/password (login.html with signup flow) |
+| Authorization | RLS: public reads, authenticated writes on proposal tables |
 | CORS | Supabase CORS configured for vsdr.vercel.app |
 | Input sanitization | All user input escaped via textContent/innerHTML patterns |
-
-**Future considerations:**
-- Vercel password protection for the deployment
-- Supabase Row Level Security policies
-- Auth integration (Supabase Auth or Vercel Auth)
+| CSP | Content-Security-Policy headers on all pages |
 
 ---
 
@@ -790,14 +834,28 @@ Available at vsdr.vercel.app
 - [x] Share links with UUID tokens
 - [x] NovaTech sample proposal with all content types
 
+### Phase 3.7: Production Hardening (Complete — v2.3)
+- [x] Supabase Auth with login/signup flow (login.html)
+- [x] Proposal Lab fully migrated to Supabase (4 tables)
+- [x] RLS policies: public reads, authenticated writes
+- [x] Design system overhaul: consistent 6px border-radius, hover lift effects, box-shadows
+- [x] Font standardization: all pages use Space Grotesk + General Sans (fixed bmc.html, goals.html)
+- [x] Proposal Analytics on Reports page
+- [x] Draft Email button on approved proposals
+- [x] Gaby Fill / Gaby Fill All for empty sections
+- [x] Comments system (separate from Change Requests)
+- [x] Knowledge Base table (Supabase) with Google Drive integration
+- [x] Text alignment support (content_json.text_align)
+- [x] Drag-and-drop section reordering
+- [x] Shared proposal-renderers.js for WYSIWYG editor preview
+- [x] Gaby Skill File (SKILL-proposal-lab.md) for API operations
+
 ### Phase 4: Enhancement (Planned)
 - [ ] Supabase table for interactions (replace localStorage)
 - [ ] Supabase table for outreach drafts (replace localStorage)
 - [ ] Email integration: send outreach directly from VSDR
 - [ ] PDF export for reports
 - [ ] Real-time Supabase subscriptions (live updates without refresh)
-- [ ] Auth: password protection or Supabase Auth
-- [ ] Shared/public views for stakeholders
 - [ ] Mobile PWA (installable, offline support)
 - [ ] Notification system (in-app alerts for overdue follow-ups)
 - [ ] AI-powered match suggestions (automated, not manual)
@@ -827,10 +885,22 @@ sprintly-vsdr/
 ├── proposals.html      # Proposal Lab Dashboard
 ├── proposal.html       # Proposal Editor
 ├── proposal-view.html  # Client-Facing Proposal View
+├── login.html          # Login & Signup
 ├── favicon.svg         # VSDR favicon
-├── network-data.json   # (legacy) Static network data
+├── css/
+│   └── design-system.css  # Shared design system (variables, buttons, sidebar, theme)
+├── js/
+│   ├── auth.js            # Supabase Auth (signIn, signUp, signOut, requireAuth)
+│   ├── supabase-client.js # Supabase REST API wrapper
+│   ├── sidebar.js         # Shared sidebar + theme toggle
+│   ├── proposal-renderers.js  # Shared section renderers (text, metrics, timeline, pricing, etc.)
+│   └── proposal-editor.js    # Editor-specific logic (panel, drag-drop, save)
+├── sql/
+│   └── schema-proposals.sql  # Proposal Lab schema (3 tables + seed data)
 ├── projects-data.json  # Static project data
+├── SKILL-proposal-lab.md  # Gaby's skill file for Proposal Lab API operations
 ├── BUILD-PLAN.md       # Build plan document
+├── QUALITY_REVIEW.md   # Codebase quality review
 └── PRD-VSDR.md         # This document
 ```
 
@@ -872,4 +942,4 @@ sprintly-vsdr/
 ---
 
 *Document maintained by Gaby, Strategic Operator, Sprintly Partners.*
-*Last updated: March 30, 2026 — v2.2 (Proposal Lab Redesign)*
+*Last updated: March 31, 2026 — v2.3 (Auth, Supabase Migration, Design System Overhaul)*
