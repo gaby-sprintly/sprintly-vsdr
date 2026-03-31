@@ -267,7 +267,7 @@ function saveTable(id){
 }
 
 function trigImg(id){document.getElementById('imgIn-'+id).click();}
-function doImg(id,input){if(input.files[0]){var r=new FileReader();r.onload=function(e){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=e.target.result;qSave(id,{image_url:e.target.result});renderPreview();openPanel(id);};r.onerror=function(){showToast('Image read failed','error');};r.readAsDataURL(input.files[0]);}}
+function doImg(id,input){var file=input.files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)){showToast('Only JPEG, PNG, WebP, GIF images supported','error');return;}if(file.size>2*1024*1024){showToast('Image must be under 2MB','error');return;}var r=new FileReader();r.onload=function(e){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=e.target.result;qSave(id,{image_url:e.target.result});renderPreview();openPanel(id);};r.onerror=function(){showToast('Image read failed','error');};r.readAsDataURL(file);}
 function rmImg(id){var s=secs.find(function(x){return x.id===id;});if(s)s.image_url=null;qSave(id,{image_url:null});renderPreview();openPanel(id);}
 
 async function approveSec(id){

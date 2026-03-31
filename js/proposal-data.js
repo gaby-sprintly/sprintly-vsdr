@@ -120,10 +120,10 @@ async function deleteSection(sectionId) {
 }
 
 async function reorderSections(proposalId, orderedIds) {
-  const promises = orderedIds.map((id, i) =>
-    sbUpdate('proposal_sections', 'id=eq.' + id, { sort_order: i + 1 })
-  );
-  await Promise.all(promises);
+  // Batch: build array of updates and send as individual calls but serialized
+  for (let i = 0; i < orderedIds.length; i++) {
+    await sbUpdate('proposal_sections', 'id=eq.' + orderedIds[i], { sort_order: i + 1 });
+  }
 }
 
 // ═══════════════════════════
@@ -194,7 +194,7 @@ function getTemplateSections(proposalType, clientName) {
       { title: 'Client Testimonial', content_type: 'callout', content: 'Client quote goes here...', content_json: { attribution: 'Client Name, Title' } }
     ]
   };
-  return templates[proposalType] || templates['Full Proposal'];
+  return templates[proposalType] || [];
 }
 
 // ═══════════════════════════
@@ -225,38 +225,15 @@ async function deleteComment(id) {
 
 // ═══════════════════════════
 // Knowledge Base
+// (Dead code — outreach.html uses its own direct fetch() calls to knowledge_base)
 // ═══════════════════════════
-
-async function fetchKBEntries(filter) {
-  return sbGet('knowledge_base', (filter || '') + '&order=created_at.desc');
-}
-
-async function searchKB(query) {
-  return sbGet('knowledge_base', 'or=(title.ilike.*' + encodeURIComponent(query) + '*,content.ilike.*' + encodeURIComponent(query) + '*)&order=created_at.desc');
-}
-
-async function fetchKBByType(contentType) {
-  return sbGet('knowledge_base', 'content_type=eq.' + contentType + '&order=created_at.desc');
-}
-
-async function fetchKBByFolder(folderId) {
-  return sbGet('knowledge_base', 'folder_id=eq.' + folderId + '&order=created_at.desc');
-}
-
-async function createKBEntry(data) {
-  if (!data.id) data.id = crypto.randomUUID();
-  const rows = await sbInsert('knowledge_base', data, { returnData: true });
-  return rows && rows.length ? rows[0] : null;
-}
-
-async function updateKBEntry(id, fields) {
-  fields.updated_at = new Date().toISOString();
-  return sbUpdate('knowledge_base', 'id=eq.' + id, fields);
-}
-
-async function deleteKBEntry(id) {
-  return sbDelete('knowledge_base', 'id=eq.' + id);
-}
+// async function fetchKBEntries(filter) { ... }
+// async function searchKB(query) { ... }
+// async function fetchKBByType(contentType) { ... }
+// async function fetchKBByFolder(folderId) { ... }
+// async function createKBEntry(data) { ... }
+// async function updateKBEntry(id, fields) { ... }
+// async function deleteKBEntry(id) { ... }
 
 function generateProposalIndex(existingProposals) {
   const year = new Date().getFullYear();

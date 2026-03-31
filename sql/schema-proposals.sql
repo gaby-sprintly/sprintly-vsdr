@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS proposals (
   client_name TEXT,
   client_contact TEXT,
   proposal_type TEXT DEFAULT 'Full Proposal',
-  proposal_index TEXT,
+  proposal_index TEXT, -- TODO: proposal_index should ideally be UNIQUE to prevent duplicate SP-XXXX-NNN codes
   slug TEXT,
   description TEXT,
   status TEXT DEFAULT 'draft' CHECK (status IN ('draft','in_review','approved','sent','archived')),

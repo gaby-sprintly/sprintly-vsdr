@@ -238,13 +238,13 @@ async function draftEmail(proposalId, title, clientName, clientContact) {
   var firstSectionId = sections[0].id;
 
   var shareToken = proposal.share_token;
-  var shareUrl = shareToken ? 'https://vsdr.vercel.app/proposal-view.html?token=' + shareToken : null;
+  var shareUrl = shareToken ? location.origin + '/proposal-view.html?token=' + shareToken : null;
 
   // If no share token, generate one first
   if (!shareUrl) {
     shareToken = crypto.randomUUID();
     await sbUpdate('proposals', 'id=eq.' + proposalId, { share_token: shareToken });
-    shareUrl = 'https://vsdr.vercel.app/proposal-view.html?token=' + shareToken;
+    shareUrl = location.origin + '/proposal-view.html?token=' + shareToken;
     proposal.share_token = shareToken;
   }
 
