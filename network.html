@@ -576,7 +576,7 @@ a { text-decoration: none; color: inherit; }
     </div>
     <div class="stat-block">
       <div class="stat-number" id="statFollowups"><div class="stat-loading"></div></div>
-      <div class="stat-label">Follow-ups Due</div>
+      <div class="stat-label">Needs Follow-Up</div>
     </div>
     <div class="stat-block">
       <div class="stat-number" id="statEnriched"><div class="stat-loading"></div></div>
@@ -688,7 +688,7 @@ a { text-decoration: none; color: inherit; }
       fetchCount('vip=eq.true').then(function(n) { document.getElementById('statVips').textContent = n; }),
       fetchCount('contact_type=eq.founder').then(function(n) { document.getElementById('statFounders').textContent = n; }),
       fetchCount('contact_type=eq.investor').then(function(n) { document.getElementById('statInvestors').textContent = n; }),
-      fetchCount('follow_up_date=lte.' + today() + '&follow_up_date=not.is.null').then(function(n) { document.getElementById('statFollowups').textContent = n; }),
+      fetchCount('follow_up_date=not.is.null').then(function(n) { document.getElementById('statFollowups').textContent = n; }),
       fetchCount('enrichment_status=eq.enriched').then(function(n) { enrichedCount = n; })
     ]).then(function() {
       var pct = totalCount > 0 ? Math.round((enrichedCount / totalCount) * 100) : 0;
@@ -709,7 +709,7 @@ a { text-decoration: none; color: inherit; }
       case 'corporate': base += '&contact_type=eq.corporate'; break;
       case 'advisor': base += '&contact_type=eq.advisor'; break;
       case 'vip': base += '&vip=eq.true'; break;
-      case 'followup': base += '&follow_up_date=lte.' + td + '&follow_up_date=not.is.null'; break;
+      case 'followup': base += '&follow_up_date=not.is.null'; break;
       case 'enrichment': base += '&enrichment_status=neq.enriched'; break;
     }
 
@@ -732,7 +732,7 @@ a { text-decoration: none; color: inherit; }
       case 'corporate': params = 'contact_type=eq.corporate'; break;
       case 'advisor': params = 'contact_type=eq.advisor'; break;
       case 'vip': params = 'vip=eq.true'; break;
-      case 'followup': params = 'follow_up_date=lte.' + td + '&follow_up_date=not.is.null'; break;
+      case 'followup': params = 'follow_up_date=not.is.null'; break;
       case 'enrichment': params = 'enrichment_status=neq.enriched'; break;
       default: params = ''; break;
     }
@@ -1180,6 +1180,9 @@ async function setContactType(contactId, airtableId, newType, btnEl) {
   } catch (e) {
     console.error('Set type failed:', e);
   }
+
+  // Refresh page data so filter tabs update
+  if (typeof window.initPage === 'function') window.initPage();
 }
 
 // ── Toggle Follow-Up ──
@@ -1214,6 +1217,9 @@ async function toggleFollowUp(contactId, airtableId, makeFollowUp, btnEl) {
   } catch (e) {
     console.error('Follow-up toggle failed:', e);
   }
+
+  // Refresh page data so filter tabs update
+  if (typeof window.initPage === 'function') window.initPage();
 }
 
 function closeEnrich() {
