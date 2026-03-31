@@ -1,1094 +1,671 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; font-src https://fonts.gstatic.com https://cdn.fontshare.com; connect-src 'self' https://gxunrnyehltpbgdodkkm.supabase.co; img-src 'self' data: blob: https:;">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprintly Partners — Business Model Canvas</title>
-
-    <!-- Fonts -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="css/design-system.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategy — VSDR</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<!-- Clash Display + Satoshi for canvas content -->
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/design-system.css">
 <style>
-        /* ===========================================
-           THEME — Dark Premium + Sprintly Green
-           =========================================== */
+/* ── bmc.html page-specific styles ── */
 
-        /* ===========================================
-           RESET & BASE
-           =========================================== */
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* Canvas typography — Clash Display + Satoshi */
+.canvas-title {
+  font-family: 'Clash Display', var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 40px);
+  color: var(--n50);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.canvas-subtitle {
+  font-family: 'Satoshi', var(--body);
+  font-size: 15px;
+  color: var(--n400);
+  margin-bottom: 8px;
+}
+.canvas-date {
+  font-family: var(--body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+}
 
-        html {
-            height: 100%;
-            overflow-x: hidden;
-        }
+/* Canvas section label */
+.canvas-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.canvas-section-eyebrow {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--green);
+  margin-bottom: 6px;
+}
 
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            height: 100%;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+/* ────────────────────────────────────
+   BMC Grid — classic 9-box layout
+   Top row: 5 columns (Partners spans 2 rows, Activities+Resources stacked, Value spans 2 rows, Relations+Channels stacked, Segments spans 2 rows)
+   Bottom row: 2 columns (Costs 3/5, Revenue 2/5)
+   ──────────────────────────────────── */
+.bmc-canvas {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 12px;
+}
 
-        /* ===========================================
-           SIDEBAR
-           =========================================== */
-        .pulse-dot {
-            width: 8px; height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse-sidebar 2s ease-in-out infinite;
-        }
-        @keyframes pulse-sidebar {
-            0%, 100% { transform: scale(0.8); opacity: 0.6; }
-            50% { transform: scale(1.2); opacity: 1.0; }
-        }
-        .sidebar-version {
-            padding: 0 27px;
-            font-family: var(--font-body);
-            font-size: 12px;
-            color: var(--text-muted);
-            opacity: 0.5;
-        }
+/* Grid placement */
+.bmc-partners   { grid-column: 1; grid-row: 1 / 3; }
+.bmc-activities { grid-column: 2; grid-row: 1; }
+.bmc-resources  { grid-column: 2; grid-row: 2; }
+.bmc-value      { grid-column: 3; grid-row: 1 / 3; }
+.bmc-relations  { grid-column: 4; grid-row: 1; }
+.bmc-channels   { grid-column: 4; grid-row: 2; }
+.bmc-segments   { grid-column: 5; grid-row: 1 / 3; }
+.bmc-costs      { grid-column: 1 / 4; grid-row: 3; }
+.bmc-revenue    { grid-column: 4 / 6; grid-row: 3; }
 
-        /* Hamburger */
+/* BMC Block base */
+.bmc-block {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.bmc-block:hover { border-color: rgba(255,255,255,0.12); }
 
-        /* ===========================================
-           MAIN CONTENT WRAPPER
-           =========================================== */
-        .bmc-main {
-            margin-left: var(--sidebar-w);
-            height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
-        }
+/* Colored top accent bar */
+.bmc-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.bmc-partners::before   { background: var(--teal); }
+.bmc-activities::before { background: var(--purple); }
+.bmc-resources::before  { background: var(--amber); }
+.bmc-value::before      { background: var(--green); }
+.bmc-relations::before  { background: var(--coral); }
+.bmc-channels::before   { background: var(--gold); }
+.bmc-segments::before   { background: #60A5FA; } /* blue */
+.bmc-costs::before      { background: var(--n400); }
+.bmc-revenue::before    { background: var(--green); }
 
-        /* ===========================================
-           SLIDE CONTAINER — viewport-locked
-           =========================================== */
-        .slide {
-            width: calc(100vw - var(--sidebar-w));
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            scroll-snap-align: start;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            padding: var(--slide-padding);
-        }
+/* Block inner */
+.bmc-block-inner {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-        .slide-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            max-height: 100%;
-            overflow: hidden;
-        }
+/* Block header */
+.bmc-block-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.bmc-block-icon {
+  width: 32px; height: 32px;
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.bmc-partners .bmc-block-icon   { background: rgba(45,212,191,0.12); }
+.bmc-activities .bmc-block-icon { background: rgba(167,139,250,0.12); }
+.bmc-resources .bmc-block-icon  { background: rgba(245,158,11,0.12); }
+.bmc-value .bmc-block-icon      { background: rgba(78,203,113,0.12); }
+.bmc-relations .bmc-block-icon  { background: rgba(239,68,68,0.12); }
+.bmc-channels .bmc-block-icon   { background: rgba(251,191,36,0.12); }
+.bmc-segments .bmc-block-icon   { background: rgba(96,165,250,0.12); }
+.bmc-costs .bmc-block-icon      { background: rgba(148,163,184,0.12); }
+.bmc-revenue .bmc-block-icon    { background: rgba(78,203,113,0.12); }
 
-        /* ===========================================
-           PROGRESS BAR
-           =========================================== */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: var(--sidebar-w);
-            height: 3px;
-            background: var(--accent);
-            z-index: 100;
-            transition: width 0.35s var(--ease-out-expo);
-            box-shadow: 0 0 12px var(--accent-glow);
-        }
+.bmc-block-name {
+  font-family: 'Clash Display', var(--display);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--n50);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  line-height: 1.2;
+}
 
-        /* ===========================================
-           NAV DOTS
-           =========================================== */
-        .nav-dots {
-            position: fixed;
-            right: clamp(0.75rem, 2vw, 1.5rem);
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 90;
-        }
-        .nav-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            border: none; cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0.4;
-        }
-        .nav-dot.active {
-            background: var(--accent);
-            opacity: 1;
-            box-shadow: 0 0 8px var(--accent-glow);
-            transform: scale(1.3);
-        }
+/* Expand toggle */
+.bmc-expand-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--n400);
+  cursor: pointer;
+  padding: 2px;
+  flex-shrink: 0;
+}
+.bmc-expand-btn svg {
+  width: 16px; height: 16px;
+  transition: transform 0.25s ease;
+  display: block;
+}
+.bmc-block.expanded .bmc-expand-btn svg {
+  transform: rotate(180deg);
+}
 
-        /* ===========================================
-           SLIDE NUMBER
-           =========================================== */
-        .slide-number {
-            position: absolute;
-            bottom: clamp(0.75rem, 2vw, 1.5rem);
-            right: clamp(1.5rem, 3vw, 3rem);
-            font-family: var(--font-body);
-            font-size: var(--small-size);
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-        }
+/* Block content */
+.bmc-block-content {
+  flex: 1;
+  overflow: hidden;
+}
+.bmc-block-preview {
+  /* Always visible summary */
+}
+.bmc-block-full {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.bmc-block.expanded .bmc-block-full {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
 
-        /* ===========================================
-           TYPOGRAPHY
-           =========================================== */
-        h1 {
-            font-family: var(--font-display);
-            font-size: var(--title-size);
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -0.02em;
-        }
-        h2 {
-            font-family: var(--font-display);
-            font-size: var(--h2-size);
-            font-weight: 600;
-            line-height: 1.15;
-            letter-spacing: -0.01em;
-            margin-bottom: var(--content-gap);
-        }
-        h3 {
-            font-family: var(--font-display);
-            font-size: var(--h3-size);
-            font-weight: 600;
-            line-height: 1.2;
-            color: var(--accent);
-        }
-        p, li {
-            font-size: var(--body-size);
-            line-height: 1.5;
-            color: var(--text-secondary);
-        }
+/* Content items */
+.bmc-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.bmc-items li {
+  font-family: 'Satoshi', var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  line-height: 1.4;
+  padding-left: 12px;
+  position: relative;
+}
+.bmc-items li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+.bmc-partners   .bmc-items li::before { color: var(--teal); }
+.bmc-activities .bmc-items li::before { color: var(--purple); }
+.bmc-resources  .bmc-items li::before { color: var(--amber); }
+.bmc-value      .bmc-items li::before { color: var(--green); }
+.bmc-relations  .bmc-items li::before { color: var(--coral); }
+.bmc-channels   .bmc-items li::before { color: var(--gold); }
+.bmc-segments   .bmc-items li::before { color: #60A5FA; }
+.bmc-costs      .bmc-items li::before { color: var(--n400); }
+.bmc-revenue    .bmc-items li::before { color: var(--green); }
 
-        .accent { color: var(--accent); }
-        .label {
-            display: inline-block;
-            font-size: var(--tiny-size);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--accent);
-            margin-bottom: 0.4em;
-        }
+/* Preview badge count */
+.bmc-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--n400);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 2px 8px;
+  margin-top: 8px;
+}
 
-        /* ===========================================
-           ANIMATIONS
-           =========================================== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity var(--duration) var(--ease-out-expo),
-                        transform var(--duration) var(--ease-out-expo);
-        }
-        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
-        .slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
-        .slide.visible .reveal:nth-child(2) { transition-delay: 0.12s; }
-        .slide.visible .reveal:nth-child(3) { transition-delay: 0.19s; }
-        .slide.visible .reveal:nth-child(4) { transition-delay: 0.26s; }
-        .slide.visible .reveal:nth-child(5) { transition-delay: 0.33s; }
-        .slide.visible .reveal:nth-child(6) { transition-delay: 0.40s; }
+/* Traction slide */
+.traction-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+.traction-item {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.traction-icon-wrap {
+  width: 36px; height: 36px;
+  background: rgba(78,203,113,0.1);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.traction-text {
+  font-family: 'Satoshi', var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  line-height: 1.5;
+}
+.traction-text strong { color: var(--n50); font-weight: 600; }
 
-        /* ===========================================
-           BACKGROUNDS
-           =========================================== */
-        .bg-grid {
-            background-image:
-                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-            background-size: 60px 60px;
-        }
-        .bg-gradient::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse at 15% 85%, rgba(78,203,113,0.08) 0%, transparent 55%),
-                radial-gradient(ellipse at 85% 15%, rgba(78,203,113,0.05) 0%, transparent 50%);
-            pointer-events: none;
-        }
+/* Revenue rows */
+.rev-rows { display: flex; flex-direction: column; gap: 0; }
+.rev-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rev-row:last-child { border-bottom: none; }
+.rev-label {
+  font-family: 'Satoshi', var(--body);
+  font-size: 13px;
+  color: var(--n50);
+  font-weight: 500;
+}
+.rev-detail {
+  font-family: 'Satoshi', var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  text-align: right;
+  max-width: 60%;
+}
 
-        /* ===========================================
-           TITLE SLIDE
-           =========================================== */
-        .title-slide .slide-content {
-            align-items: center;
-            text-align: center;
-            gap: clamp(0.75rem, 2vh, 1.5rem);
-        }
-        .title-slide h1 { max-width: 900px; }
-        .title-slide .subtitle {
-            font-size: clamp(1rem, 1.8vw, 1.35rem);
-            color: var(--text-secondary);
-            max-width: 600px;
-        }
-        .title-slide .date {
-            font-size: var(--small-size);
-            color: var(--text-muted);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-        .title-divider {
-            width: 60px; height: 3px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
+/* Page header */
+.page-hero {
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
 
-        /* ===========================================
-           BMC CANVAS GRID (Slide 2)
-           Classic 9-box layout
-           =========================================== */
-        .bmc-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr;
-            gap: clamp(3px, 0.4vw, 6px);
-            flex: 1;
-            max-height: calc(100dvh - clamp(5rem, 10vh, 9rem));
-        }
-        .bmc-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: clamp(4px, 0.5vw, 8px);
-            padding: clamp(0.35rem, 0.8vw, 0.75rem);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.3s ease;
-        }
-        .bmc-box:hover { background: var(--bg-card-hover); }
-        .bmc-box h3 {
-            font-size: var(--tiny-size);
-            margin-bottom: clamp(0.15rem, 0.4vh, 0.35rem);
-            white-space: nowrap;
-        }
-        .bmc-box ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: clamp(1px, 0.2vh, 3px);
-        }
-        .bmc-box li {
-            font-size: var(--tiny-size);
-            color: var(--text-secondary);
-            line-height: 1.35;
-        }
-
-        /* Grid areas */
-        .bmc-partners   { grid-column: 1; grid-row: 1 / 3; }
-        .bmc-activities  { grid-column: 2; grid-row: 1; }
-        .bmc-resources   { grid-column: 2; grid-row: 2; }
-        .bmc-value       { grid-column: 3; grid-row: 1 / 3; }
-        .bmc-relations   { grid-column: 4; grid-row: 1; }
-        .bmc-channels    { grid-column: 4; grid-row: 2; }
-        .bmc-segments    { grid-column: 5; grid-row: 1 / 3; }
-        .bmc-costs       { grid-column: 1 / 4; grid-row: 3; }
-        .bmc-revenue     { grid-column: 4 / 6; grid-row: 3; }
-
-        /* ===========================================
-           DETAIL SLIDES — Card layouts
-           =========================================== */
-        .card-grid {
-            display: grid;
-            gap: clamp(0.4rem, 1vw, 0.85rem);
-        }
-        .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-        .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-        .card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: clamp(6px, 0.6vw, 10px);
-            padding: clamp(0.6rem, 1.2vw, 1.25rem);
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .card:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(78,203,113,0.15);
-        }
-        .card h3 {
-            margin-bottom: clamp(0.25rem, 0.5vh, 0.5rem);
-        }
-        .card ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: clamp(0.15rem, 0.35vh, 0.35rem);
-        }
-        .card li {
-            font-size: var(--small-size);
-            color: var(--text-secondary);
-            line-height: 1.4;
-            padding-left: 1em;
-            position: relative;
-        }
-        .card li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0.55em;
-            width: 4px; height: 4px;
-            border-radius: 50%;
-            background: var(--accent);
-            opacity: 0.6;
-        }
-
-        /* Revenue table style */
-        .revenue-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            padding: clamp(0.4rem, 0.8vh, 0.7rem) 0;
-            border-bottom: 1px solid var(--border);
-        }
-        .revenue-row:last-child { border-bottom: none; }
-        .revenue-label {
-            font-size: var(--body-size);
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-        .revenue-detail {
-            font-size: var(--small-size);
-            color: var(--text-secondary);
-            text-align: right;
-            max-width: 55%;
-        }
-
-        /* Traction metrics */
-        .traction-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: clamp(0.4rem, 0.9vh, 0.75rem);
-        }
-        .traction-item {
-            display: flex;
-            align-items: flex-start;
-            gap: clamp(0.5rem, 1vw, 0.85rem);
-            font-size: var(--body-size);
-            color: var(--text-secondary);
-            line-height: 1.45;
-        }
-        .traction-icon {
-            flex-shrink: 0;
-            width: clamp(1.5rem, 2.5vw, 2rem);
-            height: clamp(1.5rem, 2.5vw, 2rem);
-            background: var(--accent-dim);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: clamp(0.9rem, 1.5vw, 1.15rem);
-        }
-
-        /* Segment pills */
-        .segment-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: clamp(0.25rem, 0.5vw, 0.4rem);
-            margin-top: clamp(0.2rem, 0.4vh, 0.35rem);
-        }
-
-        /* ===========================================
-           RESPONSIVE
-           =========================================== */
-        @media (max-height: 600px) {
-            .nav-dots { display: none; }}
-        @media (max-width: 768px) {
-            .card-grid.cols-4 { grid-template-columns: 1fr 1fr; }
-            .bmc-grid {
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto;
-            }
-            .bmc-partners, .bmc-value, .bmc-segments { grid-column: auto; grid-row: auto; }
-            .bmc-costs, .bmc-revenue { grid-column: auto; }
-
-            /* Sidebar mobile */
-            .bmc-main {
-                margin-left: 0;
-            }
-            .slide {
-                width: 100vw;
-            }
-            .progress-bar {
-                left: 0;
-            }}
-        @media (max-width: 600px) {
-            .card-grid.cols-2, .card-grid.cols-3 { grid-template-columns: 1fr; }}
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.2s !important;
-            }
-            html { scroll-behavior: auto; }}
-
-    /* ── Light theme overrides ── */
-    .theme-icon { font-size: 14px; }</style>
+/* Mobile */
+@media (max-width: 900px) {
+  .main { margin-left: 0; padding: 24px; padding-top: 72px; }
+  .bmc-canvas {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .bmc-partners, .bmc-activities, .bmc-resources,
+  .bmc-value, .bmc-relations, .bmc-channels, .bmc-segments { grid-column: auto; grid-row: auto; }
+  .bmc-costs, .bmc-revenue { grid-column: auto; }
+  .traction-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .bmc-canvas { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
 
-    <!-- Hamburger -->
-    <button class="hamburger" id="hamburger" aria-label="Open menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
+<main class="main">
+  <div class="main-inner">
 
-    <!-- Sidebar Backdrop -->
-    <div class="sidebar-backdrop" id="backdrop"></div>
+    <!-- Page Hero -->
+    <section class="page-hero">
+      <div class="canvas-section-eyebrow">Business Model Canvas</div>
+      <h1 class="canvas-title">Sprintly Partners <span style="color:var(--green)">Strategy</span></h1>
+      <p class="canvas-subtitle">Silicon Valley-based growth company bridging MENA and Silicon Valley</p>
+      <div class="canvas-date">March 2026 · Updated by Gaby</div>
+    </section>
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="sidebar-brand">
-        <div class="sidebar-logo">VSDR <span class="pulse-dot"></span></div>
+    <!-- Canvas Overview Section -->
+    <div class="canvas-section-header">
+      <div>
+        <div class="canvas-section-eyebrow">Canvas Overview</div>
+        <h2 class="page-header" style="margin-bottom:0;font-size:22px;">9-Block Business Model</h2>
       </div>
-      <div class="sidebar-sub">Sprintly Partners</div>
-      <nav class="sidebar-nav">
-        <a href="index.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          Home
-        </a>
-        <a href="bmc.html" class="nav-item active">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          Strategy
-        </a>
-        <a href="goals.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-          Goals
-        </a>
-        <a href="pipeline.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Pipeline
-        </a>
-    <div class="nav-group">
-      <a href="proposals.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Proposals
-      </a>
-      <a href="proposals.html" class="nav-sub">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        Proposal Lab
-      </a>
+      <div style="font-family:var(--body);font-size:12px;color:var(--n400);">Click any block to expand</div>
     </div>
-        <div class="nav-group">
-          <a href="network.html" class="nav-item">
-        Network
-          </a>
-          <a href="matches.html" class="nav-sub">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/><circle cx="9" cy="11" r="3"/></svg>
-            Matches
-          </a>
-              <a href="interactions.html" class="nav-sub">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Interactions
-      </a>
-    </div>
-        <a href="analytics.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-          Analytics
-        </a>
-          <a href="outreach.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      Outreach
-    </a>
-    <a href="reports.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Reports
-    </a>
-    <a href="ingestion.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-      Ingestion
-    </a>
-    <a href="settings.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Settings
-    </a>
-  </nav>
-            <div class="theme-toggle" style="padding: 0 24px; margin-bottom: 12px;">
-        <button id="themeToggle" class="theme-btn" title="Toggle theme">
-          <span class="theme-icon">☀️</span>
-          <span class="theme-label">Light Mode</span>
-        </button>
+
+    <!-- BMC Grid -->
+    <div class="bmc-canvas">
+
+      <!-- Key Partners -->
+      <div class="bmc-block bmc-partners" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">🤝</div>
+            <div class="bmc-block-name">Key Partners</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>TechWadi · Plug &amp; Play · 500 Global</li>
+                <li>a16z · SV8 · Transform VC</li>
+                <li>Stanford · Monshaat · HBKU</li>
+              </ul>
+              <div class="bmc-count-badge">+6 more</div>
+            </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>Techstars · Expert Dojo · Ignyte</li>
+                <li>NVIDIA · OpenAI · Google · Microsoft</li>
+                <li>Algeria Ventures · AAST</li>
+                <li>AUC Venture Lab · Flat6Labs · Endeavor</li>
+                <li>AfriLabs · ITIDA · Scale AI · Salesforce · Meta · AWS</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
-<div class="sidebar-version">v2.0</div>
-    </aside>
 
-    <!-- Progress Bar -->
-    <div class="progress-bar" id="progressBar"></div>
-
-    <!-- Nav Dots -->
-    <nav class="nav-dots" id="navDots"></nav>
-
-    <!-- Main Content Wrapper -->
-    <div class="bmc-main" id="bmcMain">
-
-    <!-- =============================================
-         SLIDE 1 — TITLE
-         ============================================= -->
-    <section class="slide title-slide bg-gradient bg-grid" data-slide="0">
-        <div class="slide-content">
-            <span class="label reveal">Business Model Canvas</span>
-            <h1 class="reveal">Sprintly <span class="accent">Partners</span></h1>
-            <div class="title-divider reveal"></div>
-            <p class="subtitle reveal">Silicon Valley-based growth company bridging MENA and Silicon Valley</p>
-            <p class="date reveal">March 2026</p>
+      <!-- Key Activities -->
+      <div class="bmc-block bmc-activities" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">⚡</div>
+            <div class="bmc-block-name">Key Activities</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>Startup scouting &amp; selection</li>
+                <li>Mentorship programs (virtual + SV)</li>
+                <li>Investor matching &amp; due diligence</li>
+              </ul>
+            </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>AI Squad executive enablement</li>
+                <li>US market expansion for clients</li>
+                <li>Content: podcasts &amp; thought leadership</li>
+                <li>Global events &amp; conferences</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <span class="slide-number">01 / 07</span>
-    </section>
+      </div>
 
-    <!-- =============================================
-         SLIDE 2 — BMC CANVAS OVERVIEW (9-box grid)
-         ============================================= -->
-    <section class="slide bg-gradient" data-slide="1">
-        <div class="slide-content" style="gap: clamp(0.5rem, 1vh, 0.75rem);">
-            <h2 class="reveal" style="margin-bottom: 0;">Business Model Canvas — <span class="accent">Overview</span></h2>
-
-            <div class="bmc-grid reveal">
-                <!-- Key Partners -->
-                <div class="bmc-box bmc-partners">
-                    <h3>🤝 Key Partners</h3>
-                    <ul>
-                        <li>TechWadi · Plug &amp; Play · 500 Global</li>
-                        <li>a16z · SV8 · Transform VC</li>
-                        <li>Stanford · Monshaat · HBKU</li>
-                        <li>Techstars · Expert Dojo · Ignyte</li>
-                        <li>NVIDIA · OpenAI · Google · Microsoft</li>
-                        <li>Algeria Ventures · AAST</li>
-                    </ul>
-                </div>
-
-                <!-- Key Activities -->
-                <div class="bmc-box bmc-activities">
-                    <h3>⚡ Key Activities</h3>
-                    <ul>
-                        <li>Startup scouting &amp; selection</li>
-                        <li>Mentorship programs (virtual + SV)</li>
-                        <li>Investor matching &amp; due diligence</li>
-                        <li>AI Squad executive enablement</li>
-                        <li>US market expansion for clients</li>
-                        <li>Content: podcasts &amp; thought leadership</li>
-                        <li>Global events &amp; conferences</li>
-                    </ul>
-                </div>
-
-                <!-- Key Resources -->
-                <div class="bmc-box bmc-resources">
-                    <h3>🏗️ Key Resources</h3>
-                    <ul>
-                        <li>Yousra (CEO) — Amazon, Uber, Careem</li>
-                        <li>7-person expert team (5 cities)</li>
-                        <li>AI Squad: NVIDIA, OpenAI, Google</li>
-                        <li>6K+ contact network (CRM)</li>
-                        <li>SV presence &amp; tier-1 VC access</li>
-                        <li>Mentorship: Techstars, Plug &amp; Play, Ignyte</li>
-                        <li>Pilot proof: 2/3 founders raised</li>
-                    </ul>
-                </div>
-
-                <!-- Value Propositions -->
-                <div class="bmc-box bmc-value">
-                    <h3>💎 Value Propositions</h3>
-                    <ul>
-                        <li>Direct SV investor &amp; corporate access</li>
-                        <li>Hands-on execution, not just advice</li>
-                        <li>Structured MENA-to-global pathway</li>
-                        <li>Partner-sponsored: founders don't pay</li>
-                        <li>AI Squad: practitioner-led, not academic</li>
-                        <li>Pitch at Startup Grind &amp; TechWadi</li>
-                    </ul>
-                </div>
-
-                <!-- Customer Relationships -->
-                <div class="bmc-box bmc-relations">
-                    <h3>💬 Customer Relationships</h3>
-                    <ul>
-                        <li>High-touch mentors</li>
-                        <li>Cohort community</li>
-                        <li>Alumni network</li>
-                        <li>White-glove for partners</li>
-                        <li>Quarterly All-Hands</li>
-                    </ul>
-                </div>
-
-                <!-- Channels -->
-                <div class="bmc-box bmc-channels">
-                    <h3>📡 Channels</h3>
-                    <ul>
-                        <li>Website · LinkedIn · Instagram</li>
-                        <li>YouTube · Podcast</li>
-                        <li>Conferences</li>
-                        <li>Partner referrals · Press</li>
-                        <li>Typeform</li>
-                    </ul>
-                </div>
-
-                <!-- Customer Segments -->
-                <div class="bmc-box bmc-segments">
-                    <h3>🎯 Customer Segments</h3>
-                    <ul>
-                        <li>MENA/Africa startups (Seed–Series A)</li>
-                        <li>Govts: Monshaat, HBKU, Algeria Ventures</li>
-                        <li>Corporates seeking AI transformation</li>
-                        <li>Investors seeking MENA deal flow</li>
-                        <li>US companies expanding to MENA</li>
-                    </ul>
-                </div>
-
-                <!-- Cost Structure -->
-                <div class="bmc-box bmc-costs">
-                    <h3>💰 Cost Structure</h3>
-                    <ul>
-                        <li>Team (7 people across SF, Cairo, London, Marrakech, Berlin)</li>
-                        <li>SV immersion logistics · Travel &amp; conferences · Tech/CRM · Content &amp; marketing · Legal</li>
-                    </ul>
-                </div>
-
-                <!-- Revenue Streams -->
-                <div class="bmc-box bmc-revenue">
-                    <h3>💵 Revenue Streams</h3>
-                    <ul>
-                        <li>$18-19K/founder (partner-sponsored) · $7.5K/mo retainer + 5% rev share · AI Squad custom pricing · Investor scouting fees · Sponsored events</li>
-                    </ul>
-                </div>
+      <!-- Value Propositions -->
+      <div class="bmc-block bmc-value" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">💎</div>
+            <div class="bmc-block-name">Value Propositions</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>Direct SV investor &amp; corporate access</li>
+                <li>Hands-on execution, not just advice</li>
+                <li>Structured MENA-to-global pathway</li>
+                <li>Partner-sponsored: founders don't pay</li>
+              </ul>
             </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>AI Squad: practitioner-led, not academic</li>
+                <li>Pitch at Startup Grind &amp; TechWadi</li>
+                <li>Turnkey program for govt partners</li>
+                <li>Proven model — 2/3 pilot founders raised</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <span class="slide-number">02 / 07</span>
-    </section>
+      </div>
 
-    <!-- =============================================
-         SLIDE 3 — KEY PARTNERS (detailed)
-         ============================================= -->
-    <section class="slide bg-gradient bg-grid" data-slide="2">
-        <div class="slide-content" style="gap: var(--content-gap);">
-            <div class="reveal">
-                <span class="label">Strategic Network</span>
-                <h2 style="margin-bottom: 0;">Key <span class="accent">Partners</span></h2>
+      <!-- Customer Relationships -->
+      <div class="bmc-block bmc-relations" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">💬</div>
+            <div class="bmc-block-name">Customer Relationships</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>High-touch mentors</li>
+                <li>Cohort community</li>
+              </ul>
             </div>
-
-            <div class="card-grid cols-2 reveal">
-                <div class="card">
-                    <h3>🌐 Ecosystem</h3>
-                    <ul>
-                        <li>TechWadi</li>
-                        <li>Plug and Play</li>
-                        <li>500 Global</li>
-                        <li>AUC Venture Lab</li>
-                        <li>Flat6Labs · Endeavor</li>
-                        <li>AfriLabs · ITIDA</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>💼 Investors</h3>
-                    <ul>
-                        <li>a16z</li>
-                        <li>SV8</li>
-                        <li>Transform VC</li>
-                        <li>Ziad Sankari</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>🏛️ Government &amp; Academic</h3>
-                    <ul>
-                        <li>Stanford</li>
-                        <li>Monshaat (Saudi)</li>
-                        <li>HBKU (Qatar)</li>
-                        <li>Algeria Ventures · AAST</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>🤖 Tech — AI Squad</h3>
-                    <ul>
-                        <li>NVIDIA · OpenAI · Google</li>
-                        <li>Microsoft · Scale AI</li>
-                        <li>Salesforce · Meta · AWS</li>
-                    </ul>
-                </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>Alumni network</li>
+                <li>White-glove for partners</li>
+                <li>Quarterly All-Hands</li>
+              </ul>
             </div>
+          </div>
         </div>
-        <span class="slide-number">03 / 07</span>
-    </section>
+      </div>
 
-    <!-- =============================================
-         SLIDE 4 — VALUE PROPOSITIONS (segmented)
-         ============================================= -->
-    <section class="slide bg-gradient" data-slide="3">
-        <div class="slide-content" style="gap: var(--content-gap);">
-            <div class="reveal">
-                <span class="label">Why Sprintly</span>
-                <h2 style="margin-bottom: 0;">Value <span class="accent">Propositions</span></h2>
+      <!-- Customer Segments -->
+      <div class="bmc-block bmc-segments" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">🎯</div>
+            <div class="bmc-block-name">Customer Segments</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>MENA/Africa startups (Seed–Series A)</li>
+                <li>Govts: Monshaat, HBKU, Algeria Ventures</li>
+                <li>Corporates seeking AI transformation</li>
+              </ul>
             </div>
-
-            <div class="card-grid cols-2 reveal">
-                <div class="card">
-                    <h3>🚀 For Startups</h3>
-                    <ul>
-                        <li>Direct SV investor access</li>
-                        <li>Hands-on execution support</li>
-                        <li>MENA-to-global pathway</li>
-                        <li>AI Squad mentors</li>
-                        <li>Pitch at Startup Grind &amp; TechWadi</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>🏛️ For Government Partners</h3>
-                    <ul>
-                        <li>Turnkey acceleration program</li>
-                        <li>Proven model — 2/3 founders raised</li>
-                        <li>Silicon Valley network access</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>🏢 For Corporates</h3>
-                    <ul>
-                        <li>Practitioner-led AI transformation</li>
-                        <li>6-month tailored program</li>
-                        <li>NVIDIA / OpenAI / Google leaders</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>📊 For Investors</h3>
-                    <ul>
-                        <li>Curated MENA deal flow</li>
-                        <li>Due diligence support</li>
-                        <li>Dedicated scouting arm</li>
-                    </ul>
-                </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>Investors seeking MENA deal flow</li>
+                <li>Accelerators / VCs (cross-border)</li>
+                <li>US companies expanding to MENA</li>
+                <li>23 applications for 2026 cohort</li>
+                <li>61% Seed · Egypt: 69% of applicants</li>
+              </ul>
             </div>
+          </div>
         </div>
-        <span class="slide-number">04 / 07</span>
-    </section>
+      </div>
 
-    <!-- =============================================
-         SLIDE 5 — REVENUE STREAMS
-         ============================================= -->
-    <section class="slide bg-gradient bg-grid" data-slide="4">
-        <div class="slide-content" style="gap: var(--content-gap);">
-            <div class="reveal">
-                <span class="label">Monetization</span>
-                <h2 style="margin-bottom: 0;">Revenue <span class="accent">Streams</span></h2>
+      <!-- Key Resources -->
+      <div class="bmc-block bmc-resources" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">🏗️</div>
+            <div class="bmc-block-name">Key Resources</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>Yousra (CEO) — Amazon, Uber, Careem</li>
+                <li>7-person expert team (5 cities)</li>
+                <li>AI Squad: NVIDIA, OpenAI, Google</li>
+              </ul>
             </div>
-
-            <div class="reveal" style="max-width: 820px;">
-                <div class="revenue-row">
-                    <span class="revenue-label">📋 Program Fees</span>
-                    <span class="revenue-detail">$18-19K / founder (partner-sponsored, 50/50 split)</span>
-                </div>
-                <div class="revenue-row">
-                    <span class="revenue-label">🧠 Expert Support</span>
-                    <span class="revenue-detail">$7.5K/mo retainer + $10K signing + 5% revenue share (18 months)</span>
-                </div>
-                <div class="revenue-row">
-                    <span class="revenue-label">🤖 AI Squad</span>
-                    <span class="revenue-detail">Custom corporate pricing (6-month engagement)</span>
-                </div>
-                <div class="revenue-row">
-                    <span class="revenue-label">🔍 Investor Scouting</span>
-                    <span class="revenue-detail">Deal flow fees + carried interest</span>
-                </div>
-                <div class="revenue-row">
-                    <span class="revenue-label">🎤 Events</span>
-                    <span class="revenue-detail">Sponsored (e.g., SF Tech Week with a16z)</span>
-                </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>6K+ contact network (CRM)</li>
+                <li>SV presence &amp; tier-1 VC access</li>
+                <li>Mentorship: Techstars, Plug &amp; Play, Ignyte</li>
+                <li>Pilot proof: 2/3 founders raised</li>
+              </ul>
             </div>
+          </div>
         </div>
-        <span class="slide-number">05 / 07</span>
-    </section>
+      </div>
 
-    <!-- =============================================
-         SLIDE 6 — CUSTOMER SEGMENTS
-         ============================================= -->
-    <section class="slide bg-gradient" data-slide="5">
-        <div class="slide-content" style="gap: var(--content-gap);">
-            <div class="reveal">
-                <span class="label">Market Focus</span>
-                <h2 style="margin-bottom: 0;">Customer <span class="accent">Segments</span></h2>
+      <!-- Channels -->
+      <div class="bmc-block bmc-channels" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">📡</div>
+            <div class="bmc-block-name">Channels</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>Website · LinkedIn · Instagram</li>
+                <li>YouTube · Podcast</li>
+              </ul>
             </div>
-
-            <div class="card-grid cols-3 reveal">
-                <div class="card">
-                    <h3>🎯 Primary</h3>
-                    <ul>
-                        <li>MENA/Africa startups (Seed–Series A)</li>
-                        <li>Govts: Monshaat, HBKU, Algeria Ventures</li>
-                        <li>Corporates seeking AI transformation</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>🔗 Secondary</h3>
-                    <ul>
-                        <li>Investors seeking MENA deal flow</li>
-                        <li>Accelerators / VCs (cross-border)</li>
-                        <li>US companies expanding to MENA</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>📈 Pipeline</h3>
-                    <ul>
-                        <li>23 applications (current cohort)</li>
-                        <li>61% Seed stage</li>
-                        <li>Egypt: 69% of applicants</li>
-                    </ul>
-                    <div class="segment-group" style="margin-top: clamp(0.3rem, 0.6vh, 0.5rem);">
-                        <span class="pill">AI</span>
-                        <span class="pill">FinTech</span>
-                        <span class="pill">HealthTech</span>
-                        <span class="pill">ClimateTech</span>
-                    </div>
-                </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>Conferences &amp; events</li>
+                <li>Partner referrals · Press</li>
+                <li>Typeform applications</li>
+              </ul>
             </div>
+          </div>
         </div>
-        <span class="slide-number">06 / 07</span>
-    </section>
+      </div>
 
-    <!-- =============================================
-         SLIDE 7 — PROVEN TRACTION
-         ============================================= -->
-    <section class="slide bg-gradient bg-grid" data-slide="6">
-        <div class="slide-content" style="gap: var(--content-gap);">
-            <div class="reveal">
-                <span class="label">Results</span>
-                <h2 style="margin-bottom: 0;">Proven <span class="accent">Traction</span></h2>
+      <!-- Cost Structure -->
+      <div class="bmc-block bmc-costs" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner" style="flex-direction:row;gap:24px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:180px;">
+            <div class="bmc-block-header" style="margin-bottom:12px;">
+              <div class="bmc-block-icon">💰</div>
+              <div class="bmc-block-name">Cost Structure</div>
+              <button class="bmc-expand-btn" aria-label="Expand">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
             </div>
-
-            <ul class="traction-list reveal">
-                <li class="traction-item">
-                    <span class="traction-icon">📊</span>
-                    <span><strong style="color: var(--text-primary);">2/3 pilot founders raised funding</strong> — validated acceleration model</span>
-                </li>
-                <li class="traction-item">
-                    <span class="traction-icon">🇺🇸</span>
-                    <span><strong style="color: var(--text-primary);">Stakpak relocated to San Francisco</strong> — raised funding, moved ops to US</span>
-                </li>
-                <li class="traction-item">
-                    <span class="traction-icon">🏥</span>
-                    <span><strong style="color: var(--text-primary);">Portfolio:</strong> Fincart (e-commerce/Africa), Incura (hemostatic medtech), Stakpak (AI infra)</span>
-                </li>
-                <li class="traction-item">
-                    <span class="traction-icon">🔍</span>
-                    <span><strong style="color: var(--text-primary);">Scouting arm for SV8</strong> (Amr AbdelAziz) — trusted by Silicon Valley VCs</span>
-                </li>
-                <li class="traction-item">
-                    <span class="traction-icon">📝</span>
-                    <span><strong style="color: var(--text-primary);">Active contracts:</strong> Monshaat (Saudi), HBKU (Qatar), ARPU Plus (A15), Algeria Ventures</span>
-                </li>
-                <li class="traction-item">
-                    <span class="traction-icon">📬</span>
-                    <span><strong style="color: var(--text-primary);">23 applications</strong> for 2026 cohort — 61% Seed, AI/FinTech/HealthTech/ClimateTech</span>
-                </li>
-                <li class="traction-item">
-                    <span class="traction-icon">📰</span>
-                    <span><strong style="color: var(--text-primary);">Press:</strong> CBS42, CAJ News Africa · <strong>MOU signed</strong> at Egypt Innovation Week</span>
-                </li>
-                <li class="traction-item">
-                    <span class="traction-icon">🎤</span>
-                    <span><strong style="color: var(--text-primary);">Events:</strong> a16z SF Tech Week, Stanford AI for Good, Startup Grind Global, LEAP, GITEX Africa</span>
-                </li>
+            <ul class="bmc-items">
+              <li>Team (7 people — SF, Cairo, London, Marrakech, Berlin)</li>
+              <li>SV immersion logistics &amp; travel</li>
+              <li>Conferences &amp; events</li>
+              <li>Tech/CRM infrastructure</li>
+              <li>Content &amp; marketing production</li>
+              <li>Legal &amp; compliance</li>
             </ul>
+          </div>
         </div>
-        <span class="slide-number">07 / 07</span>
-    </section>
+      </div>
 
-    </div><!-- /.bmc-main -->
+      <!-- Revenue Streams -->
+      <div class="bmc-block bmc-revenue" onclick="toggleBlock(this)">
+        <div class="bmc-block-inner">
+          <div class="bmc-block-header">
+            <div class="bmc-block-icon">💵</div>
+            <div class="bmc-block-name">Revenue Streams</div>
+            <button class="bmc-expand-btn" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="bmc-block-content">
+            <div class="bmc-block-preview">
+              <ul class="bmc-items">
+                <li>$18–19K/founder (partner-sponsored)</li>
+                <li>$7.5K/mo retainer + 5% rev share</li>
+                <li>AI Squad custom corporate pricing</li>
+              </ul>
+            </div>
+            <div class="bmc-block-full">
+              <ul class="bmc-items">
+                <li>Investor scouting fees + carried interest</li>
+                <li>Sponsored events (e.g., a16z SF Tech Week)</li>
+                <li>$10K signing fee for expert support</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- =============================================
-         JAVASCRIPT — Navigation, Animations & Sidebar
-         ============================================= -->
-    <script>
-        class SlidePresentation {
-            constructor() {
-                this.mainEl = document.getElementById('bmcMain');
-                this.slides = document.querySelectorAll('.slide');
-                this.totalSlides = this.slides.length;
-                this.currentSlide = 0;
-                this.progressBar = document.getElementById('progressBar');
-                this.navDotsContainer = document.getElementById('navDots');
+    </div><!-- /.bmc-canvas -->
 
-                this.createNavDots();
-                this.setupIntersectionObserver();
-                this.setupKeyboard();
-                this.updateProgress();
-            }
+    <!-- Traction Section -->
+    <div style="margin-top:64px;">
+      <div class="canvas-section-eyebrow">Results</div>
+      <h2 class="page-header" style="font-size:22px;margin-bottom:6px;">Proven Traction</h2>
+      <p class="page-subtitle" style="margin-bottom:0;">What we've delivered so far</p>
 
-            createNavDots() {
-                this.slides.forEach((_, i) => {
-                    const dot = document.createElement('button');
-                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-                    dot.addEventListener('click', () => {
-                        this.slides[i].scrollIntoView({ behavior: 'smooth' });
-                    });
-                    this.navDotsContainer.appendChild(dot);
-                });
-                this.dots = this.navDotsContainer.querySelectorAll('.nav-dot');
-            }
-
-            setupIntersectionObserver() {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            const idx = parseInt(entry.target.dataset.slide);
-                            if (!isNaN(idx)) {
-                                this.currentSlide = idx;
-                                this.updateProgress();
-                                this.updateDots();
-                            }
-                        }
-                    });
-                }, { threshold: 0.5, root: this.mainEl });
-
-                this.slides.forEach(slide => observer.observe(slide));
-            }
-
-            setupKeyboard() {
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
-                        e.preventDefault();
-                        this.goTo(Math.min(this.currentSlide + 1, this.totalSlides - 1));
-                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-                        e.preventDefault();
-                        this.goTo(Math.max(this.currentSlide - 1, 0));
-                    }
-                });
-            }
-
-            goTo(index) {
-                this.slides[index].scrollIntoView({ behavior: 'smooth' });
-            }
-
-            updateProgress() {
-                const pct = ((this.currentSlide + 1) / this.totalSlides) * 100;
-                this.progressBar.style.width = pct + '%';
-            }
-
-            updateDots() {
-                this.dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === this.currentSlide);
-                });
-            }
-        }
-
-        // Sidebar toggle
-        document.addEventListener('DOMContentLoaded', () => {
-            new SlidePresentation();
-
-            const hamburger = document.getElementById('hamburger');
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('backdrop');
-            const sidebarClose = document.getElementById('sidebarClose');
-
-            function openSidebar() {
-                sidebar.classList.add('open');
-                backdrop.classList.add('active');
-            }
-            function closeSidebar() {
-                sidebar.classList.remove('open');
-                backdrop.classList.remove('active');
-            }
-
-            hamburger.addEventListener('click', openSidebar);
-            backdrop.addEventListener('click', closeSidebar);
-            sidebarClose.addEventListener('click', closeSidebar);
-        });
-    
-  // Sync modal
-  function openSyncModal() {
-    var m = document.getElementById('syncModal');
-    m.style.display = 'flex';
-    document.getElementById('syncModalContent').style.display = 'block';
-    document.getElementById('syncSuccessContent').style.display = 'none';
-  }
-  function closeSyncModal() {
-    document.getElementById('syncModal').style.display = 'none';
-  }
-  function confirmSync() {
-    document.getElementById('syncModalContent').style.display = 'none';
-    document.getElementById('syncSuccessContent').style.display = 'block';
-    localStorage.setItem('vsdr_last_sync', new Date().toISOString());
-    var log = JSON.parse(localStorage.getItem('vsdr_sync_log') || '[]');
-    log.unshift({date: new Date().toISOString(), trigger: 'Manual', status: 'pending', count: '—'});
-    localStorage.setItem('vsdr_sync_log', JSON.stringify(log.slice(0, 10)));
-  }
-  document.getElementById('syncModal').addEventListener('click', function(e) {
-    if (e.target === this) closeSyncModal();
-  });
-</script>
-
-<!-- Sync Modal -->
-<div class="modal-overlay" id="syncModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;padding:24px;">
-  <div style="background:#162030;border:1px solid rgba(255,255,255,0.06);border-radius:2px;padding:32px;width:100%;max-width:440px;">
-    <div id="syncModalContent">
-      <h3 style="font-family:var(--display,'Space Grotesk',sans-serif);font-size:20px;margin-bottom:12px;color:#F8FAFC;">Sync Airtable ↔ Supabase</h3>
-      <p style="color:#94A3B8;font-size:14px;line-height:1.6;margin-bottom:24px;">This will trigger Gaby to sync data between Airtable and Supabase. Any new or updated contacts will be reconciled.</p>
-      <div style="display:flex;gap:12px;justify-content:flex-end;">
-        <button onclick="closeSyncModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:#94A3B8;font-family:inherit;font-size:14px;padding:10px 20px;border-radius:2px;cursor:pointer;">Cancel</button>
-        <button onclick="confirmSync()" style="background:#4ECB71;border:none;color:#0F1923;font-family:inherit;font-size:14px;font-weight:600;padding:10px 20px;border-radius:2px;cursor:pointer;">Confirm Sync</button>
+      <div class="traction-grid">
+        <div class="traction-item">
+          <div class="traction-icon-wrap">📊</div>
+          <div class="traction-text"><strong>2/3 pilot founders raised funding</strong> — validated acceleration model</div>
+        </div>
+        <div class="traction-item">
+          <div class="traction-icon-wrap">🇺🇸</div>
+          <div class="traction-text"><strong>Stakpak relocated to San Francisco</strong> — raised funding, moved ops to US</div>
+        </div>
+        <div class="traction-item">
+          <div class="traction-icon-wrap">🔍</div>
+          <div class="traction-text"><strong>Scouting arm for SV8</strong> (Amr AbdelAziz) — trusted by Silicon Valley VCs</div>
+        </div>
+        <div class="traction-item">
+          <div class="traction-icon-wrap">📝</div>
+          <div class="traction-text"><strong>Active contracts:</strong> Monshaat (Saudi), HBKU (Qatar), ARPU Plus (A15), Algeria Ventures</div>
+        </div>
+        <div class="traction-item">
+          <div class="traction-icon-wrap">📬</div>
+          <div class="traction-text"><strong>23 applications</strong> for 2026 cohort — 61% Seed, AI/FinTech/HealthTech/ClimateTech</div>
+        </div>
+        <div class="traction-item">
+          <div class="traction-icon-wrap">📰</div>
+          <div class="traction-text"><strong>Press:</strong> CBS42, CAJ News Africa · <strong>MOU signed</strong> at Egypt Innovation Week</div>
+        </div>
+        <div class="traction-item">
+          <div class="traction-icon-wrap">🎤</div>
+          <div class="traction-text"><strong>Events:</strong> a16z SF Tech Week, Stanford AI for Good, Startup Grind Global, LEAP, GITEX Africa</div>
+        </div>
+        <div class="traction-item">
+          <div class="traction-icon-wrap">🏥</div>
+          <div class="traction-text"><strong>Portfolio:</strong> Fincart (e-commerce/Africa), Incura (hemostatic medtech), Stakpak (AI infra)</div>
+        </div>
       </div>
     </div>
-    <div id="syncSuccessContent" style="display:none;text-align:center;padding:16px 0;">
-      <div style="font-size:40px;margin-bottom:12px;">✅</div>
-      <h3 style="font-family:var(--display,'Space Grotesk',sans-serif);font-size:20px;margin-bottom:8px;color:#F8FAFC;">Sync Requested!</h3>
-      <p style="color:#94A3B8;font-size:14px;">Gaby will process this shortly.</p>
-      <button onclick="closeSyncModal()" style="background:#4ECB71;border:none;color:#0F1923;font-family:inherit;font-size:14px;font-weight:600;padding:10px 20px;border-radius:2px;cursor:pointer;margin-top:20px;">Close</button>
-    </div>
+
   </div>
-</div>
+</main>
 
-  <!-- Theme toggle -->
-  <script>
-  (function() {
-    var saved = localStorage.getItem('vsdr-theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', saved);
-    updateThemeBtn(saved);
+<script src="js/supabase-client.js"></script>
+<script src="js/sidebar.js"></script>
+<script>
+  initSidebar('strategy');
 
-    var btn = document.getElementById('themeToggle');
-    if (btn) {
-      btn.addEventListener('click', function() {
-        var current = document.documentElement.getAttribute('data-theme') || 'dark';
-        var next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('vsdr-theme', next);
-        updateThemeBtn(next);
-      });
-    }
-
-    function updateThemeBtn(theme) {
-      var btn = document.getElementById('themeToggle');
-      if (!btn) return;
-      var icon = btn.querySelector('.theme-icon');
-      var label = btn.querySelector('.theme-label');
-      if (theme === 'light') {
-        icon.textContent = '\u{1F319}';
-        label.textContent = 'Dark Mode';
-      } else {
-        icon.textContent = '\u2600\uFE0F';
-        label.textContent = 'Light Mode';
-      }
-    }
-  })();
-  </script>
+  function toggleBlock(block) {
+    // Prevent toggle when clicking a button inside
+    block.classList.toggle('expanded');
+  }
+</script>
 </body>
 </html>

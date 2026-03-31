@@ -4,512 +4,515 @@
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; font-src https://fonts.gstatic.com https://cdn.fontshare.com; connect-src 'self' https://gxunrnyehltpbgdodkkm.supabase.co; img-src 'self' data: blob: https:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VSDR — Sprintly Partners</title>
+<title>Home — VSDR</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/design-system.css">
 <style>
-/* ── Page-specific: index.html ── */
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ── index.html page-specific styles ── */
 
-html, body {
-  height: 100%;
-  background: var(--charcoal);
-  color: var(--n50);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Hero */
+.hero {
+  padding: 40px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+  position: relative;
 }
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.sidebar-logo h1 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 22px;
-  color: #fff;
-  letter-spacing: 1px;
-}
-
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--green);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(0.8); opacity: 0.6; }
-  50% { transform: scale(1.2); opacity: 1.0; }
-}
-
-.sidebar-subtitle {
-  font-family: var(--font-body);
+.hero-eyebrow {
+  font-family: var(--body);
   font-size: 11px;
-  color: var(--n400);
-  letter-spacing: 2px;
+  font-weight: 600;
   text-transform: uppercase;
-  font-variant: small-caps;
-  margin-top: 6px;
-  padding-left: 0;
+  letter-spacing: 2px;
+  color: var(--green);
+  margin-bottom: 12px;
 }
-
-.sidebar-nav a {
+.hero-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 48px);
+  color: var(--n50);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.hero-title span {
+  color: var(--green);
+}
+.hero-tagline {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--n400);
+  margin-bottom: 32px;
+  max-width: 500px;
+  line-height: 1.6;
+}
+.hero-meta {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--n400);
-  border-left: 3px solid transparent;
-  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.sidebar-nav a:hover {
-  color: #fff;
-}
-
-.sidebar-nav a.active {
-  color: #fff;
-  border-left-color: var(--green);
-  background: rgba(78,203,113,0.06);
-}
-
-.sidebar-nav a svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.sidebar-version {
-  padding: 24px;
-  font-size: 12px;
-  color: var(--n400);
-}
-
-.hamburger:hover span {
-  background: #fff;
-}
-
-/* ── Overlay ── */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 99;
-}
-
-.sidebar-overlay.open {
-  display: block;
-}
-
-.main-inner {
-  max-width: 1200px;
-}
-
-/* ── Header ── */
-.page-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 36px;
-  color: var(--n50);
-  line-height: 1.2;
-}
-
-/* ── Cards Grid ── */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  margin-top: 48px;
+  flex-wrap: wrap;
 }
-
-.card {
-  display: block;
-  background: var(--n800);
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(12px);
-  border-radius: 2px;
-  padding: 32px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-}
-
-.card[data-accent="teal"]:hover {
-  border-color: var(--teal);
-}
-
-.card[data-accent="green"]:hover {
-  border-color: var(--green);
-}
-
-.card[data-accent="amber"]:hover {
-  border-color: var(--amber);
-}
-
-.card-label {
-  font-family: var(--font-body);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+.hero-date {
+  font-family: var(--body);
+  font-size: 13px;
   color: var(--n400);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-label svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-.card-stat {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 48px;
-  color: var(--n50);
-  margin-top: 20px;
-  line-height: 1;
-}
-
-.card-sublabel {
-  font-family: var(--font-body);
-  font-size: 14px;
-  color: var(--n400);
-  margin-top: 8px;
-}
-
-.card-secondary {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 12px;
-  font-family: var(--font-body);
-  font-size: 13px;
+}
+.hero-date svg { width: 14px; height: 14px; color: var(--n400); }
+.hero-actions { display: flex; gap: 10px; align-items: center; }
+
+/* Hero Key Stats Bar */
+.hero-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 32px;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.hero-stat {
+  flex: 1;
+  padding: 16px 20px;
+  border-right: 1px solid var(--border);
+  min-width: 0;
+}
+.hero-stat:last-child { border-right: none; }
+.hero-stat-value {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--n50);
+  line-height: 1;
+}
+.hero-stat-value.green { color: var(--green); }
+.hero-stat-value.amber { color: var(--amber); }
+.hero-stat-value.teal { color: var(--teal); }
+.hero-stat-label {
+  font-family: var(--body);
+  font-size: 11px;
   color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
 }
 
-.status-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--green);
+/* Section header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.section-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--n50);
+}
+
+/* Dashboard Cards Grid */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Premium Dashboard Card */
+.dash-card {
+  display: block;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.dash-card.visible {
+  animation: fadeInUp 0.4s ease forwards;
+}
+.dash-card:nth-child(1) { animation-delay: 0.05s; }
+.dash-card:nth-child(2) { animation-delay: 0.10s; }
+.dash-card:nth-child(3) { animation-delay: 0.15s; }
+.dash-card:nth-child(4) { animation-delay: 0.20s; }
+.dash-card:nth-child(5) { animation-delay: 0.25s; }
+.dash-card:nth-child(6) { animation-delay: 0.30s; }
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Gradient accent top bar */
+.dash-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.dash-card[data-color="teal"]::before   { background: linear-gradient(90deg, var(--teal), rgba(45,212,191,0.3)); }
+.dash-card[data-color="green"]::before  { background: linear-gradient(90deg, var(--green), rgba(78,203,113,0.3)); }
+.dash-card[data-color="amber"]::before  { background: linear-gradient(90deg, var(--amber), rgba(245,158,11,0.3)); }
+.dash-card[data-color="purple"]::before { background: linear-gradient(90deg, var(--purple), rgba(167,139,250,0.3)); }
+.dash-card[data-color="coral"]::before  { background: linear-gradient(90deg, var(--coral), rgba(239,68,68,0.3)); }
+.dash-card[data-color="gold"]::before   { background: linear-gradient(90deg, var(--gold), rgba(251,191,36,0.3)); }
+
+.dash-card:hover { transform: translateY(-3px); }
+.dash-card:hover::before { opacity: 1; }
+.dash-card[data-color="teal"]:hover   { border-color: rgba(45,212,191,0.25); box-shadow: 0 8px 32px rgba(45,212,191,0.06); }
+.dash-card[data-color="green"]:hover  { border-color: rgba(78,203,113,0.25); box-shadow: 0 8px 32px rgba(78,203,113,0.06); }
+.dash-card[data-color="amber"]:hover  { border-color: rgba(245,158,11,0.25); box-shadow: 0 8px 32px rgba(245,158,11,0.06); }
+.dash-card[data-color="purple"]:hover { border-color: rgba(167,139,250,0.25); box-shadow: 0 8px 32px rgba(167,139,250,0.06); }
+.dash-card[data-color="coral"]:hover  { border-color: rgba(239,68,68,0.25); box-shadow: 0 8px 32px rgba(239,68,68,0.06); }
+.dash-card[data-color="gold"]:hover   { border-color: rgba(251,191,36,0.25); box-shadow: 0 8px 32px rgba(251,191,36,0.06); }
+
+/* Card icon background */
+.card-icon-wrap {
+  width: 40px; height: 40px;
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.dash-card[data-color="teal"]   .card-icon-wrap { background: rgba(45,212,191,0.1); }
+.dash-card[data-color="green"]  .card-icon-wrap { background: rgba(78,203,113,0.1); }
+.dash-card[data-color="amber"]  .card-icon-wrap { background: rgba(245,158,11,0.1); }
+.dash-card[data-color="purple"] .card-icon-wrap { background: rgba(167,139,250,0.1); }
+.dash-card[data-color="coral"]  .card-icon-wrap { background: rgba(239,68,68,0.1); }
+.dash-card[data-color="gold"]   .card-icon-wrap { background: rgba(251,191,36,0.1); }
+.card-icon-wrap svg { width: 20px; height: 20px; }
+.dash-card[data-color="teal"]   .card-icon-wrap svg { color: var(--teal); }
+.dash-card[data-color="green"]  .card-icon-wrap svg { color: var(--green); }
+.dash-card[data-color="amber"]  .card-icon-wrap svg { color: var(--amber); }
+.dash-card[data-color="purple"] .card-icon-wrap svg { color: var(--purple); }
+.dash-card[data-color="coral"]  .card-icon-wrap svg { color: var(--coral); }
+.dash-card[data-color="gold"]   .card-icon-wrap svg { color: var(--gold); }
+
+.card-label-row {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-bottom: 8px;
+}
+.card-big-stat {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--n50);
+  margin-bottom: 6px;
+}
+.card-sublabel {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  margin-bottom: 16px;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.meta-dot {
+  width: 6px; height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
+.meta-dot.green  { background: var(--green); }
+.meta-dot.amber  { background: var(--amber); }
+.meta-dot.teal   { background: var(--teal); }
+.meta-dot.coral  { background: var(--coral); }
 
-/* ── Footer ── */
+/* Card arrow indicator */
+.card-arrow {
+  position: absolute;
+  top: 24px; right: 24px;
+  width: 16px; height: 16px;
+  color: var(--n400);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dash-card:hover .card-arrow {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+/* Sync button */
+.btn-sync {
+  padding: 9px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n400);
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.btn-sync:hover { color: var(--n50); border-color: rgba(255,255,255,0.15); }
+
+/* Footer */
 .page-footer {
   margin-top: 48px;
-  font-family: var(--font-body);
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer-text {
+  font-family: var(--body);
   font-size: 12px;
   color: var(--n400);
+  opacity: 0.6;
 }
 
-/* ── Mobile ── */
+/* Mobile */
 @media (max-width: 767px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .sidebar-close {
-    display: block;
-  }
-
-  .hamburger {
-    display: block;
-  }
-
-  .main {
-    margin-left: 0;
-    padding: 24px;
-    padding-top: 64px;
-  }
-
-  .page-title {
-    font-size: 28px;
-  }
-
-  .cards {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-top: 32px;
-  }
+  .main { margin-left: 0; padding: 24px; padding-top: 72px; }
+  .dash-grid { grid-template-columns: 1fr; gap: 16px; }
+  .hero-stats { flex-wrap: wrap; }
+  .hero-stat { border-right: none; border-bottom: 1px solid var(--border); min-width: 50%; }
+  .hero-stat:last-child { border-bottom: none; }
+  .hero-title { font-size: 26px; }
 }
-
 @media (min-width: 768px) and (max-width: 1100px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .dash-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
 <body>
 
-<!-- Hamburger -->
-<button class="hamburger" id="hamburger" aria-label="Open menu">
-  <span></span>
-  <span></span>
-  <span></span>
-</button>
-
-<!-- Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-  <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>
-  <div class="sidebar-brand">
-    <div class="sidebar-logo">
-      <h1>VSDR</h1>
-      <span class="pulse-dot"></span>
-    </div>
-    <div class="sidebar-subtitle">Sprintly Partners</div>
-  </div>
-  <nav class="sidebar-nav">
-    <a href="index.html" class="active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7"></rect>
-        <rect x="14" y="3" width="7" height="7"></rect>
-        <rect x="3" y="14" width="7" height="7"></rect>
-        <rect x="14" y="14" width="7" height="7"></rect>
-      </svg>
-      Home
-    </a>
-    <a href="bmc.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-        <polyline points="2 17 12 22 22 17"></polyline>
-        <polyline points="2 12 12 17 22 12"></polyline>
-      </svg>
-      Strategy
-    </a>
-    <a href="goals.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <circle cx="12" cy="12" r="6"></circle>
-        <circle cx="12" cy="12" r="2"></circle>
-      </svg>
-      Goals
-    </a>
-    <a href="pipeline.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-      </svg>
-      Pipeline
-    </a>
-    <div class="nav-group">
-      <a href="proposals.html" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Proposals
-      </a>
-      <a href="proposals.html" class="nav-sub">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        Proposal Lab
-      </a>
-    </div>
-    <div class="nav-group">
-      <a href="network.html">
-        Network
-      </a>
-      <a href="matches.html" class="nav-sub">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
-          <line x1="19" y1="8" x2="19" y2="14"></line>
-          <line x1="22" y1="11" x2="16" y2="11"></line>
-          <circle cx="9" cy="11" r="3"></circle>
-        </svg>
-        Matches
-      </a>
-          <a href="interactions.html" class="nav-sub">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Interactions
-      </a>
-    </div>
-    <a href="analytics.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-      </svg>
-      Analytics
-    </a>
-      <a href="outreach.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      Outreach
-    </a>
-    <a href="reports.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Reports
-    </a>
-    <a href="ingestion.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-      Ingestion
-    </a>
-    <a href="settings.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Settings
-    </a>
-  </nav>
-        <div class="theme-toggle" style="padding: 0 24px; margin-bottom: 12px;">
-        <button id="themeToggle" class="theme-btn" title="Toggle theme">
-          <span class="theme-icon">☀️</span>
-          <span class="theme-label">Light Mode</span>
-        </button>
-      </div>
-<div class="sidebar-version">v2.0</div>
-</aside>
-
-<!-- Main -->
 <main class="main">
   <div class="main-inner">
-    <header>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0;flex-wrap:wrap;gap:12px;">
-  <h2 class="page-title">Virtual Strategy Data Room</h2>
-  <button class="btn-sync" onclick="openSyncModal()">⟳ Sync Airtable ↔ Supabase</button>
-</div>
-      <p class="page-subtitle">Strategy. Goals. Pipeline. Always Live.</p>
-    </header>
 
-    <section class="cards">
-      <a href="bmc.html" class="card" data-accent="teal">
-        <div class="card-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-            <polyline points="2 17 12 22 22 17"></polyline>
-            <polyline points="2 12 12 17 22 12"></polyline>
-          </svg>
-          Strategy
+    <!-- Hero Section -->
+    <section class="hero">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="hero-eyebrow">Virtual Strategy Data Room</div>
+          <h1 class="hero-title">Welcome back, <span>Youyou</span> 👋</h1>
+          <p class="hero-tagline">Strategy. Goals. Pipeline. Always live.<br>Your company's entire operating picture, in one place.</p>
+          <div class="hero-meta">
+            <div class="hero-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span id="heroDate">Loading…</span>
+            </div>
+          </div>
         </div>
-        <div class="card-stat">9</div>
+        <button class="btn-sync" onclick="openSyncModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+          Sync Airtable ↔ Supabase
+        </button>
+      </div>
+
+      <!-- Key stats bar -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value green">5</div>
+          <div class="hero-stat-label">Annual Goals</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value teal">7</div>
+          <div class="hero-stat-label">Pipeline Projects</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value amber">6K+</div>
+          <div class="hero-stat-label">Network Contacts</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">25</div>
+          <div class="hero-stat-label">Active Matches</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value green">2 VIPs</div>
+          <div class="hero-stat-label">Priority Contacts</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Cards -->
+    <div class="section-header">
+      <div class="section-title">Overview</div>
+    </div>
+
+    <div class="dash-grid" id="dashGrid">
+
+      <!-- Strategy -->
+      <a href="bmc.html" class="dash-card" data-color="teal">
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <div class="card-label-row">Strategy</div>
+        <div class="card-big-stat">9</div>
         <div class="card-sublabel">Canvas Blocks</div>
+        <div class="card-meta">
+          <span class="meta-dot teal"></span>
+          Business Model Canvas live
+        </div>
       </a>
 
-      <a href="goals.html" class="card" data-accent="green">
-        <div class="card-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4ECB71" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="6"></circle>
-            <circle cx="12" cy="12" r="2"></circle>
-          </svg>
-          Goals
+      <!-- Goals -->
+      <a href="goals.html" class="dash-card" data-color="green">
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
         </div>
-        <div class="card-stat">5</div>
+        <div class="card-label-row">Goals</div>
+        <div class="card-big-stat">5</div>
         <div class="card-sublabel">Annual Goals</div>
-        <div class="card-secondary">
-          <span class="status-dot"></span>
-          2 On Track
+        <div class="card-meta">
+          <span class="meta-dot green"></span>
+          3 On Track · 1 At Risk
         </div>
       </a>
 
-      <a href="pipeline.html" class="card" data-accent="amber">
-        <div class="card-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-          </svg>
-          Pipeline
+      <!-- Pipeline -->
+      <a href="pipeline.html" class="dash-card" data-color="amber">
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <div class="card-stat">7</div>
+        <div class="card-label-row">Pipeline</div>
+        <div class="card-big-stat">7</div>
         <div class="card-sublabel">Active Projects</div>
+        <div class="card-meta">
+          <span class="meta-dot amber"></span>
+          Updated today
+        </div>
       </a>
 
-      <a href="network.html" class="card" data-accent="teal">
-        <div class="card-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-          Network
+      <!-- Network -->
+      <a href="network.html" class="dash-card" data-color="teal">
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
-        <div class="card-stat" style="font-size:32px;">2 VIPs</div>
+        <div class="card-label-row">Network</div>
+        <div class="card-big-stat" style="font-size:34px;">2 VIPs</div>
         <div class="card-sublabel">0 Follow-ups Due</div>
-        <div class="card-secondary">
-          <span class="status-dot"></span>
+        <div class="card-meta">
+          <span class="meta-dot green"></span>
           Network clean
         </div>
       </a>
 
-      <a href="matches.html" class="card" data-accent="green">
-        <div class="card-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#4ECB71" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <line x1="19" y1="8" x2="19" y2="14"></line>
-            <line x1="22" y1="11" x2="16" y2="11"></line>
-          </svg>
-          Matches
+      <!-- Matches -->
+      <a href="matches.html" class="dash-card" data-color="purple">
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
         </div>
-        <div class="card-stat" style="font-size:32px;">25 Active</div>
+        <div class="card-label-row">Matches</div>
+        <div class="card-big-stat" style="font-size:34px;">25 Active</div>
         <div class="card-sublabel">0 Sent</div>
-        <div class="card-secondary">
-          <span class="status-dot"></span>
+        <div class="card-meta">
+          <span class="meta-dot amber"></span>
           Ready for review
         </div>
       </a>
 
-      <a href="analytics.html" class="card" data-accent="teal">
-        <div class="card-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-          </svg>
-          Analytics
+      <!-- Analytics -->
+      <a href="analytics.html" class="dash-card" data-color="gold">
+        <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
         </div>
-        <div class="card-stat" style="font-size:28px;">5,952</div>
-        <div class="card-sublabel">Contacts | 0.2% Enriched</div>
-        <div class="card-secondary">
-          <span class="status-dot"></span>
+        <div class="card-label-row">Analytics</div>
+        <div class="card-big-stat" style="font-size:32px;">5,952</div>
+        <div class="card-sublabel">Contacts · 0.2% Enriched</div>
+        <div class="card-meta">
+          <span class="meta-dot teal"></span>
           Live intelligence
         </div>
       </a>
-    </section>
+
+    </div>
 
     <footer class="page-footer">
-      Last updated: March 30, 2026 · Maintained by Gaby
+      <span class="footer-text">Last updated: March 30, 2026 · Maintained by Gaby</span>
+      <span class="footer-text">VSDR v2.2 · Sprintly Partners</span>
     </footer>
+
   </div>
 </main>
 
+<!-- Sync Modal -->
+<div class="modal-overlay" id="syncModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--n800);border:1px solid var(--border);border-radius:2px;padding:32px;width:100%;max-width:440px;">
+    <div id="syncModalContent">
+      <h3 style="font-family:var(--display);font-size:20px;margin-bottom:12px;color:var(--n50);">Sync Airtable ↔ Supabase</h3>
+      <p style="color:var(--n400);font-size:14px;line-height:1.6;margin-bottom:24px;">This will trigger Gaby to sync data between Airtable and Supabase. Any new or updated contacts will be reconciled.</p>
+      <div style="display:flex;gap:12px;justify-content:flex-end;">
+        <button onclick="closeSyncModal()" style="background:transparent;border:1px solid var(--border);color:var(--n400);font-family:var(--body);font-size:14px;padding:10px 20px;border-radius:2px;cursor:pointer;">Cancel</button>
+        <button onclick="confirmSync()" style="background:var(--green);border:none;color:#0F1923;font-family:var(--body);font-size:14px;font-weight:600;padding:10px 20px;border-radius:2px;cursor:pointer;">Confirm Sync</button>
+      </div>
+    </div>
+    <div id="syncSuccessContent" style="display:none;text-align:center;padding:16px 0;">
+      <div style="font-size:40px;margin-bottom:12px;">✅</div>
+      <h3 style="font-family:var(--display);font-size:20px;margin-bottom:8px;color:var(--n50);">Sync Requested!</h3>
+      <p style="color:var(--n400);font-size:14px;">Gaby will process this shortly.</p>
+      <button onclick="closeSyncModal()" style="background:var(--green);border:none;color:#0F1923;font-family:var(--body);font-size:14px;font-weight:600;padding:10px 20px;border-radius:2px;cursor:pointer;margin-top:20px;">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/supabase-client.js"></script>
+<script src="js/sidebar.js"></script>
 <script>
-(function() {
-  var hamburger = document.getElementById('hamburger');
-  var sidebar = document.getElementById('sidebar');
-  var overlay = document.getElementById('sidebarOverlay');
-  var closeBtn = document.getElementById('sidebarClose');
+  // Init sidebar
+  initSidebar('home');
 
-  function openSidebar() {
-    sidebar.classList.add('open');
-    overlay.classList.add('open');
-  }
+  // Set current date in hero
+  (function() {
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var now = new Date();
+    var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+    var el = document.getElementById('heroDate');
+    if (el) el.textContent = dateStr;
+  })();
 
-  function closeSidebar() {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('open');
-  }
-
-  hamburger.addEventListener('click', openSidebar);
-  closeBtn.addEventListener('click', closeSidebar);
-  overlay.addEventListener('click', closeSidebar);
-})();
+  // Entrance animations on load
+  (function() {
+    var cards = document.querySelectorAll('.dash-card');
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    cards.forEach(function(card) { observer.observe(card); });
+  })();
 
   // Sync modal
   function openSyncModal() {
@@ -526,66 +529,12 @@ a {
     document.getElementById('syncSuccessContent').style.display = 'block';
     localStorage.setItem('vsdr_last_sync', new Date().toISOString());
     var log = JSON.parse(localStorage.getItem('vsdr_sync_log') || '[]');
-    log.unshift({date: new Date().toISOString(), trigger: 'Manual', status: 'pending', count: '—'});
+    log.unshift({ date: new Date().toISOString(), trigger: 'Manual', status: 'pending', count: '—' });
     localStorage.setItem('vsdr_sync_log', JSON.stringify(log.slice(0, 10)));
   }
   document.getElementById('syncModal').addEventListener('click', function(e) {
     if (e.target === this) closeSyncModal();
   });
 </script>
-
-<!-- Sync Modal -->
-<div class="modal-overlay" id="syncModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;padding:24px;">
-  <div style="background:#162030;border:1px solid rgba(255,255,255,0.06);border-radius:2px;padding:32px;width:100%;max-width:440px;">
-    <div id="syncModalContent">
-      <h3 style="font-family:var(--display,'Space Grotesk',sans-serif);font-size:20px;margin-bottom:12px;color:#F8FAFC;">Sync Airtable ↔ Supabase</h3>
-      <p style="color:#94A3B8;font-size:14px;line-height:1.6;margin-bottom:24px;">This will trigger Gaby to sync data between Airtable and Supabase. Any new or updated contacts will be reconciled.</p>
-      <div style="display:flex;gap:12px;justify-content:flex-end;">
-        <button onclick="closeSyncModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:#94A3B8;font-family:inherit;font-size:14px;padding:10px 20px;border-radius:2px;cursor:pointer;">Cancel</button>
-        <button onclick="confirmSync()" style="background:#4ECB71;border:none;color:#0F1923;font-family:inherit;font-size:14px;font-weight:600;padding:10px 20px;border-radius:2px;cursor:pointer;">Confirm Sync</button>
-      </div>
-    </div>
-    <div id="syncSuccessContent" style="display:none;text-align:center;padding:16px 0;">
-      <div style="font-size:40px;margin-bottom:12px;">✅</div>
-      <h3 style="font-family:var(--display,'Space Grotesk',sans-serif);font-size:20px;margin-bottom:8px;color:#F8FAFC;">Sync Requested!</h3>
-      <p style="color:#94A3B8;font-size:14px;">Gaby will process this shortly.</p>
-      <button onclick="closeSyncModal()" style="background:#4ECB71;border:none;color:#0F1923;font-family:inherit;font-size:14px;font-weight:600;padding:10px 20px;border-radius:2px;cursor:pointer;margin-top:20px;">Close</button>
-    </div>
-  </div>
-</div>
-
-  <!-- Theme toggle -->
-  <script>
-  (function() {
-    var saved = localStorage.getItem('vsdr-theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', saved);
-    updateThemeBtn(saved);
-
-    var btn = document.getElementById('themeToggle');
-    if (btn) {
-      btn.addEventListener('click', function() {
-        var current = document.documentElement.getAttribute('data-theme') || 'dark';
-        var next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('vsdr-theme', next);
-        updateThemeBtn(next);
-      });
-    }
-
-    function updateThemeBtn(theme) {
-      var btn = document.getElementById('themeToggle');
-      if (!btn) return;
-      var icon = btn.querySelector('.theme-icon');
-      var label = btn.querySelector('.theme-label');
-      if (theme === 'light') {
-        icon.textContent = '\u{1F319}';
-        label.textContent = 'Dark Mode';
-      } else {
-        icon.textContent = '\u2600\uFE0F';
-        label.textContent = 'Light Mode';
-      }
-    }
-  })();
-  </script>
 </body>
 </html>
