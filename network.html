@@ -1077,22 +1077,16 @@ async function toggleVip(contactId, airtableId, makeVip, btnEl) {
     console.error('Supabase VIP update failed:', e);
   }
 
-  // Create CR for Gaby to sync VIP to Airtable (key can't be in frontend)
+  // Sync VIP to Airtable via serverless function (no key in frontend)
   if (airtableId) {
     try {
-      await fetch(SUPABASE_URL + '/rest/v1/proposal_change_requests', {
+      await fetch('/api/airtable-sync', {
         method: 'POST',
-        headers: { ...SB_HEADERS },
-        body: JSON.stringify({
-          proposal_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-          section_id: '11111111-1111-1111-1111-111111111105',
-          author: 'Yousra',
-          message: '[VIP-SYNC] Sync VIP status to Airtable.\nAirtable ID: ' + airtableId + '\nContact ID: ' + contactId + '\nVIP: ' + makeVip,
-          status: 'open'
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ airtableId: airtableId, fields: { VIP: makeVip } })
       });
     } catch (e) {
-      console.error('VIP sync CR failed:', e);
+      console.error('Airtable VIP sync failed:', e);
     }
   }
 }
