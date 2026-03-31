@@ -772,17 +772,12 @@ async function sendFromGaby(id) {
     'Instructions: Send this email from gaby@sprintlypartners.com. Show Yousra the draft first for approval before actually sending.';
 
   try {
-    const kbId = crypto.randomUUID();
-    await sbInsert('knowledge_base', {
-      id: kbId,
-      title: '[SEND-EMAIL] ' + (item.subject || 'Outreach'),
-      source: 'outreach',
-      source_id: item.id,
-      content: message,
-      content_type: 'gaby_task',
-      tags: ['outreach', 'send', 'pending'],
-      metadata: { recipient: item.recipient, company: item.company, status: 'pending' },
-      created_by: 'Yousra'
+    await sbInsert('proposal_change_requests', {
+      proposal_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+      section_id: '11111111-1111-1111-1111-111111111105',
+      author: 'Yousra',
+      message: message,
+      status: 'open'
     });
 
     const idx = data.findIndex(d => d.id === id);
@@ -808,17 +803,12 @@ async function draftInYousra(id) {
     'Instructions: Create this as a DRAFT in Yousra\'s Gmail (do NOT send). Use GMAIL_CREATE_EMAIL_DRAFT via Composio. Confirm back to Yousra when done.';
 
   try {
-    const kbId = crypto.randomUUID();
-    await sbInsert('knowledge_base', {
-      id: kbId,
-      title: '[DRAFT-EMAIL] ' + (item.subject || 'Outreach'),
-      source: 'outreach',
-      source_id: item.id,
-      content: message,
-      content_type: 'gaby_task',
-      tags: ['outreach', 'draft', 'pending'],
-      metadata: { recipient: item.recipient, company: item.company, status: 'pending' },
-      created_by: 'Yousra'
+    await sbInsert('proposal_change_requests', {
+      proposal_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+      section_id: '11111111-1111-1111-1111-111111111105',
+      author: 'Yousra',
+      message: message,
+      status: 'open'
     });
 
     showToast('Draft request sent to Gaby! She\'ll create it in your inbox.');
