@@ -8,27 +8,9 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="css/design-system.css">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --green: #4ECB71;
-  --charcoal: #0F1923;
-  --teal: #2DD4BF;
-  --amber: #F59E0B;
-  --coral: #EF4444;
-  --gold: #FBBF24;
-  --purple: #A855F7;
-  --blue: #3B82F6;
-  --n50: #F8FAFC;
-  --n400: #94A3B8;
-  --n800: #1E293B;
-  --surface: rgba(255,255,255,0.03);
-  --border: rgba(255,255,255,0.06);
-  --sidebar-w: 240px;
-  --display: 'Space Grotesk', sans-serif;
-  --body: 'General Sans', sans-serif;
-}
 
 html { background: var(--charcoal); }
 
@@ -43,31 +25,6 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* ── SIDEBAR ── */
-.sidebar {
-  width: var(--sidebar-w);
-  min-height: 100vh;
-  background: var(--charcoal);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 100;
-  padding: 32px 0 24px;
-}
-
-.sidebar-brand { padding: 0 24px; margin-bottom: 8px; }
-
-.sidebar-logo {
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 22px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .pulse-dot {
   width: 8px;
@@ -82,48 +39,6 @@ a { text-decoration: none; color: inherit; }
   50% { transform: scale(1.2); opacity: 1.0; }
 }
 
-.sidebar-sub {
-  font-family: var(--body);
-  font-size: 11px;
-  color: var(--n400);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 0 24px;
-  margin-top: 4px;
-}
-
-.sidebar-nav {
-  margin-top: 40px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 24px;
-  font-family: var(--body);
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--n400);
-  text-decoration: none;
-  border-left: 3px solid transparent;
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
-}
-
-.nav-item:hover { color: #fff; }
-
-.nav-item.active {
-  color: #fff;
-  border-left-color: var(--green);
-  background: rgba(78,203,113,0.08);
-}
-
-.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-
 .sidebar-version {
   padding: 0 27px;
   font-family: var(--body);
@@ -132,84 +47,11 @@ a { text-decoration: none; color: inherit; }
   opacity: 0.5;
 }
 
-.nav-group { display: flex; flex-direction: column; }
-.nav-sub {
-  padding-left: 44px !important;
-  font-size: 0.85em;
-  opacity: 0.7;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 24px 8px 44px;
-  color: var(--n400);
-  transition: all 0.2s ease;
-}
-.nav-sub:hover, .nav-sub.active { opacity: 1; color: var(--green); }
-.nav-sub svg { flex-shrink: 0; }
-
 /* ── HAMBURGER ── */
-.hamburger {
-  display: none;
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 200;
-  background: var(--n800);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-}
-
-.hamburger svg { width: 20px; height: 20px; color: var(--n50); }
-
-.sidebar-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 90;
-}
-
-.sidebar-close {
-  display: none;
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--n400);
-}
-
-.sidebar-close svg { width: 20px; height: 20px; }
 
 /* ── MAIN ── */
-.main {
-  margin-left: var(--sidebar-w);
-  flex: 1;
-  padding: 48px;
-  max-width: calc(1400px + 96px);
-}
 
 /* ── PAGE HEADER ── */
-.page-header {
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 36px;
-  color: var(--n50);
-  margin-bottom: 8px;
-}
-
-.page-subtitle {
-  font-family: var(--body);
-  font-size: 16px;
-  color: var(--n400);
-  margin-bottom: 40px;
-}
 
 /* ── METRIC CARDS ROW ── */
 .metrics-row {
@@ -275,11 +117,6 @@ a { text-decoration: none; color: inherit; }
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 2px;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
 }
 
 /* ── CHART CARDS ── */
@@ -599,20 +436,6 @@ a { text-decoration: none; color: inherit; }
 
 /* ── MOBILE ── */
 @media (max-width: 767px) {
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-  }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-backdrop.open { display: block; }
-  .sidebar-close.show { display: block; }
-  .hamburger { display: flex; }
-  .main {
-    margin-left: 0;
-    padding: 24px;
-    padding-top: 72px;
-  }
-  .page-header { font-size: 28px; }
   .metrics-row {
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
@@ -620,104 +443,14 @@ a { text-decoration: none; color: inherit; }
   .metric-number { font-size: 24px; }
   .metric-card { padding: 16px 14px; }
   .chart-row { grid-template-columns: 1fr; }
-  .gaps-row { grid-template-columns: 1fr 1fr; gap: 12px; }
-}
+  .gaps-row { grid-template-columns: 1fr 1fr; gap: 12px; }}
 
 @media (max-width: 480px) {
   .metrics-row { grid-template-columns: repeat(2, 1fr); }
-  .gaps-row { grid-template-columns: 1fr; }
-}
-
-  .btn-sync { background: transparent; border: 1px solid #2DD4BF; color: #2DD4BF; font-family: inherit; font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 2px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
-  .btn-sync:hover { background: rgba(45,212,191,0.1); }
+  .gaps-row { grid-template-columns: 1fr; }}
 
     /* ── Light theme overrides ── */
-    .theme-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      padding: 8px 14px;
-      cursor: pointer;
-      font-family: var(--body, 'General Sans', sans-serif);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--n400);
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-    .theme-btn:hover {
-      color: var(--n50);
-      border-color: var(--n400);
-    }
-    .theme-icon { font-size: 14px; }
-
-    html[data-theme="light"] {
-      --green: #2EA84E;
-      --charcoal: #F8FAFC;
-      --teal: #0D9488;
-      --amber: #D97706;
-      --coral: #DC2626;
-      --gold: #CA8A04;
-      --n50: #0F172A;
-      --n400: #64748B;
-      --n800: #FFFFFF;
-      --surface: rgba(0,0,0,0.02);
-      --border: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] body {
-      background: #F1F5F9;
-      color: #0F172A;
-    }
-    html[data-theme="light"] .sidebar {
-      background: #FFFFFF;
-      border-right-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .sidebar-logo,
-    html[data-theme="light"] .page-header {
-      color: #0F172A;
-    }
-    html[data-theme="light"] .nav-item:hover {
-      color: #0F172A;
-    }
-    html[data-theme="light"] .nav-item.active {
-      color: #0F172A;
-      background: rgba(46,168,78,0.06);
-    }
-    html[data-theme="light"] .card,
-    html[data-theme="light"] .stat-block,
-    html[data-theme="light"] .contact-card,
-    html[data-theme="light"] .diagram-card,
-    html[data-theme="light"] .spec-card {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .search-input,
-    html[data-theme="light"] select,
-    html[data-theme="light"] textarea,
-    html[data-theme="light"] input[type="text"],
-    html[data-theme="light"] input[type="date"],
-    html[data-theme="light"] input[type="email"] {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.12);
-      color: #0F172A;
-    }
-    html[data-theme="light"] .enrich-modal-card,
-    html[data-theme="light"] .sync-modal-card,
-    html[data-theme="light"] .modal-card {
-      background: rgba(255,255,255,0.97);
-      border-color: rgba(0,0,0,0.1);
-    }
-    html[data-theme="light"] .hamburger {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .sidebar-backdrop {
-      background: rgba(0,0,0,0.3);
-    }
-</style>
+    .theme-icon { font-size: 14px; }</style>
 </head>
 <body>
 

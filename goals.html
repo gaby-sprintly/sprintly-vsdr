@@ -7,21 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/design-system.css">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-:root {
-  --green: #4ECB71;
-  --charcoal: #0F1923;
-  --teal: #2DD4BF;
-  --amber: #F59E0B;
-  --coral: #EF4444;
-  --n50: #F8FAFC;
-  --n400: #94A3B8;
-  --n800: #1E293B;
-  --surface: rgba(255,255,255,0.03);
-  --sidebar-w: 240px;
-}
 
 html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
@@ -34,30 +22,6 @@ body {
 }
 
 /* ── SIDEBAR ── */
-.sidebar {
-  position: fixed;
-  top: 0; left: 0;
-  width: var(--sidebar-w);
-  height: 100vh;
-  background: var(--charcoal);
-  border-right: 1px solid rgba(255,255,255,0.06);
-  display: flex;
-  flex-direction: column;
-  padding: 32px 0;
-  z-index: 100;
-}
-
-.sidebar-brand { padding: 0 28px; margin-bottom: 8px; }
-
-.sidebar-logo {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 22px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .pulse-dot {
   width: 8px; height: 8px;
@@ -71,42 +35,6 @@ body {
   50% { transform: scale(1.2); opacity: 1.0; }
 }
 
-.sidebar-sub {
-  font-family: 'General Sans', sans-serif;
-  font-size: 11px;
-  color: var(--n400);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 0 28px;
-  margin-top: 4px;
-}
-
-.sidebar-nav { margin-top: 40px; flex: 1; }
-
-.sidebar-nav a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 28px;
-  font-family: 'General Sans', sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--n400);
-  text-decoration: none;
-  border-left: 3px solid transparent;
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
-}
-
-.sidebar-nav a:hover { color: #fff; }
-
-.sidebar-nav a.active {
-  color: #fff;
-  border-left-color: var(--green);
-  background: rgba(78,203,113,0.08);
-}
-
-.sidebar-nav a svg { width: 18px; height: 18px; flex-shrink: 0; }
-
 .sidebar-version {
   padding: 0 28px;
   font-size: 11px;
@@ -115,49 +43,8 @@ body {
 }
 
 /* ── HAMBURGER ── */
-.hamburger {
-  display: none;
-  position: fixed;
-  top: 16px; left: 16px;
-  z-index: 200;
-  background: var(--n800);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 2px;
-  color: var(--n50);
-  width: 40px; height: 40px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.hamburger svg { width: 20px; height: 20px; }
-
-.sidebar-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 90;
-}
-
-.sidebar-close {
-  display: none;
-  position: absolute;
-  top: 16px; right: 16px;
-  background: none; border: none;
-  color: var(--n400);
-  cursor: pointer;
-}
-
-.sidebar-close svg { width: 20px; height: 20px; }
 
 /* ── MAIN ── */
-.main {
-  margin-left: var(--sidebar-w);
-  flex: 1;
-  padding: 48px;
-  max-width: 1200px;
-}
 
 /* ── PAGE HEADER ── */
 .page-title {
@@ -310,11 +197,6 @@ body {
   animation-fill-mode: forwards;
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
 .goal-card:nth-child(1) .progress-fill::after { animation-delay: 0s; }
 .goal-card:nth-child(2) .progress-fill::after { animation-delay: 0.15s; }
 .goal-card:nth-child(3) .progress-fill::after { animation-delay: 0.3s; }
@@ -373,17 +255,6 @@ body {
 
 /* ── MOBILE ── */
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); transition: transform 0.25s ease; }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-backdrop.open { display: block; }
-  .sidebar-close.show { display: block; }
-  .hamburger { display: flex; }
-
-  .main {
-    margin-left: 0;
-    padding: 24px;
-    padding-top: 72px;
-  }
 
   .page-title { font-size: 28px; }
 
@@ -392,30 +263,10 @@ body {
   .goal-title { font-size: 18px; }
   .progress-pct { font-size: 26px; }
 
-  .q2-grid { grid-template-columns: 1fr; }
-}
+  .q2-grid { grid-template-columns: 1fr; }}
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .q2-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-.nav-group { display: flex; flex-direction: column; }
-.nav-sub {
-  padding-left: 44px !important;
-  font-size: 0.85em;
-  opacity: 0.7;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 24px 8px 44px;
-  color: var(--n400);
-  transition: all 0.2s ease;
-}
-.nav-sub:hover, .nav-sub.active {
-  opacity: 1;
-  color: var(--green);
-}
-.nav-sub svg { flex-shrink: 0; }
+  .q2-grid { grid-template-columns: repeat(2, 1fr); }}
 
 /* ── EXPANDABLE GOAL DETAILS ── */
 .goal-card {
@@ -486,96 +337,8 @@ body {
   opacity: 0.7;
 }
 
-  .btn-sync { background: transparent; border: 1px solid #2DD4BF; color: #2DD4BF; font-family: inherit; font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 2px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
-  .btn-sync:hover { background: rgba(45,212,191,0.1); }
-
     /* ── Light theme overrides ── */
-    .theme-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      padding: 8px 14px;
-      cursor: pointer;
-      font-family: var(--body, 'General Sans', sans-serif);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--n400);
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-    .theme-btn:hover {
-      color: var(--n50);
-      border-color: var(--n400);
-    }
-    .theme-icon { font-size: 14px; }
-
-    html[data-theme="light"] {
-      --green: #2EA84E;
-      --charcoal: #F8FAFC;
-      --teal: #0D9488;
-      --amber: #D97706;
-      --coral: #DC2626;
-      --gold: #CA8A04;
-      --n50: #0F172A;
-      --n400: #64748B;
-      --n800: #FFFFFF;
-      --surface: rgba(0,0,0,0.02);
-      --border: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] body {
-      background: #F1F5F9;
-      color: #0F172A;
-    }
-    html[data-theme="light"] .sidebar {
-      background: #FFFFFF;
-      border-right-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .sidebar-logo,
-    html[data-theme="light"] .page-header {
-      color: #0F172A;
-    }
-    html[data-theme="light"] .nav-item:hover {
-      color: #0F172A;
-    }
-    html[data-theme="light"] .nav-item.active {
-      color: #0F172A;
-      background: rgba(46,168,78,0.06);
-    }
-    html[data-theme="light"] .card,
-    html[data-theme="light"] .stat-block,
-    html[data-theme="light"] .contact-card,
-    html[data-theme="light"] .diagram-card,
-    html[data-theme="light"] .spec-card {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .search-input,
-    html[data-theme="light"] select,
-    html[data-theme="light"] textarea,
-    html[data-theme="light"] input[type="text"],
-    html[data-theme="light"] input[type="date"],
-    html[data-theme="light"] input[type="email"] {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.12);
-      color: #0F172A;
-    }
-    html[data-theme="light"] .enrich-modal-card,
-    html[data-theme="light"] .sync-modal-card,
-    html[data-theme="light"] .modal-card {
-      background: rgba(255,255,255,0.97);
-      border-color: rgba(0,0,0,0.1);
-    }
-    html[data-theme="light"] .hamburger {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .sidebar-backdrop {
-      background: rgba(0,0,0,0.3);
-    }
-</style>
+    .theme-icon { font-size: 14px; }</style>
 </head>
 <body>
 

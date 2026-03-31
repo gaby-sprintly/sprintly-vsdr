@@ -7,26 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/design-system.css">
 <style>
+/* ── Page-specific: index.html ── */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-:root {
-  --green: #4ECB71;
-  --charcoal: #0F1923;
-  --teal: #2DD4BF;
-  --amber: #F59E0B;
-  --red: #EF4444;
-  --n50: #F8FAFC;
-  --n400: #94A3B8;
-  --n800: #1E293B;
-  --surface: rgba(255,255,255,0.03);
-  --sidebar-w: 240px;
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'General Sans', sans-serif;
 }
 
 html, body {
@@ -41,31 +28,6 @@ html, body {
 a {
   text-decoration: none;
   color: inherit;
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: var(--sidebar-w);
-  height: 100%;
-  background: var(--charcoal);
-  border-right: 1px solid rgba(255,255,255,0.06);
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  transition: transform 0.25s ease;
-}
-
-.sidebar-brand {
-  padding: 32px 24px 0;
-}
-
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .sidebar-logo h1 {
@@ -98,11 +60,6 @@ a {
   font-variant: small-caps;
   margin-top: 6px;
   padding-left: 0;
-}
-
-.sidebar-nav {
-  margin-top: 40px;
-  flex: 1;
 }
 
 .sidebar-nav a {
@@ -140,42 +97,6 @@ a {
   color: var(--n400);
 }
 
-.sidebar-close {
-  display: none;
-  position: absolute;
-  top: 20px;
-  right: 16px;
-  background: none;
-  border: none;
-  color: var(--n400);
-  font-size: 24px;
-  cursor: pointer;
-  line-height: 1;
-  font-family: var(--font-body);
-}
-
-/* ── Hamburger ── */
-.hamburger {
-  display: none;
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 90;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-}
-
-.hamburger span {
-  display: block;
-  width: 22px;
-  height: 2px;
-  background: var(--n400);
-  margin: 5px 0;
-  transition: background 0.15s ease;
-}
-
 .hamburger:hover span {
   background: #fff;
 }
@@ -193,13 +114,6 @@ a {
   display: block;
 }
 
-/* ── Main ── */
-.main {
-  margin-left: var(--sidebar-w);
-  min-height: 100%;
-  padding: 48px;
-}
-
 .main-inner {
   max-width: 1200px;
 }
@@ -211,14 +125,6 @@ a {
   font-size: 36px;
   color: var(--n50);
   line-height: 1.2;
-}
-
-.page-subtitle {
-  font-family: var(--font-body);
-  font-weight: 400;
-  font-size: 16px;
-  color: var(--n400);
-  margin-top: 8px;
 }
 
 /* ── Cards Grid ── */
@@ -354,114 +260,6 @@ a {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
-.nav-group { display: flex; flex-direction: column; }
-.nav-sub {
-  padding-left: 44px !important;
-  font-size: 0.85em;
-  opacity: 0.7;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 24px 8px 44px;
-  color: var(--n400);
-  transition: all 0.2s ease;
-}
-.nav-sub:hover, .nav-sub.active {
-  opacity: 1;
-  color: var(--green);
-}
-.nav-sub svg { flex-shrink: 0; }
-
-  .btn-sync { background: transparent; border: 1px solid #2DD4BF; color: #2DD4BF; font-family: inherit; font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 2px; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
-  .btn-sync:hover { background: rgba(45,212,191,0.1); }
-
-    /* ── Light theme overrides ── */
-    .theme-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      padding: 8px 14px;
-      cursor: pointer;
-      font-family: var(--body, 'General Sans', sans-serif);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--n400);
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-    .theme-btn:hover {
-      color: var(--n50);
-      border-color: var(--n400);
-    }
-    .theme-icon { font-size: 14px; }
-
-    html[data-theme="light"] {
-      --green: #2EA84E;
-      --charcoal: #F8FAFC;
-      --teal: #0D9488;
-      --amber: #D97706;
-      --coral: #DC2626;
-      --gold: #CA8A04;
-      --n50: #0F172A;
-      --n400: #64748B;
-      --n800: #FFFFFF;
-      --surface: rgba(0,0,0,0.02);
-      --border: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] body {
-      background: #F1F5F9;
-      color: #0F172A;
-    }
-    html[data-theme="light"] .sidebar {
-      background: #FFFFFF;
-      border-right-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .sidebar-logo,
-    html[data-theme="light"] .page-header {
-      color: #0F172A;
-    }
-    html[data-theme="light"] .nav-item:hover {
-      color: #0F172A;
-    }
-    html[data-theme="light"] .nav-item.active {
-      color: #0F172A;
-      background: rgba(46,168,78,0.06);
-    }
-    html[data-theme="light"] .card,
-    html[data-theme="light"] .stat-block,
-    html[data-theme="light"] .contact-card,
-    html[data-theme="light"] .diagram-card,
-    html[data-theme="light"] .spec-card {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .search-input,
-    html[data-theme="light"] select,
-    html[data-theme="light"] textarea,
-    html[data-theme="light"] input[type="text"],
-    html[data-theme="light"] input[type="date"],
-    html[data-theme="light"] input[type="email"] {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.12);
-      color: #0F172A;
-    }
-    html[data-theme="light"] .enrich-modal-card,
-    html[data-theme="light"] .sync-modal-card,
-    html[data-theme="light"] .modal-card {
-      background: rgba(255,255,255,0.97);
-      border-color: rgba(0,0,0,0.1);
-    }
-    html[data-theme="light"] .hamburger {
-      background: #FFFFFF;
-      border-color: rgba(0,0,0,0.08);
-    }
-    html[data-theme="light"] .sidebar-backdrop {
-      background: rgba(0,0,0,0.3);
-    }
 </style>
 </head>
 <body>
