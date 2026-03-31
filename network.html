@@ -1046,58 +1046,36 @@ async function confirmEnrich() {
 
 async function toggleVip(contactId, airtableId, makeVip, btnEl) {
   // Immediate UI feedback
-  if (makeVip) {
-    btnEl.classList.add('active');
-    btnEl.innerHTML = '★ VIP';
-    btnEl.title = 'Remove VIP';
-    btnEl.setAttribute('onclick', "event.preventDefault();event.stopPropagation();toggleVip('" + contactId + "','" + airtableId + "',false,this)");
-  } else {
-    btnEl.classList.remove('active');
-    btnEl.innerHTML = '☆ VIP';
-    btnEl.title = 'Add to VIP';
-    btnEl.setAttribute('onclick', "event.preventDefault();event.stopPropagation();toggleVip('" + contactId + "','" + airtableId + "',true,this)");
-  }
+  btnEl.disabled = true;
+  btnEl.style.opacity = '0.5';
 
-  // Update card styling
-  var card = btnEl.closest('.contact-card');
-  if (card) {
-    if (makeVip) card.classList.add('vip-card');
-    else card.classList.remove('vip-card');
-  }
-
-  // Update Supabase (refresh auth first)
+  // Single server call: updates both Supabase and Airtable (bypasses RLS)
   try {
-    if (typeof requireAuth === 'function') await requireAuth();
-    var resp = await fetch(SUPABASE_URL + '/rest/v1/contacts?id=eq.' + contactId, {
-      method: 'PATCH',
-      headers: { ...SB_HEADERS, 'Prefer': 'return=representation' },
-      body: JSON.stringify({ vip: makeVip })
+    var payload = {
+      supabaseId: contactId,
+      supabaseFields: { vip: makeVip }
+    };
+    if (airtableId) {
+      payload.airtableId = airtableId;
+      payload.fields = { VIP: makeVip };
+    }
+
+    var resp = await fetch('/api/airtable-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
-    if (!resp.ok) {
-      var errText = await resp.text();
-      console.error('Supabase VIP update failed:', resp.status, errText);
-    } else {
-      var result = await resp.json();
-      console.log('VIP updated in Supabase:', result.length ? result[0].vip : 'no result');
+    var result = await resp.json();
+    console.log('VIP toggle result:', JSON.stringify(result));
+
+    if (result.supabase && !result.supabase.ok) {
+      console.error('Supabase VIP failed:', result.supabase.error);
     }
   } catch (e) {
-    console.error('Supabase VIP update failed:', e);
+    console.error('VIP toggle failed:', e);
   }
 
-  // Sync VIP to Airtable via serverless function (no key in frontend)
-  if (airtableId) {
-    try {
-      await fetch('/api/airtable-sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ airtableId: airtableId, fields: { VIP: makeVip } })
-      });
-    } catch (e) {
-      console.error('Airtable VIP sync failed:', e);
-    }
-  }
-
-  // Refresh VIP section and stats
+  // Refresh page data (VIP section, stats, cards)
   if (typeof window.initPage === 'function') window.initPage();
 }
 
