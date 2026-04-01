@@ -669,6 +669,10 @@ a { text-decoration: none; color: inherit; }
       <div class="stat-label">Needs Follow-Up</div>
     </div>
     <div class="stat-block">
+      <div class="stat-number" id="statOverdue"><div class="stat-loading"></div></div>
+      <div class="stat-label">Overdue</div>
+    </div>
+    <div class="stat-block">
       <div class="stat-number" id="statEnriched"><div class="stat-loading"></div></div>
       <div class="stat-label">Enriched</div>
     </div>
@@ -690,6 +694,7 @@ a { text-decoration: none; color: inherit; }
       <button class="pill" data-filter="advisor">Advisors</button>
       <button class="pill" data-filter="vip">VIPs</button>
       <button class="pill" data-filter="followup">Needs Follow-up</button>
+      <button class="pill" data-filter="overdue">Overdue</button>
       <button class="pill" data-filter="enrichment">Needs Enrichment</button>
       <button class="pill" data-filter="enriched">Enriched</button>
     </div>
@@ -780,6 +785,7 @@ a { text-decoration: none; color: inherit; }
       fetchCount('contact_type=eq.founder').then(function(n) { document.getElementById('statFounders').textContent = n; }),
       fetchCount('contact_type=eq.investor').then(function(n) { document.getElementById('statInvestors').textContent = n; }),
       fetchCount('follow_up_date=not.is.null').then(function(n) { document.getElementById('statFollowups').textContent = n; }),
+      fetchCount('follow_up_date=not.is.null&follow_up_date=lt.' + today()).then(function(n) { document.getElementById('statOverdue').textContent = n; }),
       fetchCount('enrichment_status=eq.enriched').then(function(n) { enrichedCount = n; })
     ]).then(function() {
       var pct = totalCount > 0 ? Math.round((enrichedCount / totalCount) * 100) : 0;
@@ -801,6 +807,7 @@ a { text-decoration: none; color: inherit; }
       case 'advisor': base += '&contact_type=eq.advisor'; break;
       case 'vip': base += '&vip=eq.true'; break;
       case 'followup': base += '&follow_up_date=not.is.null'; break;
+      case 'overdue': base += '&follow_up_date=not.is.null&follow_up_date=lt.' + today(); break;
       case 'enrichment': base += '&enrichment_status=neq.enriched'; break;
       case 'enriched': base += '&enrichment_status=eq.enriched'; break;
     }
@@ -825,6 +832,7 @@ a { text-decoration: none; color: inherit; }
       case 'advisor': params = 'contact_type=eq.advisor'; break;
       case 'vip': params = 'vip=eq.true'; break;
       case 'followup': params = 'follow_up_date=not.is.null'; break;
+      case 'overdue': params = 'follow_up_date=not.is.null&follow_up_date=lt.' + today(); break;
       case 'enrichment': params = 'enrichment_status=neq.enriched'; break;
       case 'enriched': params = 'enrichment_status=eq.enriched'; break;
       default: params = ''; break;
@@ -1099,7 +1107,7 @@ a { text-decoration: none; color: inherit; }
       var labels = {
         all: 'All Contacts', founder: 'Founders', investor: 'Investors',
         corporate: 'Corporate', advisor: 'Advisors', vip: 'VIP Contacts',
-        followup: 'Needs Follow-up', enrichment: 'Needs Enrichment', enriched: 'Enriched'
+        followup: 'Needs Follow-up', overdue: 'Overdue Follow-ups', enrichment: 'Needs Enrichment', enriched: 'Enriched'
       };
       document.getElementById('allContactsLabel').textContent = labels[currentFilter] || 'All Contacts';
 
