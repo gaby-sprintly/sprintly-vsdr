@@ -1244,7 +1244,7 @@ async function toggleContactFollowUp(btnEl) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           supabaseId: cd.id,
-          supabaseFields: { follow_up_date: null, follow_up_reason: null },
+          supabaseFields: { follow_up_date: null, follow_up_reason: null, needs_follow_up: false },
           airtableId: cd.airtable_id || undefined,
           fields: cd.airtable_id ? { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': false } : undefined
         })
@@ -1295,7 +1295,7 @@ async function confirmFollowUp() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         supabaseId: cd.id,
-        supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason },
+        supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason, needs_follow_up: true },
         airtableId: cd.airtable_id || undefined,
         fields: cd.airtable_id ? { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': true } : undefined
       })

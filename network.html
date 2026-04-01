@@ -1324,7 +1324,7 @@ async function toggleFollowUp(contactId, airtableId, makeFollowUp, btnEl) {
     try {
       var payload = {
         supabaseId: contactId,
-        supabaseFields: { follow_up_date: null, follow_up_reason: null }
+        supabaseFields: { follow_up_date: null, follow_up_reason: null, needs_follow_up: false }
       };
       if (airtableId) {
         payload.airtableId = airtableId;
@@ -1363,7 +1363,7 @@ async function confirmFollowUpModal() {
   try {
     var payload = {
       supabaseId: s.contactId,
-      supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason }
+      supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason, needs_follow_up: true }
     };
     if (s.airtableId) {
       payload.airtableId = s.airtableId;
