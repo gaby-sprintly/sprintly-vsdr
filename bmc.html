@@ -7,27 +7,94 @@
 <title>Strategy — VSDR</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
-<!-- Clash Display + Satoshi for canvas content -->
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="stylesheet" href="css/design-system.css">
 <style>
-/* ── bmc.html page-specific styles ── */
+/* ══════════════════════════════════════════
+   STRATEGY PAGE — FUTURISTIC EDITION
+   ══════════════════════════════════════════ */
 
-/* Canvas typography — Clash Display + Satoshi */
+/* ── Ambient Canvas Background ── */
+#bgCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.main-inner { position: relative; z-index: 1; }
+
+/* ── Hero ── */
+.page-hero {
+  padding: 48px 0 56px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+  position: relative;
+  overflow: visible;
+}
+
+/* Glowing orb behind title */
+.hero-orb {
+  position: absolute;
+  top: -40px; left: -60px;
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse at center, rgba(78,203,113,0.08) 0%, rgba(45,212,191,0.04) 40%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -10px) scale(1.05); }
+  66% { transform: translate(-15px, 15px) scale(0.95); }
+}
+
+.canvas-section-eyebrow {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--green);
+  margin-bottom: 8px;
+  display: inline-block;
+  position: relative;
+}
+/* Animated underline on eyebrow */
+.canvas-section-eyebrow::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 1px;
+  background: var(--green);
+  transition: width 0.6s ease;
+}
+.canvas-section-eyebrow.revealed::after { width: 100%; }
+
 .canvas-title {
   font-family: 'Clash Display', var(--display);
   font-weight: 700;
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: clamp(32px, 4vw, 48px);
   color: var(--n50);
   line-height: 1.1;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
+.canvas-title .accent { color: var(--green); }
+.canvas-title .char {
+  display: inline-block;
+  opacity: 0;
+}
+
 .canvas-subtitle {
   font-family: 'Satoshi', var(--body);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--n400);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  max-width: 500px;
+  line-height: 1.6;
 }
 .canvas-date {
   font-family: var(--body);
@@ -35,9 +102,10 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   color: var(--n400);
+  opacity: 0.6;
 }
 
-/* Canvas section label */
+/* ── Canvas Grid Header ── */
 .canvas-section-header {
   display: flex;
   justify-content: space-between;
@@ -46,29 +114,30 @@
   flex-wrap: wrap;
   gap: 12px;
 }
-.canvas-section-eyebrow {
+.canvas-hint {
   font-family: var(--body);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--green);
-  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--n400);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.canvas-hint .hint-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-/* ────────────────────────────────────
-   BMC Grid — classic 9-box layout
-   Top row: 5 columns (Partners spans 2 rows, Activities+Resources stacked, Value spans 2 rows, Relations+Channels stacked, Segments spans 2 rows)
-   Bottom row: 2 columns (Costs 3/5, Revenue 2/5)
-   ──────────────────────────────────── */
+/* ══════════════════════════════════
+   BMC GRID — 9-block layout
+   ══════════════════════════════════ */
 .bmc-canvas {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: auto auto auto;
   gap: 12px;
 }
-
-/* Grid placement */
 .bmc-partners   { grid-column: 1; grid-row: 1 / 3; }
 .bmc-activities { grid-column: 2; grid-row: 1; }
 .bmc-resources  { grid-column: 2; grid-row: 2; }
@@ -79,17 +148,18 @@
 .bmc-costs      { grid-column: 1 / 4; grid-row: 3; }
 .bmc-revenue    { grid-column: 4 / 6; grid-row: 3; }
 
-/* BMC Block base */
+/* ── BMC Block ── */
 .bmc-block {
-  background: var(--n800);
+  background: rgba(30,41,59,0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: 3px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
-.bmc-block:hover { border-color: rgba(255,255,255,0.12); }
 
 /* Colored top accent bar */
 .bmc-block::before {
@@ -97,16 +167,33 @@
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
+  transition: height 0.3s ease, box-shadow 0.3s ease;
 }
+.bmc-block:hover::before { height: 4px; }
 .bmc-partners::before   { background: var(--teal); }
 .bmc-activities::before { background: var(--purple); }
 .bmc-resources::before  { background: var(--amber); }
 .bmc-value::before      { background: var(--green); }
 .bmc-relations::before  { background: var(--coral); }
 .bmc-channels::before   { background: var(--gold); }
-.bmc-segments::before   { background: #60A5FA; } /* blue */
+.bmc-segments::before   { background: #60A5FA; }
 .bmc-costs::before      { background: var(--n400); }
 .bmc-revenue::before    { background: var(--green); }
+
+/* Hover glows — unique per block */
+.bmc-partners:hover   { border-color: rgba(45,212,191,0.3); box-shadow: 0 0 30px rgba(45,212,191,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-activities:hover { border-color: rgba(167,139,250,0.3); box-shadow: 0 0 30px rgba(167,139,250,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-resources:hover  { border-color: rgba(245,158,11,0.3); box-shadow: 0 0 30px rgba(245,158,11,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-value:hover      { border-color: rgba(78,203,113,0.3); box-shadow: 0 0 30px rgba(78,203,113,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-relations:hover  { border-color: rgba(239,68,68,0.3); box-shadow: 0 0 30px rgba(239,68,68,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-channels:hover   { border-color: rgba(251,191,36,0.3); box-shadow: 0 0 30px rgba(251,191,36,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-segments:hover   { border-color: rgba(96,165,250,0.3); box-shadow: 0 0 30px rgba(96,165,250,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-costs:hover      { border-color: rgba(148,163,184,0.3); box-shadow: 0 0 30px rgba(148,163,184,0.04), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+.bmc-revenue:hover    { border-color: rgba(78,203,113,0.3); box-shadow: 0 0 30px rgba(78,203,113,0.06), 0 8px 32px rgba(0,0,0,0.2); transform: translateY(-3px); }
+
+/* Active/expanded state */
+.bmc-block.expanded { transform: translateY(-2px); }
+.bmc-block.expanded::before { height: 4px; }
 
 /* Block inner */
 .bmc-block-inner {
@@ -115,8 +202,6 @@
   display: flex;
   flex-direction: column;
 }
-
-/* Block header */
 .bmc-block-header {
   display: flex;
   align-items: center;
@@ -125,12 +210,14 @@
   flex-shrink: 0;
 }
 .bmc-block-icon {
-  width: 32px; height: 32px;
-  border-radius: 2px;
+  width: 34px; height: 34px;
+  border-radius: 3px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   font-size: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+.bmc-block:hover .bmc-block-icon { transform: scale(1.1); }
 .bmc-partners .bmc-block-icon   { background: rgba(45,212,191,0.12); }
 .bmc-activities .bmc-block-icon { background: rgba(167,139,250,0.12); }
 .bmc-resources .bmc-block-icon  { background: rgba(245,158,11,0.12); }
@@ -160,37 +247,17 @@
   cursor: pointer;
   padding: 2px;
   flex-shrink: 0;
+  transition: color 0.2s;
 }
 .bmc-expand-btn svg {
   width: 16px; height: 16px;
-  transition: transform 0.25s ease;
   display: block;
 }
-.bmc-block.expanded .bmc-expand-btn svg {
-  transform: rotate(180deg);
-}
+.bmc-block:hover .bmc-expand-btn { color: var(--n50); }
 
 /* Block content */
-.bmc-block-content {
-  flex: 1;
-  overflow: hidden;
-}
-.bmc-block-preview {
-  /* Always visible summary */
-}
-.bmc-block-full {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
-  opacity: 0;
-}
-.bmc-block.expanded .bmc-block-full {
-  max-height: 500px;
-  opacity: 1;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
+.bmc-block-content { flex: 1; overflow: hidden; }
+.bmc-block-full { height: 0; overflow: hidden; opacity: 0; }
 
 /* Content items */
 .bmc-items {
@@ -204,19 +271,23 @@
   font-size: 12px;
   color: var(--n400);
   line-height: 1.4;
-  padding-left: 12px;
+  padding-left: 14px;
   position: relative;
+  transition: color 0.2s, padding-left 0.2s;
 }
 .bmc-items li::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 6px;
+  left: 0; top: 6px;
   width: 4px; height: 4px;
   border-radius: 50%;
   background: currentColor;
   opacity: 0.5;
+  transition: opacity 0.2s, transform 0.2s;
 }
+.bmc-items li:hover { color: var(--n50); padding-left: 18px; }
+.bmc-items li:hover::before { opacity: 1; transform: scale(1.5); }
+
 .bmc-partners   .bmc-items li::before { color: var(--teal); }
 .bmc-activities .bmc-items li::before { color: var(--purple); }
 .bmc-resources  .bmc-items li::before { color: var(--amber); }
@@ -227,7 +298,6 @@
 .bmc-costs      .bmc-items li::before { color: var(--n400); }
 .bmc-revenue    .bmc-items li::before { color: var(--green); }
 
-/* Preview badge count */
 .bmc-count-badge {
   display: inline-flex;
   align-items: center;
@@ -235,78 +305,85 @@
   font-family: var(--body);
   font-size: 11px;
   color: var(--n400);
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 2px 8px;
   margin-top: 8px;
+  transition: background 0.2s;
+}
+.bmc-block:hover .bmc-count-badge { background: rgba(255,255,255,0.06); }
+
+/* ══════════════════════════════════
+   TRACTION — Scroll-triggered section
+   ══════════════════════════════════ */
+.traction-section {
+  margin-top: 72px;
+  position: relative;
 }
 
-/* Traction slide */
+/* Horizontal line that draws itself */
+.traction-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 40px;
+  transform-origin: left;
+}
+
 .traction-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  margin-top: 24px;
 }
 .traction-item {
-  background: var(--n800);
+  background: rgba(30,41,59,0.6);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  border-radius: 2px;
-  padding: 20px;
+  border-radius: 3px;
+  padding: 22px;
   display: flex;
   gap: 14px;
   align-items: flex-start;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.traction-item:hover {
+  border-color: rgba(78,203,113,0.2);
+  box-shadow: 0 0 24px rgba(78,203,113,0.04), 0 8px 24px rgba(0,0,0,0.15);
+  transform: translateY(-3px);
 }
 .traction-icon-wrap {
-  width: 36px; height: 36px;
-  background: rgba(78,203,113,0.1);
-  border-radius: 2px;
+  width: 40px; height: 40px;
+  background: rgba(78,203,113,0.08);
+  border: 1px solid rgba(78,203,113,0.1);
+  border-radius: 3px;
   display: flex; align-items: center; justify-content: center;
   font-size: 18px;
   flex-shrink: 0;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.traction-item:hover .traction-icon-wrap {
+  transform: scale(1.1) rotate(3deg);
+  box-shadow: 0 0 16px rgba(78,203,113,0.12);
 }
 .traction-text {
   font-family: 'Satoshi', var(--body);
   font-size: 13px;
   color: var(--n400);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 .traction-text strong { color: var(--n50); font-weight: 600; }
 
-/* Revenue rows */
-.rev-rows { display: flex; flex-direction: column; gap: 0; }
-.rev-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.rev-row:last-child { border-bottom: none; }
-.rev-label {
-  font-family: 'Satoshi', var(--body);
-  font-size: 13px;
-  color: var(--n50);
-  font-weight: 500;
-}
-.rev-detail {
-  font-family: 'Satoshi', var(--body);
-  font-size: 12px;
-  color: var(--n400);
-  text-align: right;
-  max-width: 60%;
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  #bgCanvas { display: none; }
+  .hero-orb { animation: none; }
 }
 
-/* Page header */
-.page-hero {
-  padding-bottom: 40px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 40px;
-}
-
-/* Mobile */
+/* ── Mobile ── */
 @media (max-width: 900px) {
   .main { margin-left: 0; padding: 24px; padding-top: 72px; }
   .bmc-canvas {
@@ -317,6 +394,7 @@
   .bmc-value, .bmc-relations, .bmc-channels, .bmc-segments { grid-column: auto; grid-row: auto; }
   .bmc-costs, .bmc-revenue { grid-column: auto; }
   .traction-grid { grid-template-columns: 1fr; }
+  #bgCanvas { opacity: 0.2; }
 }
 @media (max-width: 560px) {
   .bmc-canvas { grid-template-columns: 1fr; }
@@ -325,28 +403,32 @@
 </head>
 <body>
 
+<!-- Particle grid background -->
+<canvas id="bgCanvas"></canvas>
+
 <main class="main">
   <div class="main-inner">
 
     <!-- Page Hero -->
-    <section class="page-hero">
-      <div class="canvas-section-eyebrow">Business Model Canvas</div>
-      <h1 class="canvas-title">Sprintly Partners <span style="color:var(--green)">Strategy</span></h1>
-      <p class="canvas-subtitle">Silicon Valley-based growth company bridging MENA and Silicon Valley</p>
-      <div class="canvas-date">March 2026 · Updated by Gaby</div>
+    <section class="page-hero" id="heroSection">
+      <div class="hero-orb"></div>
+      <div class="canvas-section-eyebrow" id="heroEyebrow">Business Model Canvas</div>
+      <h1 class="canvas-title" id="heroTitle">Sprintly Partners <span class="accent">Strategy</span></h1>
+      <p class="canvas-subtitle" id="heroSubtitle">Silicon Valley-based growth company bridging MENA and Silicon Valley</p>
+      <div class="canvas-date" id="heroDate">April 2026 · Updated by Gaby</div>
     </section>
 
     <!-- Canvas Overview Section -->
-    <div class="canvas-section-header">
+    <div class="canvas-section-header" id="canvasHeader">
       <div>
-        <div class="canvas-section-eyebrow">Canvas Overview</div>
-        <h2 class="page-header" style="margin-bottom:0;font-size:22px;">9-Block Business Model</h2>
+        <div class="canvas-section-eyebrow" id="canvasEyebrow">Canvas Overview</div>
+        <h2 class="page-header" style="margin-bottom:0;font-size:22px;" id="canvasTitle">9-Block Business Model</h2>
       </div>
-      <div style="font-family:var(--body);font-size:12px;color:var(--n400);">Click any block to expand</div>
+      <div class="canvas-hint"><span class="hint-dot"></span> Click any block to expand</div>
     </div>
 
     <!-- BMC Grid -->
-    <div class="bmc-canvas">
+    <div class="bmc-canvas" id="bmcGrid">
 
       <!-- Key Partners -->
       <div class="bmc-block bmc-partners" onclick="toggleBlock(this)">
@@ -354,9 +436,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">🤝</div>
             <div class="bmc-block-name">Key Partners</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -386,9 +466,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">⚡</div>
             <div class="bmc-block-name">Key Activities</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -416,9 +494,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">💎</div>
             <div class="bmc-block-name">Value Propositions</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -447,9 +523,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">💬</div>
             <div class="bmc-block-name">Customer Relationships</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -475,9 +549,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">🎯</div>
             <div class="bmc-block-name">Customer Segments</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -506,9 +578,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">🏗️</div>
             <div class="bmc-block-name">Key Resources</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -536,9 +606,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">📡</div>
             <div class="bmc-block-name">Channels</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -565,9 +633,7 @@
             <div class="bmc-block-header" style="margin-bottom:12px;">
               <div class="bmc-block-icon">💰</div>
               <div class="bmc-block-name">Cost Structure</div>
-              <button class="bmc-expand-btn" aria-label="Expand">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
+              <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
             </div>
             <ul class="bmc-items">
               <li>Team (7 people — SF, Cairo, London, Marrakech, Berlin)</li>
@@ -587,9 +653,7 @@
           <div class="bmc-block-header">
             <div class="bmc-block-icon">💵</div>
             <div class="bmc-block-name">Revenue Streams</div>
-            <button class="bmc-expand-btn" aria-label="Expand">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
+            <button class="bmc-expand-btn" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           </div>
           <div class="bmc-block-content">
             <div class="bmc-block-preview">
@@ -613,59 +677,250 @@
     </div><!-- /.bmc-canvas -->
 
     <!-- Traction Section -->
-    <div style="margin-top:64px;">
-      <div class="canvas-section-eyebrow">Results</div>
-      <h2 class="page-header" style="font-size:22px;margin-bottom:6px;">Proven Traction</h2>
-      <p class="page-subtitle" style="margin-bottom:0;">What we've delivered so far</p>
+    <section class="traction-section" id="tractionSection">
+      <div class="traction-divider" id="tractionDivider"></div>
+      <div class="canvas-section-eyebrow" id="tractionEyebrow">Results</div>
+      <h2 class="page-header" style="font-size:22px;margin-bottom:6px;" id="tractionTitle">Proven Traction</h2>
+      <p class="page-subtitle" style="margin-bottom:24px;" id="tractionSubtitle">What we've delivered so far</p>
 
-      <div class="traction-grid">
-        <div class="traction-item">
-          <div class="traction-icon-wrap">📊</div>
-          <div class="traction-text"><strong>2/3 pilot founders raised funding</strong> — validated acceleration model</div>
-        </div>
-        <div class="traction-item">
-          <div class="traction-icon-wrap">🇺🇸</div>
-          <div class="traction-text"><strong>Stakpak relocated to San Francisco</strong> — raised funding, moved ops to US</div>
-        </div>
-        <div class="traction-item">
-          <div class="traction-icon-wrap">🔍</div>
-          <div class="traction-text"><strong>Scouting arm for SV8</strong> (Amr AbdelAziz) — trusted by Silicon Valley VCs</div>
-        </div>
-        <div class="traction-item">
-          <div class="traction-icon-wrap">📝</div>
-          <div class="traction-text"><strong>Active contracts:</strong> Monshaat (Saudi), HBKU (Qatar), ARPU Plus (A15), Algeria Ventures</div>
-        </div>
-        <div class="traction-item">
-          <div class="traction-icon-wrap">📬</div>
-          <div class="traction-text"><strong>23 applications</strong> for 2026 cohort — 61% Seed, AI/FinTech/HealthTech/ClimateTech</div>
-        </div>
-        <div class="traction-item">
-          <div class="traction-icon-wrap">📰</div>
-          <div class="traction-text"><strong>Press:</strong> CBS42, CAJ News Africa · <strong>MOU signed</strong> at Egypt Innovation Week</div>
-        </div>
-        <div class="traction-item">
-          <div class="traction-icon-wrap">🎤</div>
-          <div class="traction-text"><strong>Events:</strong> a16z SF Tech Week, Stanford AI for Good, Startup Grind Global, LEAP, GITEX Africa</div>
-        </div>
-        <div class="traction-item">
-          <div class="traction-icon-wrap">🏥</div>
-          <div class="traction-text"><strong>Portfolio:</strong> Fincart (e-commerce/Africa), Incura (hemostatic medtech), Stakpak (AI infra)</div>
-        </div>
+      <div class="traction-grid" id="tractionGrid">
+        <div class="traction-item"><div class="traction-icon-wrap">📊</div><div class="traction-text"><strong>2/3 pilot founders raised funding</strong> — validated acceleration model</div></div>
+        <div class="traction-item"><div class="traction-icon-wrap">🇺🇸</div><div class="traction-text"><strong>Stakpak relocated to San Francisco</strong> — raised funding, moved ops to US</div></div>
+        <div class="traction-item"><div class="traction-icon-wrap">🔍</div><div class="traction-text"><strong>Scouting arm for SV8</strong> (Amr AbdelAziz) — trusted by Silicon Valley VCs</div></div>
+        <div class="traction-item"><div class="traction-icon-wrap">📝</div><div class="traction-text"><strong>Active contracts:</strong> Monshaat (Saudi), HBKU (Qatar), ARPU Plus (A15), Algeria Ventures</div></div>
+        <div class="traction-item"><div class="traction-icon-wrap">📬</div><div class="traction-text"><strong>23 applications</strong> for 2026 cohort — 61% Seed, AI/FinTech/HealthTech/ClimateTech</div></div>
+        <div class="traction-item"><div class="traction-icon-wrap">📰</div><div class="traction-text"><strong>Press:</strong> CBS42, CAJ News Africa · <strong>MOU signed</strong> at Egypt Innovation Week</div></div>
+        <div class="traction-item"><div class="traction-icon-wrap">🎤</div><div class="traction-text"><strong>Events:</strong> a16z SF Tech Week, Stanford AI for Good, Startup Grind Global, LEAP, GITEX Africa</div></div>
+        <div class="traction-item"><div class="traction-icon-wrap">🏥</div><div class="traction-text"><strong>Portfolio:</strong> Fincart (e-commerce/Africa), Incura (hemostatic medtech), Stakpak (AI infra)</div></div>
       </div>
-    </div>
+    </section>
 
   </div>
 </main>
+
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
 
 <script src="js/supabase-client.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sidebar.js"></script>
 <script>
   initSidebar('strategy');
+  gsap.registerPlugin(ScrollTrigger);
 
+  // ══════════════════════════════════
+  //  PARTICLE GRID BACKGROUND
+  // ══════════════════════════════════
+  (function() {
+    var canvas = document.getElementById('bgCanvas');
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var mouse = { x: -999, y: -999 };
+    var particleCount = 80;
+    var connectDist = 150;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Track mouse for interactive glow
+    document.addEventListener('mousemove', function(e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    // Create particles
+    for (var i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 1.5 + 0.5
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Wrap around
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        // Draw particle
+        var dx = mouse.x - p.x;
+        var dy = mouse.y - p.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var glow = dist < 200 ? 1 - dist / 200 : 0;
+        var alpha = 0.15 + glow * 0.4;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r + glow * 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(78, 203, 113, ' + alpha + ')';
+        ctx.fill();
+
+        // Connect nearby particles
+        for (var j = i + 1; j < particles.length; j++) {
+          var p2 = particles[j];
+          var ddx = p.x - p2.x;
+          var ddy = p.y - p2.y;
+          var d = Math.sqrt(ddx * ddx + ddy * ddy);
+          if (d < connectDist) {
+            var lineAlpha = (1 - d / connectDist) * 0.08;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = 'rgba(78, 203, 113, ' + lineAlpha + ')';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    animate();
+  })();
+
+  // ══════════════════════════════════
+  //  HERO ENTRANCE TIMELINE
+  // ══════════════════════════════════
+  var hero = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+  hero
+    .from('#heroEyebrow', { y: 20, opacity: 0, duration: 0.5 })
+    .add(function() { document.getElementById('heroEyebrow').classList.add('revealed'); })
+    .from('#heroTitle', { y: 50, opacity: 0, duration: 0.8 }, '-=0.3')
+    .from('#heroSubtitle', { y: 30, opacity: 0, duration: 0.6 }, '-=0.4')
+    .from('#heroDate', { y: 15, opacity: 0, duration: 0.4 }, '-=0.3');
+
+  // ══════════════════════════════════
+  //  CANVAS GRID ENTRANCE
+  // ══════════════════════════════════
+  hero
+    .from('#canvasHeader', { y: 30, opacity: 0, duration: 0.5 }, '-=0.1')
+    .add(function() { document.getElementById('canvasEyebrow').classList.add('revealed'); });
+
+  // Stagger BMC blocks in a specific order that traces the canvas visually
+  var blockOrder = [
+    '.bmc-value',       // Center first — the heart
+    '.bmc-partners',    // Left column
+    '.bmc-activities',  // Inner left top
+    '.bmc-resources',   // Inner left bottom
+    '.bmc-relations',   // Inner right top
+    '.bmc-channels',    // Inner right bottom
+    '.bmc-segments',    // Right column
+    '.bmc-costs',       // Bottom left
+    '.bmc-revenue'      // Bottom right
+  ];
+
+  blockOrder.forEach(function(sel, i) {
+    hero.from(sel, {
+      y: 40,
+      opacity: 0,
+      scale: 0.95,
+      duration: 0.45,
+      ease: 'power2.out'
+    }, '-=' + (i === 0 ? '0.1' : '0.3'));
+  });
+
+  // Animate accent bars width after blocks appear
+  hero.from('.bmc-block::before', { scaleX: 0, duration: 0.3 }, '-=0.2');
+
+  // ══════════════════════════════════
+  //  TRACTION — SCROLL TRIGGERED
+  // ══════════════════════════════════
+
+  // Divider draws in
+  gsap.from('#tractionDivider', {
+    scaleX: 0,
+    transformOrigin: 'left center',
+    duration: 0.8,
+    ease: 'power2.out',
+    scrollTrigger: { trigger: '#tractionSection', start: 'top 85%' }
+  });
+
+  // Section header
+  gsap.from('#tractionEyebrow', {
+    x: -30, opacity: 0, duration: 0.5, ease: 'power3.out',
+    scrollTrigger: { trigger: '#tractionEyebrow', start: 'top 85%' },
+    onComplete: function() { document.getElementById('tractionEyebrow').classList.add('revealed'); }
+  });
+
+  gsap.from('#tractionTitle', {
+    y: 30, opacity: 0, duration: 0.6, ease: 'power3.out',
+    scrollTrigger: { trigger: '#tractionTitle', start: 'top 85%' }
+  });
+
+  gsap.from('#tractionSubtitle', {
+    y: 20, opacity: 0, duration: 0.5, ease: 'power3.out',
+    scrollTrigger: { trigger: '#tractionSubtitle', start: 'top 85%' }
+  });
+
+  // Traction cards — staggered cascade
+  gsap.from('.traction-item', {
+    y: 50,
+    opacity: 0,
+    scale: 0.96,
+    stagger: 0.08,
+    duration: 0.5,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '#tractionGrid', start: 'top 85%' }
+  });
+
+  // ══════════════════════════════════
+  //  BLOCK EXPAND / COLLAPSE (GSAP)
+  // ══════════════════════════════════
   function toggleBlock(block) {
-    // Prevent toggle when clicking a button inside
-    block.classList.toggle('expanded');
+    var wasExpanded = block.classList.contains('expanded');
+    var full = block.querySelector('.bmc-block-full');
+    var chevron = block.querySelector('.bmc-expand-btn svg');
+
+    // Close all others
+    document.querySelectorAll('.bmc-block.expanded').forEach(function(b) {
+      if (b !== block) {
+        b.classList.remove('expanded');
+        var f = b.querySelector('.bmc-block-full');
+        var c = b.querySelector('.bmc-expand-btn svg');
+        gsap.to(f, { height: 0, opacity: 0, duration: 0.3, ease: 'power2.inOut' });
+        gsap.to(c, { rotation: 0, duration: 0.25 });
+      }
+    });
+
+    if (wasExpanded) {
+      block.classList.remove('expanded');
+      gsap.to(full, { height: 0, opacity: 0, duration: 0.3, ease: 'power2.inOut' });
+      gsap.to(chevron, { rotation: 0, duration: 0.25 });
+    } else {
+      block.classList.add('expanded');
+
+      // Measure
+      gsap.set(full, { height: 'auto', opacity: 1 });
+      var h = full.offsetHeight;
+      gsap.set(full, { height: 0, opacity: 0 });
+
+      gsap.to(full, {
+        height: h, opacity: 1, duration: 0.4, ease: 'power2.out',
+        onComplete: function() { gsap.set(full, { height: 'auto' }); }
+      });
+      gsap.to(chevron, { rotation: 180, duration: 0.25 });
+
+      // Stagger items inside
+      var items = full.querySelectorAll('.bmc-items li');
+      gsap.from(items, {
+        x: -12, opacity: 0, stagger: 0.04, duration: 0.25, ease: 'power2.out', delay: 0.1
+      });
+    }
   }
 </script>
 </body>
