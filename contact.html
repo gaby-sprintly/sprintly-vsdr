@@ -733,19 +733,19 @@ a { text-decoration: none; color: inherit; }
   <div class="modal-card">
     <div id="followUpStep1">
       <div class="modal-title">Set Follow-up</div>
-      <div class="modal-text" style="margin-bottom:16px;">Schedule a follow-up for this contact.</div>
-      <div class="modal-label">Date</div>
+      <div class="modal-text" style="margin-bottom:16px;">Schedule a follow-up for this contact. This sets the follow-up date and reason in both Supabase and Airtable.</div>
+      <div class="modal-label">Follow-up Date</div>
       <input type="date" class="modal-input" id="followUpDate">
       <div class="modal-label">Reason</div>
       <input type="text" class="modal-input" id="followUpReason" placeholder="e.g. Check in after pitch meeting">
       <div class="modal-actions">
         <button class="modal-btn modal-btn-cancel" onclick="closeModal('followUpModal')">Cancel</button>
-        <button class="modal-btn modal-btn-confirm" onclick="showModalSuccess('followUpModal')">Send to Gaby</button>
+        <button class="modal-btn modal-btn-confirm" onclick="confirmFollowUp()">Set Follow-up</button>
       </div>
     </div>
     <div class="modal-success" id="followUpSuccess">
       <div class="modal-success-icon">&#10003;</div>
-      <div class="modal-success-text">Follow-up request sent. Gaby will handle it.</div>
+      <div class="modal-success-text">Follow-up saved! Date and reason synced to Airtable.</div>
     </div>
   </div>
 </div>
@@ -1234,32 +1234,84 @@ async function toggleContactFollowUp(btnEl) {
   var cd = window._vsdrContactData ? window._vsdrContactData() : null;
   if (!cd) return;
   var hasFollowUp = !!cd.follow_up_date;
-  var makeFollowUp = !hasFollowUp;
 
-  var followUpDate = null;
-  if (makeFollowUp) {
+  if (hasFollowUp) {
+    // Deactivate: clear follow-up directly
+    btnEl.disabled = true;
+    try {
+      await fetch('/api/airtable-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          supabaseId: cd.id,
+          supabaseFields: { follow_up_date: null, follow_up_reason: null },
+          airtableId: cd.airtable_id || undefined,
+          fields: cd.airtable_id ? { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': false } : undefined
+        })
+      });
+      cd.follow_up_date = null;
+      cd.follow_up_reason = null;
+      btnEl.innerHTML = '🔔 Follow Up';
+      btnEl.classList.remove('action-btn-amber', 'followup-active');
+      btnEl.classList.add('action-btn-neutral');
+    } catch (e) { console.error('Follow-up clear failed:', e); }
+    btnEl.disabled = false;
+  } else {
+    // Activate: open the follow-up modal with date picker + reason
+    window._followUpBtnRef = btnEl;
+    var dateInput = document.getElementById('followUpDate');
+    var reasonInput = document.getElementById('followUpReason');
+    // Default date to 7 days from now
     var d = new Date(); d.setDate(d.getDate() + 7);
-    followUpDate = d.toISOString().split('T')[0];
+    dateInput.value = d.toISOString().split('T')[0];
+    dateInput.min = new Date().toISOString().split('T')[0];
+    reasonInput.value = '';
+    openModal('followUpModal');
   }
+}
 
-  btnEl.disabled = true;
+// ── Confirm Follow-Up from modal ──
+async function confirmFollowUp() {
+  var cd = window._vsdrContactData ? window._vsdrContactData() : null;
+  if (!cd) return;
+  var dateInput = document.getElementById('followUpDate');
+  var reasonInput = document.getElementById('followUpReason');
+  var followUpDate = dateInput.value;
+  var followUpReason = reasonInput.value.trim();
+
+  if (!followUpDate) { dateInput.focus(); return; }
+  if (!followUpReason) { reasonInput.focus(); reasonInput.placeholder = 'Please enter a reason'; return; }
+
+  // Show success state immediately
+  var modal = document.getElementById('followUpModal');
+  var step1 = modal.querySelector('#followUpStep1');
+  var success = modal.querySelector('.modal-success');
+  if (step1) step1.style.display = 'none';
+  if (success) success.style.display = 'block';
+
   try {
     await fetch('/api/airtable-sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         supabaseId: cd.id,
-        supabaseFields: { follow_up_date: followUpDate, follow_up_reason: makeFollowUp ? 'Manual flag from VSDR' : null },
+        supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason },
         airtableId: cd.airtable_id || undefined,
-        fields: cd.airtable_id ? { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : null } : undefined
+        fields: cd.airtable_id ? { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': true } : undefined
       })
     });
     cd.follow_up_date = followUpDate;
-    btnEl.innerHTML = makeFollowUp ? '🔔 Needs Follow-Up' : '🔔 Follow Up';
-    if (makeFollowUp) { btnEl.classList.remove('action-btn-neutral'); btnEl.classList.add('action-btn-amber', 'followup-active'); }
-    else { btnEl.classList.remove('action-btn-amber', 'followup-active'); btnEl.classList.add('action-btn-neutral'); }
-  } catch (e) { console.error('Follow-up toggle failed:', e); }
-  btnEl.disabled = false;
+    cd.follow_up_reason = followUpReason;
+    // Update the button
+    var btnEl = window._followUpBtnRef;
+    if (btnEl) {
+      btnEl.innerHTML = '🔔 Needs Follow-Up';
+      btnEl.classList.remove('action-btn-neutral');
+      btnEl.classList.add('action-btn-amber', 'followup-active');
+    }
+  } catch (e) { console.error('Follow-up save failed:', e); }
+
+  setTimeout(function() { closeModal('followUpModal'); }, 2000);
 }
 
 // ── Set Contact Type from contact detail ──

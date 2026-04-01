@@ -391,6 +391,96 @@ a { text-decoration: none; color: inherit; }
   cursor: pointer;
 }
 
+/* ── Follow-Up Modal ── */
+.followup-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+}
+.followup-modal.open { display: flex; }
+.followup-modal-card {
+  background: rgba(30,41,59,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 4px;
+  padding: 32px;
+  max-width: 440px;
+  width: 90%;
+}
+.followup-modal-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--n50);
+  margin-bottom: 12px;
+}
+.followup-modal-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.followup-modal-label {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.followup-modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 16px;
+}
+.followup-modal-input:focus { border-color: var(--teal); }
+.followup-modal-input::placeholder { color: var(--n400); opacity: 0.6; }
+.followup-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.followup-btn-confirm {
+  background: var(--amber);
+  color: var(--charcoal);
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.followup-btn-confirm:hover { opacity: 0.9; }
+.followup-btn-cancel {
+  background: transparent;
+  color: var(--n400);
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.followup-btn-cancel:hover { color: var(--n50); border-color: var(--n400); }
+
 .enrich-success {
   color: var(--green);
   font-family: var(--body);
@@ -1046,6 +1136,28 @@ a { text-decoration: none; color: inherit; }
 })();
 </script>
 <!-- Enrich Modal -->
+<!-- Follow-Up Modal -->
+<div class="followup-modal" id="followUpModal">
+  <div class="followup-modal-card">
+    <div id="followUpStep1">
+      <div class="followup-modal-title" id="followUpTitle">Set Follow-up</div>
+      <div class="followup-modal-text">Schedule a follow-up for this contact. This syncs to both Supabase and Airtable.</div>
+      <div class="followup-modal-label">Follow-up Date</div>
+      <input type="date" class="followup-modal-input" id="nwFollowUpDate">
+      <div class="followup-modal-label">Reason</div>
+      <input type="text" class="followup-modal-input" id="nwFollowUpReason" placeholder="e.g. Check in after pitch meeting">
+      <div class="followup-modal-actions">
+        <button class="followup-btn-cancel" onclick="closeFollowUpModal()">Cancel</button>
+        <button class="followup-btn-confirm" onclick="confirmFollowUpModal()">Set Follow-up</button>
+      </div>
+    </div>
+    <div id="followUpStep2" style="display:none; padding:20px 0; text-align:center;">
+      <div style="font-size:32px; color:var(--green); margin-bottom:12px;">✓</div>
+      <div style="color:var(--green); font-family:var(--body); font-size:15px; font-weight:500;">Follow-up saved! Synced to Airtable.</div>
+    </div>
+  </div>
+</div>
+
 <div class="enrich-modal" id="enrichModal">
   <div class="enrich-modal-card">
     <div id="enrichStep1">
@@ -1189,41 +1301,97 @@ async function setContactType(contactId, airtableId, newType, btnEl) {
 }
 
 // ── Toggle Follow-Up ──
+var _nwFollowUpState = { contactId: '', airtableId: '', btnEl: null };
+
 async function toggleFollowUp(contactId, airtableId, makeFollowUp, btnEl) {
-  var followUpDate = null;
   if (makeFollowUp) {
-    // Set follow-up to 7 days from now
-    var d = new Date();
-    d.setDate(d.getDate() + 7);
-    followUpDate = d.toISOString().split('T')[0];
-    btnEl.classList.add('active');
-    btnEl.title = 'Remove follow-up';
+    // Open the modal with date picker + reason
+    _nwFollowUpState = { contactId: contactId, airtableId: airtableId, btnEl: btnEl };
+    var dateInput = document.getElementById('nwFollowUpDate');
+    var reasonInput = document.getElementById('nwFollowUpReason');
+    var d = new Date(); d.setDate(d.getDate() + 7);
+    dateInput.value = d.toISOString().split('T')[0];
+    dateInput.min = new Date().toISOString().split('T')[0];
+    reasonInput.value = '';
+    document.getElementById('followUpTitle').textContent = 'Set Follow-up';
+    document.getElementById('followUpStep1').style.display = 'block';
+    document.getElementById('followUpStep2').style.display = 'none';
+    document.getElementById('followUpModal').classList.add('open');
   } else {
+    // Clear follow-up directly (no modal needed)
     btnEl.classList.remove('active');
     btnEl.title = 'Flag for follow-up';
+    try {
+      var payload = {
+        supabaseId: contactId,
+        supabaseFields: { follow_up_date: null, follow_up_reason: null }
+      };
+      if (airtableId) {
+        payload.airtableId = airtableId;
+        payload.fields = { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': false };
+      }
+      await fetch('/api/airtable-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) { console.error('Follow-up clear failed:', e); }
+    if (typeof window.initPage === 'function') window.initPage();
   }
+}
+
+function closeFollowUpModal() {
+  document.getElementById('followUpModal').classList.remove('open');
+}
+
+async function confirmFollowUpModal() {
+  var dateInput = document.getElementById('nwFollowUpDate');
+  var reasonInput = document.getElementById('nwFollowUpReason');
+  var followUpDate = dateInput.value;
+  var followUpReason = reasonInput.value.trim();
+
+  if (!followUpDate) { dateInput.focus(); return; }
+  if (!followUpReason) { reasonInput.focus(); reasonInput.placeholder = 'Please enter a reason'; return; }
+
+  // Show success
+  document.getElementById('followUpStep1').style.display = 'none';
+  document.getElementById('followUpStep2').style.display = 'block';
+
+  var s = _nwFollowUpState;
+  if (s.btnEl) { s.btnEl.classList.add('active'); s.btnEl.title = 'Remove follow-up'; }
 
   try {
     var payload = {
-      supabaseId: contactId,
-      supabaseFields: { follow_up_date: followUpDate, follow_up_reason: makeFollowUp ? 'Manual flag from VSDR' : null }
+      supabaseId: s.contactId,
+      supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason }
     };
-    if (airtableId) {
-      payload.airtableId = airtableId;
-      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': makeFollowUp ? 'Manual flag from VSDR' : null };
+    if (s.airtableId) {
+      payload.airtableId = s.airtableId;
+      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': true };
     }
     await fetch('/api/airtable-sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-  } catch (e) {
-    console.error('Follow-up toggle failed:', e);
-  }
+  } catch (e) { console.error('Follow-up save failed:', e); }
 
-  // Refresh page data so filter tabs update
-  if (typeof window.initPage === 'function') window.initPage();
+  setTimeout(function() {
+    closeFollowUpModal();
+    if (typeof window.initPage === 'function') window.initPage();
+  }, 2000);
 }
+
+// Close follow-up modal on overlay click / Escape
+document.getElementById('followUpModal').addEventListener('click', function(e) {
+  if (e.target === this) closeFollowUpModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var fm = document.getElementById('followUpModal');
+    if (fm.classList.contains('open')) closeFollowUpModal();
+  }
+});
 
 function closeEnrich() {
   document.getElementById('enrichModal').classList.remove('open');
