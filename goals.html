@@ -12,6 +12,26 @@
 <style>
 /* ── goals.html page-specific styles ── */
 
+/* Ambient glow behind page header */
+.page-glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(78,203,113,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: glowPulse 6s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+}
+
+.main-inner { position: relative; }
+
 /* Status badge */
 .status-badge {
   display: inline-flex;
@@ -55,10 +75,22 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
-.goal-card:hover { border-color: rgba(255,255,255,0.12); }
-.goal-card.expanded { border-color: rgba(255,255,255,0.1); }
+.goal-card:hover {
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+.goal-card.expanded {
+  border-color: rgba(255,255,255,0.1);
+  transform: translateY(0);
+}
+
+/* Status-specific hover glow */
+.goal-card[data-status="on-track"]:hover { box-shadow: 0 4px 30px rgba(78,203,113,0.08), 0 4px 24px rgba(0,0,0,0.2); }
+.goal-card[data-status="at-risk"]:hover { box-shadow: 0 4px 30px rgba(245,158,11,0.08), 0 4px 24px rgba(0,0,0,0.2); }
+.goal-card[data-status="behind"]:hover { box-shadow: 0 4px 30px rgba(239,68,68,0.08), 0 4px 24px rgba(0,0,0,0.2); }
 
 /* Left accent strip */
 .goal-card::before {
@@ -67,7 +99,9 @@
   left: 0; top: 0; bottom: 0;
   width: 3px;
   border-radius: 2px 0 0 2px;
+  transition: width 0.3s ease;
 }
+.goal-card:hover::before { width: 4px; }
 .goal-card[data-status="on-track"]::before    { background: var(--green); }
 .goal-card[data-status="at-risk"]::before     { background: var(--amber); }
 .goal-card[data-status="behind"]::before      { background: var(--coral); }
@@ -102,7 +136,6 @@
   stroke-linecap: round;
   stroke-dasharray: 188.5;
   stroke-dashoffset: 188.5;
-  transition: stroke-dashoffset 1s ease;
 }
 .goal-card[data-status="on-track"]    .progress-ring-fill { stroke: var(--green); }
 .goal-card[data-status="at-risk"]     .progress-ring-fill { stroke: var(--amber); }
@@ -118,6 +151,7 @@
   font-weight: 700;
   font-size: 14px;
   color: var(--n50);
+  opacity: 0;
 }
 
 /* Goal info */
@@ -164,24 +198,18 @@
   width: 18px; height: 18px;
   color: var(--n400);
   flex-shrink: 0;
-  transition: transform 0.25s ease, color 0.2s ease;
+  transition: color 0.2s ease;
   margin-top: 2px;
 }
 .goal-card.expanded .goal-chevron {
-  transform: rotate(180deg);
   color: var(--green);
 }
 
 /* Expandable details */
 .goal-details {
-  max-height: 0;
+  height: 0;
   overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.3s ease;
   opacity: 0;
-}
-.goal-card.expanded .goal-details {
-  max-height: 600px;
-  opacity: 1;
 }
 .goal-details-inner {
   padding: 0 28px 24px 32px;
@@ -226,9 +254,11 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   margin-top: 1px;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 .kr-check.done { background: var(--green); border-color: var(--green); }
 .kr-check.done svg { width: 10px; height: 10px; color: #0F1923; }
+.kr-item:hover .kr-check { transform: scale(1.15); }
 
 /* Next actions */
 .actions-list {
@@ -244,6 +274,7 @@
   line-height: 1.4;
   padding-left: 14px;
   position: relative;
+  transition: color 0.2s ease, padding-left 0.2s ease;
 }
 .actions-list li::before {
   content: '→';
@@ -252,7 +283,10 @@
   color: var(--teal);
   font-size: 11px;
   top: 1px;
+  transition: transform 0.2s ease;
 }
+.actions-list li:hover { color: var(--n50); padding-left: 18px; }
+.actions-list li:hover::before { transform: translateX(2px); }
 
 /* Quarterly cards */
 .q-grid {
@@ -265,6 +299,12 @@
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 16px 18px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.q-card:hover {
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transform: translateY(-3px);
 }
 .q-card-top {
   display: flex;
@@ -298,6 +338,20 @@
   margin-bottom: 6px;
 }
 
+/* Stat number counter initial state */
+.stat-number {
+  clip-path: inset(0);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .page-glow { animation: none; opacity: 0.5; }
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .main { margin-left: 0; padding: 24px; padding-top: 72px; }
@@ -305,6 +359,7 @@
   .details-grid { grid-template-columns: 1fr; }
   .q-grid { grid-template-columns: 1fr; }
   .goal-title { font-size: 16px; }
+  .page-glow { width: 300px; height: 200px; }
 }
 @media (max-width: 480px) {
   .q-grid { grid-template-columns: 1fr; }
@@ -316,37 +371,40 @@
 <main class="main">
   <div class="main-inner">
 
+    <!-- Ambient glow -->
+    <div class="page-glow"></div>
+
     <!-- Page Header -->
-    <div class="page-header">Goals &amp; OKRs</div>
-    <p class="page-subtitle">2026 annual goals · updated by Yousra · ask Gaby anytime</p>
+    <div class="page-header" id="pageHeader">Goals &amp; OKRs</div>
+    <p class="page-subtitle" id="pageSubtitle">2026 annual goals · updated by Yousra · ask Gaby anytime</p>
 
     <!-- Stats Bar -->
-    <div class="stats-bar">
+    <div class="stats-bar" id="statsBar">
       <div class="stat-block">
-        <div class="stat-number">5</div>
+        <div class="stat-number" data-count="5">0</div>
         <div class="stat-label">Total Goals</div>
       </div>
       <div class="stat-block">
-        <div class="stat-number" style="color:var(--green)">3</div>
+        <div class="stat-number" data-count="3" data-color="green" style="color:var(--green)">0</div>
         <div class="stat-label">On Track</div>
       </div>
       <div class="stat-block">
-        <div class="stat-number" style="color:var(--amber)">1</div>
+        <div class="stat-number" data-count="1" data-color="amber" style="color:var(--amber)">0</div>
         <div class="stat-label">At Risk</div>
       </div>
       <div class="stat-block">
-        <div class="stat-number" style="color:var(--coral)">0</div>
+        <div class="stat-number" data-count="0" data-color="coral" style="color:var(--coral)">0</div>
         <div class="stat-label">Behind</div>
       </div>
       <div class="stat-block">
-        <div class="stat-number">39%</div>
+        <div class="stat-number" data-count="39" data-suffix="%">0%</div>
         <div class="stat-label">Avg Progress</div>
       </div>
     </div>
 
     <!-- Annual Goals -->
-    <div class="section-eyebrow">2026 Annual Goals</div>
-    <div class="goals-grid">
+    <div class="section-eyebrow" id="annualEyebrow">2026 Annual Goals</div>
+    <div class="goals-grid" id="goalsGrid">
 
       <!-- Goal 1: MENA to Valley Cohort -->
       <div class="goal-card" data-status="on-track" data-progress="30" onclick="toggleGoal(this)">
@@ -378,22 +436,10 @@
               <div>
                 <div class="details-section-title">Key Results</div>
                 <ul class="kr-list">
-                  <li class="kr-item">
-                    <div class="kr-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <span>23 applications received</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Finalize cohort selection (April)</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Virtual mentorship sessions (mid-May)</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>SV immersion completed (June 2–8)</span>
-                  </li>
+                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>23 applications received</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Finalize cohort selection (April)</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Virtual mentorship sessions (mid-May)</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>SV immersion completed (June 2–8)</span></li>
                 </ul>
               </div>
               <div>
@@ -440,18 +486,9 @@
               <div>
                 <div class="details-section-title">Key Results</div>
                 <ul class="kr-list">
-                  <li class="kr-item">
-                    <div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <span>Monshaat (Saudi) — Signed &amp; delivering</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>HBKU (Qatar) — Awaiting Nada's update</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>3rd partner identified &amp; signed</span>
-                  </li>
+                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>Monshaat (Saudi) — Signed &amp; delivering</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>HBKU (Qatar) — Awaiting Nada's update</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>3rd partner identified &amp; signed</span></li>
                 </ul>
               </div>
               <div>
@@ -497,22 +534,10 @@
               <div>
                 <div class="details-section-title">Key Results</div>
                 <ul class="kr-list">
-                  <li class="kr-item">
-                    <div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <span>NVIDIA content produced</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <span>AI Squad deck ready</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>First paying corporate client signed</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Second corporate client signed</span>
-                  </li>
+                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>NVIDIA content produced</span></li>
+                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>AI Squad deck ready</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>First paying corporate client signed</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Second corporate client signed</span></li>
                 </ul>
               </div>
               <div>
@@ -559,18 +584,9 @@
               <div>
                 <div class="details-section-title">Key Results</div>
                 <ul class="kr-list">
-                  <li class="kr-item">
-                    <div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <span>6,000+ contacts in CRM</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Reach 7,000 contacts</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Reach 8,000 contacts</span>
-                  </li>
+                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>6,000+ contacts in CRM</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Reach 7,000 contacts</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Reach 8,000 contacts</span></li>
                 </ul>
               </div>
               <div>
@@ -616,18 +632,9 @@
               <div>
                 <div class="details-section-title">Key Results</div>
                 <ul class="kr-list">
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Revenue target defined by Yousra</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Q2 revenue milestone hit</span>
-                  </li>
-                  <li class="kr-item">
-                    <div class="kr-check"></div>
-                    <span>Annual target achieved</span>
-                  </li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Revenue target defined by Yousra</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Q2 revenue milestone hit</span></li>
+                  <li class="kr-item"><div class="kr-check"></div><span>Annual target achieved</span></li>
                 </ul>
               </div>
               <div>
@@ -645,11 +652,11 @@
     </div><!-- /.goals-grid -->
 
     <!-- Q2 Quarterly Goals -->
-    <hr class="section-divider">
-    <div class="section-eyebrow">Q2 2026</div>
-    <h2 class="page-header" style="font-size:22px;margin-bottom:24px;">Quarterly Goals</h2>
+    <hr class="section-divider" id="q2Divider">
+    <div class="section-eyebrow" id="q2Eyebrow">Q2 2026</div>
+    <h2 class="page-header" style="font-size:22px;margin-bottom:24px;" id="q2Header">Quarterly Goals</h2>
 
-    <div class="q-grid">
+    <div class="q-grid" id="qGrid">
       <div class="q-card">
         <div class="q-card-top">
           <div class="q-title">Finalize cohort selection (April)</div>
@@ -685,48 +692,201 @@
   </div>
 </main>
 
+<!-- GSAP Core + ScrollTrigger -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+
 <script src="js/supabase-client.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sidebar.js"></script>
 <script>
   initSidebar('goals');
+  gsap.registerPlugin(ScrollTrigger);
 
-  // Toggle goal expand/collapse
+  // ══════════════════════════════════
+  //  PAGE LOAD TIMELINE
+  // ══════════════════════════════════
+
+  var master = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+  // 1. Header + subtitle fade in
+  master
+    .from('#pageHeader', { y: 40, opacity: 0, duration: 0.7 })
+    .from('#pageSubtitle', { y: 20, opacity: 0, duration: 0.5 }, '-=0.4');
+
+  // 2. Stats bar — stagger each stat block
+  master.from('#statsBar .stat-block', {
+    y: 30,
+    opacity: 0,
+    stagger: 0.08,
+    duration: 0.5
+  }, '-=0.2');
+
+  // 3. Count-up animation for stat numbers
+  document.querySelectorAll('.stat-number[data-count]').forEach(function(el) {
+    var target = parseInt(el.getAttribute('data-count'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    var obj = { val: 0 };
+    master.to(obj, {
+      val: target,
+      duration: 1.2,
+      ease: 'power2.out',
+      onUpdate: function() {
+        el.textContent = Math.round(obj.val) + suffix;
+      }
+    }, '-=1.0');
+  });
+
+  // 4. Section eyebrow
+  master.from('#annualEyebrow', { x: -30, opacity: 0, duration: 0.4 }, '-=0.8');
+
+  // 5. Goal cards — stagger in
+  master.from('.goal-card', {
+    y: 50,
+    opacity: 0,
+    stagger: 0.12,
+    duration: 0.6,
+    ease: 'power3.out'
+  }, '-=0.5');
+
+  // 6. Progress rings — animate stroke + label
+  document.querySelectorAll('.goal-card[data-progress]').forEach(function(card, i) {
+    var pct = parseFloat(card.getAttribute('data-progress')) || 0;
+    var fill = card.querySelector('.progress-ring-fill');
+    var label = card.querySelector('.progress-ring-label');
+    if (!fill) return;
+    var circumference = 188.5;
+    var offset = circumference - (pct / 100) * circumference;
+
+    master.to(fill, {
+      strokeDashoffset: offset,
+      duration: 1.2,
+      ease: 'power2.out'
+    }, '-=1.0');
+
+    // Fade in the percentage label
+    master.to(label, {
+      opacity: 1,
+      duration: 0.4,
+      ease: 'power2.out'
+    }, '-=0.8');
+  });
+
+  // ══════════════════════════════════
+  //  Q2 SECTION — SCROLL TRIGGERED
+  // ══════════════════════════════════
+
+  gsap.from('#q2Divider', {
+    scaleX: 0,
+    transformOrigin: 'left center',
+    duration: 0.6,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: '#q2Divider',
+      start: 'top 85%'
+    }
+  });
+
+  gsap.from('#q2Eyebrow', {
+    x: -30,
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '#q2Eyebrow',
+      start: 'top 85%'
+    }
+  });
+
+  gsap.from('#q2Header', {
+    y: 30,
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '#q2Header',
+      start: 'top 85%'
+    }
+  });
+
+  gsap.from('.q-card', {
+    y: 40,
+    opacity: 0,
+    stagger: 0.1,
+    duration: 0.5,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '#qGrid',
+      start: 'top 85%'
+    }
+  });
+
+  // ══════════════════════════════════
+  //  GOAL EXPAND / COLLAPSE (GSAP)
+  // ══════════════════════════════════
+
   function toggleGoal(card) {
     var wasExpanded = card.classList.contains('expanded');
-    // Close all
-    document.querySelectorAll('.goal-card').forEach(function(c) {
-      c.classList.remove('expanded');
-    });
-    // Open if wasn't already open
-    if (!wasExpanded) {
-      card.classList.add('expanded');
-    }
-  }
+    var details = card.querySelector('.goal-details');
+    var chevron = card.querySelector('.goal-chevron');
 
-  // Animate progress rings on load
-  (function() {
-    function animateRings() {
-      var cards = document.querySelectorAll('.goal-card[data-progress]');
-      cards.forEach(function(card) {
-        var pct = parseFloat(card.getAttribute('data-progress')) || 0;
-        var fill = card.querySelector('.progress-ring-fill');
-        if (!fill) return;
-        var circumference = 188.5; // 2 * π * 30
-        var offset = circumference - (pct / 100) * circumference;
-        // Small delay to trigger CSS transition
-        setTimeout(function() {
-          fill.style.strokeDashoffset = offset;
-        }, 150);
+    // Close all other cards
+    document.querySelectorAll('.goal-card.expanded').forEach(function(c) {
+      if (c !== card) {
+        c.classList.remove('expanded');
+        var d = c.querySelector('.goal-details');
+        var ch = c.querySelector('.goal-chevron');
+        gsap.to(d, { height: 0, opacity: 0, duration: 0.35, ease: 'power2.inOut' });
+        gsap.to(ch, { rotation: 0, duration: 0.3, ease: 'power2.out' });
+      }
+    });
+
+    if (wasExpanded) {
+      // Collapse
+      card.classList.remove('expanded');
+      gsap.to(details, { height: 0, opacity: 0, duration: 0.35, ease: 'power2.inOut' });
+      gsap.to(chevron, { rotation: 0, duration: 0.3, ease: 'power2.out' });
+    } else {
+      // Expand
+      card.classList.add('expanded');
+
+      // Measure natural height
+      gsap.set(details, { height: 'auto', opacity: 1 });
+      var naturalHeight = details.offsetHeight;
+      gsap.set(details, { height: 0, opacity: 0 });
+
+      gsap.to(details, {
+        height: naturalHeight,
+        opacity: 1,
+        duration: 0.45,
+        ease: 'power2.out',
+        onComplete: function() {
+          gsap.set(details, { height: 'auto' }); // allow content reflow
+        }
+      });
+      gsap.to(chevron, { rotation: 180, duration: 0.3, ease: 'power2.out' });
+
+      // Stagger in the key results and actions
+      var krItems = details.querySelectorAll('.kr-item');
+      var actionItems = details.querySelectorAll('.actions-list li');
+      gsap.from(krItems, {
+        x: -15,
+        opacity: 0,
+        stagger: 0.05,
+        duration: 0.3,
+        ease: 'power2.out',
+        delay: 0.15
+      });
+      gsap.from(actionItems, {
+        x: -15,
+        opacity: 0,
+        stagger: 0.05,
+        duration: 0.3,
+        ease: 'power2.out',
+        delay: 0.2
       });
     }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', animateRings);
-    } else {
-      animateRings();
-    }
-  })();
+  }
 </script>
 </body>
 </html>
