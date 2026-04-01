@@ -1328,7 +1328,7 @@ async function toggleFollowUp(contactId, airtableId, makeFollowUp, btnEl) {
       };
       if (airtableId) {
         payload.airtableId = airtableId;
-        payload.fields = { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': false };
+        payload.fields = { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': 'No' };
       }
       await fetch('/api/airtable-sync', {
         method: 'POST',
@@ -1367,7 +1367,7 @@ async function confirmFollowUpModal() {
     };
     if (s.airtableId) {
       payload.airtableId = s.airtableId;
-      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': true };
+      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': 'Yes' };
     }
     await fetch('/api/airtable-sync', {
       method: 'POST',
