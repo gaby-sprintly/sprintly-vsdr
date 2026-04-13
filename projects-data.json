@@ -198,7 +198,7 @@
       "id": "arpu-plus",
       "name": "ARPU Plus / CloudCom",
       "status": "Active",
-      "company_brief": "ARPU Plus is a telecoms value-added services company under A15, one of Egypt's largest digital holding companies. Sprintly provides BD and US market expansion support for ARPU Plus portfolio companies, starting with CloudCom (cloud communications). Medhat Karam is CEO of ARPU Plus.",
+      "company_brief": "ARPU Plus is a telecoms value-added services company under A15. Sprintly is supporting US business development and market expansion for portfolio products, with current focus on CloudCom / CloudCom Verify. CloudCom appears to be a broader omnichannel CPaaS and mobile identity platform, with Verify as the authentication wedge product.",
       "executives": [
         {
           "name": "Medhat Karam",
@@ -207,7 +207,12 @@
         },
         {
           "name": "Shady Aziz",
-          "role": "Cloud Communication Lead",
+          "role": "CloudCom operating lead",
+          "company": "CloudCom"
+        },
+        {
+          "name": "Ahmed Erman",
+          "role": "Legal / agreement contact",
           "company": "ARPU Plus"
         }
       ],
@@ -216,7 +221,7 @@
         "role": "CEO, ARPU Plus",
         "email": "medhat.karam@arpuplus.com"
       },
-      "key_metrics": "US market expansion",
+      "key_metrics": "US positioning + target account mapping underway",
       "timeline": [
         {
           "date": "March 2026",
@@ -224,26 +229,47 @@
           "status": "completed"
         },
         {
-          "date": "Q2 2026",
-          "milestone": "First partnership introductions to US tech companies",
-          "status": "in_progress"
+          "date": "March 28, 2026",
+          "milestone": "Initial CloudCom / Verify research brief completed",
+          "status": "completed"
         },
         {
-          "date": "Ongoing",
-          "milestone": "Monthly BD activities and reporting",
+          "date": "March 28, 2026",
+          "milestone": "Deep-dive diligence pass completed on CloudCom category, market, and competitive set",
+          "status": "completed"
+        },
+        {
+          "date": "April 3-4, 2026",
+          "milestone": "Positioning questions sent to Shady Aziz and ARPU Plus team",
+          "status": "completed"
+        },
+        {
+          "date": "April 4, 2026",
+          "milestone": "Shady replied inline with customer reference and positioning answers",
+          "status": "completed"
+        },
+        {
+          "date": "Q2 2026",
+          "milestone": "Target accounts and introductions for US business development",
           "status": "in_progress"
         }
       ],
       "next_actions": [
-        "Deliver first partnership introductions to US tech targets (Meta, Microsoft, Google)",
-        "CloudCom meeting scheduled Wednesday 6 PM",
-        "Prepare partnership positioning deck for US targets"
+        "Build priority target account list based on OTP cost, identity pain, and hard-market coverage",
+        "Map Yousra warm intros to best-fit fintech, telecom, and mobile-first enterprise prospects",
+        "Extract hard metrics and case studies from CloudCom deck / slides",
+        "Decide whether Verify is sold as standalone wedge or broader CloudCom platform story",
+        "Clarify the first US vertical and exact use case to lead with",
+        "Prepare a one-page external positioning summary for outreach"
       ],
       "possible_intros": [
-        "Ahmed Ibrahim (CoreWeave, Engineering Manager)",
-        "Jonathan Wan (Ironmind.ai, Draper alumni)"
+        "Fintech and mobile-first founders in Yousra network with onboarding / OTP pain",
+        "Startup banking and enterprise platform contacts in the US",
+        "Telecom / identity / CPaaS adjacent operators and investors",
+        "Google / Meta / Amazon-adjacent operators where hard-market coverage matters",
+        "Banks, wallets, lenders, and high-volume consumer apps with expensive OTP routes"
       ],
-      "notes": "Retainer model. Revenue share on partnerships introduced."
+      "notes": "Consolidated account view: CloudCom appears to be more than a single auth tool. Best current read is an omnichannel CPaaS + mobile identity platform, with Verify as the likely wedge product for US conversations. What they seem to sell in plain English is lower OTP cost, less login and onboarding friction, stronger authentication, and better coverage in hard-to-reach markets. The category is real and maps to Telesign, Prove, TMT ID, Vonage, Twilio, Infobip, and Open Gateway-style number verification.\n\nWhat Shady Aziz confirmed by email: we can mention Google and local banks externally; Meta, Xiaomi, FedEx, and Amazon can only be described as indirect partners. For proof, he pointed us back to the product slides for impact / pain-point evidence. On competitors, he said they sometimes collaborate with aggregators by providing coverage, and sometimes compete directly for the same client. Their strongest differentiator is coverage, especially in difficult destinations across MENA, Asia, and Africa. On the commercial pain point, his clearest answer was that OTP can cost up to $0.30 in some markets, so cost + coverage is a sharper story than generic security language.\n\nCurrent best positioning: CloudCom helps enterprises reduce OTP cost and improve authentication coverage, especially in high-cost and harder-to-reach markets. That is more concrete than describing them vaguely as an identity platform. The strongest story is not just fraud reduction. It is coverage in hard markets, lower OTP spend, and smoother mobile verification.\n\nWhat still needs answering: which US vertical to target first, which exact use case to lead with, whether Verify is sold standalone or as part of the broader CloudCom platform, stronger hard metrics from case studies, clearer pricing logic, implementation effort, and what we should avoid overpromising.\n\nCommercial context: Retainer model with revenue share on partnerships introduced. Sprintly role is US business development and market expansion support for ARPU Plus portfolio products, starting with CloudCom."
     },
     {
       "id": "algeria-ventures",
