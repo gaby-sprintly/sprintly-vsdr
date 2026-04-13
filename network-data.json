@@ -1,16 +1,28 @@
 {
-  "last_synced": "2026-04-04T08:00:00Z",
+  "last_synced": "2026-04-13T08:00:00Z",
   "vips": [
     {
-      "name": "Ahmed Gaballah",
-      "company": "SOKNA",
-      "title": "Founder & CEO",
+      "name": "Khalid S. Al-Murshed",
+      "company": "Return On Health",
+      "title": "Founder & Chief Executive Officer",
+      "email": "",
+      "last_contacted": "",
+      "follow_up_date": "2026-04-07",
+      "follow_up_reason": "Manual flag from VSDR",
+      "industry": "Healthtech",
+      "region": "GCC - Saudi Arabia",
+      "source": "airtable"
+    },
+    {
+      "name": "Rand Abu Roza",
+      "company": "Xpand Conference",
+      "title": "Co-Founder",
       "email": "",
       "last_contacted": "",
       "follow_up_date": "",
       "follow_up_reason": "",
-      "industry": "",
-      "region": "",
+      "industry": "Other",
+      "region": "MENA",
       "source": "airtable"
     },
     {
@@ -22,220 +34,146 @@
       "source": "memory"
     }
   ],
-  "followups_due": [],
-  "followups_upcoming": [],
+  "followups_due": [
+    {
+      "name": "Amr khater - CIA , CRMA",
+      "company": "Egypt Kuwait Holding",
+      "title": "Internal Audit Manager",
+      "follow_up_date": "2026-04-08",
+      "follow_up_reason": "Check in",
+      "priority": "VIP"
+    },
+    {
+      "name": "Nagy Ezzat",
+      "company": "Dale Carnegie Training",
+      "title": "International certified Dale Carnegie Trainer",
+      "follow_up_date": "2026-04-08",
+      "follow_up_reason": "Manual flag from VSDR",
+      "priority": "VIP"
+    },
+    {
+      "name": "Khalid S. Al-Murshed",
+      "company": "Return On Health",
+      "title": "Founder & Chief Executive Officer",
+      "follow_up_date": "2026-04-07",
+      "follow_up_reason": "Manual flag from VSDR",
+      "priority": "High"
+    },
+    {
+      "name": "Abdul Shameer",
+      "company": "Ismail Bin Ali Trading & Contracting & Transportation Company W.L.L",
+      "title": "Human Resources Manager / HR & Admin Manager",
+      "follow_up_date": "2026-04-07",
+      "follow_up_reason": "Manual flag from VSDR",
+      "priority": "VIP"
+    }
+  ],
+  "followups_upcoming": [
+    {
+      "name": "Mohamed Essam Elbana",
+      "company": "SuperPay by e&",
+      "title": "Head of Enterprise sales",
+      "follow_up_date": "2026-04-19",
+      "follow_up_reason": "Check in"
+    },
+    {
+      "name": "Mohammad Osamah Atif",
+      "company": "etera",
+      "title": "Founding - Head of Product",
+      "follow_up_date": "2026-04-18",
+      "follow_up_reason": "checkin"
+    }
+  ],
   "potential_intros": [],
   "network_health": {
     "total_estimated": "6,000+",
     "sample_size": 100,
     "with_company_pct": 99,
-    "with_industry_pct": 0,
+    "with_industry_pct": 4,
     "with_email_pct": 3,
-    "with_priority_pct": 0,
-    "vip_count": 2,
-    "followups_overdue": 0,
-    "followups_upcoming": 0
+    "with_priority_pct": 6,
+    "vip_count": 6,
+    "followups_overdue": 4,
+    "followups_upcoming": 2
   },
   "needs_enrichment": [
     {
       "name": "Moe Nada",
       "company": "SupportFinity™",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"],
+      "verified_update": {
+        "industry": "AI/ML",
+        "region": "MENA",
+        "contact_type": "Founder",
+        "notes": "Co-founder/CEO at SupportFinity, building an AI-native recruitment platform.",
+        "confidence": "high"
+      }
     },
     {
       "name": "Yomna El Gabry",
       "company": "Kraft Heinz",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"]
     },
     {
       "name": "Mohamed Ashraf",
       "company": "Abu Dhabi Commercial Bank - Egypt",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"]
     },
     {
       "name": "Hann Nyvil",
       "company": "China Money Network",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"],
+      "verified_update": {
+        "industry": "Investor / Media",
+        "region": "GCC - UAE",
+        "contact_type": "Investor - Angel",
+        "notes": "LinkedIn snippets place him across Hong Kong and Dubai with China Money Network and Africa Seed activity.",
+        "confidence": "medium"
+      }
     },
     {
       "name": "Amr Gazea",
       "company": "Mezatech",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"],
+      "verified_update": {
+        "industry": "Cleantech",
+        "region": "Egypt",
+        "contact_type": "Founder",
+        "notes": "CEO and co-founder of Mezatech, focused on device repair, refurbishment, trade-in and recycling in the circular tech economy.",
+        "confidence": "high"
+      }
     },
     {
       "name": "Yasmine Taha, MBA",
       "company": "PENTIUM IT",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"]
     },
     {
       "name": "Moustafa Eldesouki",
       "company": "Bayut & Dubizzle",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"]
     },
     {
       "name": "Karim Elazhary",
       "company": "Talents Arena",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"]
     },
     {
       "name": "Maged Galal",
       "company": "Fine Hygienic Holding",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"]
     },
     {
-      "name": "Reem Raheem,MBA®,DBA,SHL.",
+      "name": "Reem Raheem, MBA®, DBA, SHL.",
       "company": "Floward",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Mohamed Haggag MBA CPM CExporter",
-      "company": "United Nations",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Djihane Kahlouche",
-      "company": "IRIGREEN",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Black Juma",
-      "company": "Oryx ",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Wael Gaber",
-      "company": "Wafeer",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Abdellah Daoud",
-      "company": "Routimize",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Negar Feher",
-      "company": "Sustainable Space Consulting",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Mohamed Samy El Shayeb",
-      "company": "WHITE Advertising | Dubai",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Ahmed Nawar",
-      "company": "Microsoft",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Katherine Atkinson",
-      "company": "Nuro",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
-    },
-    {
-      "name": "Ahmed Tantawy",
-      "company": "ILLA ",
-      "missing_fields": [
-        "Industry",
-        "Priority",
-        "Region",
-        "Tags"
-      ]
+      "missing_fields": ["Industry", "Priority", "Region", "Tags"],
+      "verified_update": {
+        "industry": "E-Commerce",
+        "region": "Egypt",
+        "contact_type": "Corporate",
+        "notes": "Global Talent and OD Manager across MENA, EMEA and Southeast Asia at Floward.",
+        "confidence": "high"
+      }
     }
   ],
   "suggested_intros": [
@@ -256,198 +194,7 @@
         "title": "Founder, Managing Partner",
         "email": ""
       },
-      "rationale": "Saudi healthtech founder meets a capital partner. Khalid is building in healthcare in KSA, exactly the kind of MENA deal flow Distique could be interested in. Both are founders who understand the operator-investor dynamic.",
-      "draft_email_gaby": "Hi Khalid, Hi Nate,\n\nI wanted to connect you both. Khalid is the Founder & CEO of Return On Health, a healthtech venture based in Saudi Arabia. Nate is the Founder and Managing Partner at Distique Capital.\n\nGiven Khalid's growth in the Saudi healthtech space and Nate's investment focus, I thought this could be a valuable connection for both of you.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Khalid, Hi Nate,\n\nI wanted to connect you both. Khalid is the Founder & CEO of Return On Health, a healthtech venture based in Saudi Arabia. Nate is the Founder and Managing Partner at Distique Capital.\n\nGiven Khalid's growth in the Saudi healthtech space and Nate's investment focus, I thought this could be a valuable connection.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-002",
-      "status": "pending",
-      "category": "Founder x Investor",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Youssef Mohamed",
-        "company": "PokaMind",
-        "title": "Founder and CEO",
-        "email": ""
-      },
-      "person_b": {
-        "name": "John Routhier",
-        "company": "SNH Capital Partners",
-        "title": "Operating Partner, AI CRO",
-        "email": ""
-      },
-      "rationale": "PokaMind is likely an AI/ML venture (PhD founder). John at SNH Capital is specifically focused on AI as an Operating Partner. Strong sector alignment.",
-      "draft_email_gaby": "Hi Youssef, Hi John,\n\nI wanted to connect you both. Youssef is the Founder and CEO of PokaMind. John is an Operating Partner at SNH Capital Partners with a focus on AI and value creation.\n\nI believe there is strong alignment given your shared focus on AI ventures.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Youssef, Hi John,\n\nI wanted to connect you both. Youssef is the Founder and CEO of PokaMind. John is an Operating Partner at SNH Capital Partners with a focus on AI and value creation.\n\nI believe there is strong alignment given your shared focus on AI ventures.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-003",
-      "status": "pending",
-      "category": "Founder x Ecosystem",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Abdullah AlSalmani",
-        "company": "SpacePoint",
-        "title": "Co-Founder & CEO",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Mohammed Al-Emadi",
-        "company": "Qatar Development Bank",
-        "title": "Executive Director of Investment & Incubation",
-        "email": ""
-      },
-      "rationale": "SpacePoint founder could benefit from QDB's incubation and investment arm. QDB actively invests in tech startups in the Gulf region. This intro positions Sprintly as the bridge.",
-      "draft_email_gaby": "Hi Abdullah, Hi Mohammed,\n\nI wanted to introduce you both. Abdullah is the Co-Founder & CEO of SpacePoint, and Mohammed leads Investment & Incubation at Qatar Development Bank.\n\nI see a natural fit between SpacePoint's growth trajectory and QDB's investment and incubation programs.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Abdullah, Hi Mohammed,\n\nI wanted to introduce you both. Abdullah is the Co-Founder & CEO of SpacePoint, and Mohammed leads Investment & Incubation at Qatar Development Bank.\n\nI see a natural fit between SpacePoint's growth trajectory and QDB's investment and incubation programs.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-004",
-      "status": "pending",
-      "category": "Founder x Ecosystem",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Amr El Salanekly",
-        "company": "Ezdehar Management",
-        "title": "Co-Founder & Director",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Tarek Taha",
-        "company": "Central Bank of Egypt",
-        "title": "Fintech & Innovation Hub Director",
-        "email": ""
-      },
-      "rationale": "Ezdehar is an Egyptian investment management firm. Tarek runs the CBE Fintech Hub. If Ezdehar has fintech portfolio companies or fintech interests, Tarek is the gateway to Egypt's entire regulatory and innovation sandbox.",
-      "draft_email_gaby": "Hi Amr, Hi Tarek,\n\nI wanted to connect you both. Amr is Co-Founder & Director at Ezdehar Management. Tarek leads the Fintech & Innovation Hub at the Central Bank of Egypt.\n\nGiven the intersection of investment and fintech innovation in Egypt, I thought this could open valuable doors for both of you.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Amr, Hi Tarek,\n\nI wanted to connect you both. Amr is Co-Founder & Director at Ezdehar Management. Tarek leads the Fintech & Innovation Hub at the Central Bank of Egypt.\n\nGiven the intersection of investment and fintech innovation in Egypt, I thought this could open valuable doors for both of you.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-005",
-      "status": "pending",
-      "category": "Founder x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Brahim Ben Helal",
-        "company": "VeritaTrust",
-        "title": "Co-Founder & Advisor",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Ahmed Ibrahim",
-        "company": "CoreWeave",
-        "title": "Engineering Manager",
-        "email": ""
-      },
-      "rationale": "VeritaTrust likely deals with trust/verification tech. CoreWeave is one of the hottest AI infrastructure companies. If VeritaTrust needs GPU compute or AI infra, Ahmed at CoreWeave is the right door.",
-      "draft_email_gaby": "Hi Brahim, Hi Ahmed,\n\nI wanted to connect you both. Brahim is the Co-Founder of VeritaTrust. Ahmed is an Engineering Manager at CoreWeave, one of the leading AI infrastructure providers.\n\nIf VeritaTrust's work intersects with AI compute or infrastructure needs, I think this connection could be highly relevant.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Brahim, Hi Ahmed,\n\nI wanted to connect you both. Brahim is the Co-Founder of VeritaTrust. Ahmed is an Engineering Manager at CoreWeave, one of the leading AI infrastructure providers.\n\nIf VeritaTrust's work intersects with AI compute or infrastructure needs, I think this connection could be highly relevant.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-006",
-      "status": "pending",
-      "category": "Ecosystem x Ecosystem",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Rand Abu Roza",
-        "company": "Xpand Conference",
-        "title": "Co-Founder",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Simraan Mangnani",
-        "company": "Step Conference",
-        "title": "Investor & Ecosystem Programs Manager",
-        "email": ""
-      },
-      "rationale": "Two MENA conference leaders. Xpand (Jordan) and Step (Dubai/SF) serve the same ecosystem from different angles. Cross-pollination could benefit both, and positions Sprintly as the connector between major MENA events.",
-      "draft_email_gaby": "Hi Rand, Hi Simraan,\n\nI wanted to connect two people I admire in the MENA tech events space. Rand co-founded Xpand Conference in Jordan. Simraan manages Investor & Ecosystem Programs at Step Conference.\n\nI think there is real opportunity for your communities to cross-pollinate. Would love to see what you might build together.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Rand, Hi Simraan,\n\nI wanted to connect two people I admire in the MENA tech events space. Rand co-founded Xpand Conference in Jordan. Simraan manages Investor & Ecosystem Programs at Step Conference.\n\nI think there is real opportunity for your communities to cross-pollinate.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-007",
-      "status": "pending",
-      "category": "Ecosystem x Ecosystem",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Waleed Al Nashar",
-        "company": "ITIDA",
-        "title": "Chief Legal, Regulatory & Compliance",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Heba Alashry",
-        "company": "AAST Entrepreneurship Center",
-        "title": "Co-Founder & Director",
-        "email": "heba.m.alashry@gmail.com"
-      },
-      "rationale": "ITIDA (Egypt's tech authority) and AAST (Arab League entrepreneurship). Both are Sprintly ecosystem partners. Connecting their regulatory/legal side with the startup incubation side strengthens the Egyptian ecosystem for Sprintly founders.",
-      "draft_email_gaby": "Hi Waleed, Hi Heba,\n\nI wanted to introduce you both. Waleed leads Legal, Regulatory & Compliance at ITIDA. Heba co-founded and directs the AAST Entrepreneurship Center.\n\nI think connecting ITIDA's regulatory perspective with AAST's founder community could benefit both organizations and the startups you serve.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Waleed, Hi Heba,\n\nI wanted to introduce you both. Waleed leads Legal, Regulatory & Compliance at ITIDA. Heba co-founded and directs the AAST Entrepreneurship Center.\n\nI think connecting ITIDA's regulatory perspective with AAST's founder community could benefit both organizations.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-008",
-      "status": "pending",
-      "category": "Founder x Founder",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Ahmad Al Ebrahim",
-        "company": "theQA",
-        "title": "Co-Founder & CEO",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Mark Mitchell",
-        "company": "Altaureus",
-        "title": "CEO and Founder",
-        "email": ""
-      },
-      "rationale": "Two CEO founders in the network who could share operator insights. QA and Altaureus likely serve different markets but face similar scaling challenges. Founder-to-founder connections build the Sprintly alumni effect.",
-      "draft_email_gaby": "Hi Ahmad, Hi Mark,\n\nI wanted to connect two founders in our network. Ahmad is the Co-Founder & CEO of theQA. Mark is the Founder & CEO of Altaureus.\n\nI believe founders learn best from other founders. Hoping you both find value in this connection.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Ahmad, Hi Mark,\n\nI wanted to connect two founders in our network. Ahmad is the Co-Founder & CEO of theQA. Mark is the Founder & CEO of Altaureus.\n\nI believe founders learn best from other founders. Hoping you both find value in this connection.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-009",
-      "status": "pending",
-      "category": "Founder x Founder",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Ludovico Rossi",
-        "company": "Brickken",
-        "title": "CRO & Co-founder",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Mohamed Fathy",
-        "company": "D360 Bank",
-        "title": "Head of Lending & Credit Products",
-        "email": "mohamed.mahmud3040@gmail.com"
-      },
-      "rationale": "Brickken is likely in blockchain/tokenization (brick + token). D360 Bank is a digital bank. If Brickken does asset tokenization, D360 could be a distribution or integration partner for digital lending products.",
-      "draft_email_gaby": "Hi Ludovico, Hi Mohamed,\n\nI wanted to introduce you both. Ludovico is the CRO & Co-founder of Brickken. Mohamed leads Lending & Credit Products at D360 Bank.\n\nI see potential synergy between digital asset innovation and next-gen banking products. Worth a conversation.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Ludovico, Hi Mohamed,\n\nI wanted to introduce you both. Ludovico is the CRO & Co-founder of Brickken. Mohamed leads Lending & Credit Products at D360 Bank.\n\nI see potential synergy between digital asset innovation and next-gen banking products.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-010",
-      "status": "pending",
-      "category": "Founder x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "April Lim",
-        "company": "Vornex AI",
-        "title": "Founder & CEO",
-        "email": "april@vornex.ai"
-      },
-      "person_b": {
-        "name": "Jayakarthikeyan Govindarajalu",
-        "company": "MADON",
-        "title": "CIO & Head of AI & Automation",
-        "email": "jayakarthikeyang@yahoo.com"
-      },
-      "rationale": "Vornex AI founder meets a corporate AI/automation leader. If MADON needs AI solutions, Vornex could be a vendor or partner. Classic founder-to-buyer intro.",
-      "draft_email_gaby": "Hi April, Hi Jayakarthikeyan,\n\nI wanted to connect you both. April is the Founder & CEO of Vornex AI. Jayakarthikeyan is the CIO & Head of AI & Automation at MADON.\n\nI thought there could be interesting overlap between Vornex's AI capabilities and MADON's automation needs.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi April, Hi Jayakarthikeyan,\n\nI wanted to connect you both. April is the Founder & CEO of Vornex AI. Jayakarthikeyan is the CIO & Head of AI & Automation at MADON.\n\nI thought there could be interesting overlap between Vornex's AI capabilities and MADON's automation needs.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
+      "rationale": "Saudi healthtech founder meets a capital partner. Khalid is building in healthcare in KSA, exactly the kind of MENA deal flow Distique could be interested in. Both are founders who understand the operator-investor dynamic."
     },
     {
       "id": "match-011",
@@ -466,313 +213,80 @@
         "title": "Managing Director",
         "email": ""
       },
-      "rationale": "SVB Managing Director is a premium connection for any founder seeking US banking, venture debt, or SV ecosystem access. High-value intro if RECLASS is at the right stage.",
-      "draft_email_gaby": "Hi Mohamed, Hi Sara,\n\nI wanted to introduce you both. Mohamed is the Founder of RECLASS. Sara is a Managing Director at Silicon Valley Bank.\n\nAs Mohamed scales his venture, SVB's expertise in supporting growth-stage startups could be a valuable resource.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Mohamed, Hi Sara,\n\nI wanted to introduce you both. Mohamed is the Founder of RECLASS. Sara is a Managing Director at Silicon Valley Bank.\n\nAs Mohamed scales his venture, SVB's expertise in supporting growth-stage startups could be a valuable resource.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
+      "rationale": "This intro is now warm because Yousra emailed Sara on Apr 13 while in SF. RECLASS can use that live bank and ecosystem access signal."
     },
     {
-      "id": "match-012",
-      "status": "pending",
-      "category": "Founder x Corporate",
-      "created": "2026-03-30",
+      "id": "match-026",
+      "status": "new",
+      "category": "Operator x Investor",
+      "created": "2026-04-13",
       "person_a": {
-        "name": "Hazem Fadlelmawla",
-        "company": "Conformity AI",
-        "title": "Founder",
-        "email": "hazem.wadaa97@gmail.com"
+        "name": "Shady Aziz",
+        "company": "CloudCom",
+        "title": "Executive lead",
+        "email": "shady.aziz@cloudcom.io"
       },
       "person_b": {
-        "name": "Waleed Al Nashar",
-        "company": "ITIDA",
-        "title": "Chief Legal, Regulatory & Compliance",
-        "email": ""
-      },
-      "rationale": "Conformity AI (compliance/regulatory AI) meets ITIDA's Chief of Regulatory & Compliance. If Conformity AI helps companies with regulatory compliance, ITIDA could be a customer, partner, or endorsement path.",
-      "draft_email_gaby": "Hi Hazem, Hi Waleed,\n\nI wanted to introduce you both. Hazem is the Founder of Conformity AI, working on AI-powered compliance solutions. Waleed leads Legal, Regulatory & Compliance at ITIDA.\n\nI see a natural intersection between AI compliance tools and ITIDA's regulatory mission.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Hazem, Hi Waleed,\n\nI wanted to introduce you both. Hazem is the Founder of Conformity AI, working on AI-powered compliance solutions. Waleed leads Legal, Regulatory & Compliance at ITIDA.\n\nI see a natural intersection between AI compliance tools and ITIDA's regulatory mission.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-013",
-      "status": "pending",
-      "category": "Ecosystem x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Shimaa El-Sheikh",
-        "company": "ITIDA / CREATIVA Hubs",
-        "title": "Partnerships Lead",
-        "email": "shymaa54@icloud.com"
-      },
-      "person_b": {
-        "name": "Dimpho Maboee",
-        "company": "AfriNextGen Magazine",
-        "title": "Lead Research Strategist",
-        "email": "ddmaboee@gmail.com"
-      },
-      "rationale": "CREATIVA Hubs (Egypt innovation) meets AfriNextGen (Africa media). Cross-continental visibility for Egyptian startups in African media. Aligns with Sprintly's Africa expansion.",
-      "draft_email_gaby": "Hi Shimaa, Hi Dimpho,\n\nI wanted to connect you both. Shimaa leads Partnerships at ITIDA's CREATIVA Hubs, Egypt's innovation hub network. Dimpho is the Lead Research Strategist at AfriNextGen Magazine.\n\nI think there is a great story at the intersection of Egyptian innovation and African tech media.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Shimaa, Hi Dimpho,\n\nI wanted to connect you both. Shimaa leads Partnerships at ITIDA's CREATIVA Hubs, Egypt's innovation hub network. Dimpho is the Lead Research Strategist at AfriNextGen Magazine.\n\nI think there is a great story at the intersection of Egyptian innovation and African tech media.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-014",
-      "status": "pending",
-      "category": "Founder x Ecosystem",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Ahmad Salah",
-        "company": "Hire.inc",
-        "title": "Interim CEO",
-        "email": "hello@ahmadsalah.com"
-      },
-      "person_b": {
-        "name": "Menna Zaghloul",
-        "company": "Entlaq Holding",
-        "title": "Co-Founder & Communications Director",
-        "email": ""
-      },
-      "rationale": "Hire.inc (HR tech) meets Entlaq Holding (Egyptian holding company). If Entlaq's portfolio companies need hiring solutions, this is a direct B2B intro. Menna's communications background also means potential partnership visibility.",
-      "draft_email_gaby": "Hi Ahmad, Hi Menna,\n\nI wanted to introduce you both. Ahmad is the CEO of Hire.inc, building HR tech solutions. Menna co-founded Entlaq Holding and leads their communications and public affairs.\n\nI thought Entlaq's portfolio companies could benefit from Hire.inc's capabilities, and vice versa.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Ahmad, Hi Menna,\n\nI wanted to introduce you both. Ahmad is the CEO of Hire.inc. Menna co-founded Entlaq Holding and leads communications.\n\nI thought there could be natural synergy between Hire.inc and Entlaq's portfolio.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-015",
-      "status": "pending",
-      "category": "Founder x Investor",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "David Nwankwo",
-        "company": "FDN Advisory",
-        "title": "Founder & Managing Partner",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Mehdi Legroune",
-        "company": "B8 Business Angels",
-        "title": "Vice President",
-        "email": "mlegroune@cycle-family.com"
-      },
-      "rationale": "FDN Advisory (African advisory firm) meets B8 Business Angels (North Africa). Cross-border advisory and angel investment for MENA/Africa startups. Strengthens Sprintly's investor arm.",
-      "draft_email_gaby": "Hi David, Hi Mehdi,\n\nI wanted to connect you both. David is the Founder & Managing Partner at FDN Advisory. Mehdi is Vice President at B8 Business Angels.\n\nI see potential for collaboration on deal flow and advisory across the MENA and Africa ecosystems.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi David, Hi Mehdi,\n\nI wanted to connect you both. David is the Founder & Managing Partner at FDN Advisory. Mehdi is Vice President at B8 Business Angels.\n\nI see potential for collaboration on deal flow and advisory across MENA and Africa.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-016",
-      "status": "pending",
-      "category": "Founder x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Islam Salama",
-        "company": "Attech",
-        "title": "Founder & Managing Partner",
-        "email": "islam@attechdigital.com"
-      },
-      "person_b": {
-        "name": "Allen Youssef",
-        "company": "Vontier",
-        "title": "Head of Marketing MEA",
-        "email": "allen.h.youssef@gmail.com"
-      },
-      "rationale": "Attech does CTV, pDOOH and hotel screen advertising. Allen leads marketing for Vontier across MEA. If Vontier needs digital out-of-home or CTV advertising in the region, Attech is the partner.",
-      "draft_email_gaby": "Hi Islam, Hi Allen,\n\nI wanted to introduce you both. Islam is the Founder & Managing Partner of Attech, specializing in CTV, programmatic DOOH, and hotel screen advertising. Allen is the Head of Marketing for MEA at Vontier.\n\nI thought there could be an interesting fit for Vontier's regional marketing needs and Attech's digital advertising solutions.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Islam, Hi Allen,\n\nI wanted to introduce you both. Islam founded Attech (CTV, pDOOH, hotel screens). Allen leads Marketing MEA at Vontier.\n\nI see a natural fit for regional digital advertising.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-017",
-      "status": "pending",
-      "category": "Founder x Ecosystem",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Anass Laktiri",
-        "company": "Stealth Startup",
-        "title": "Co-Founder",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Arslane Souici",
-        "company": "4eme Revolution",
-        "title": "Active member",
-        "email": "arselane.souici@edu.em-lyon.com"
-      },
-      "rationale": "Both appear to be North African (Morocco/Algeria) in the startup space. 4eme Revolution is likely an innovation community. Connecting a stealth founder with an innovation community member creates early awareness and support.",
-      "draft_email_gaby": "Hi Anass, Hi Arslane,\n\nI wanted to introduce you both as fellow North African innovators. Anass is co-founding a stealth startup. Arslane is active in the 4eme Revolution community and studying at EM Lyon.\n\nI think there is value in connecting early-stage founders with engaged community builders.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Anass, Hi Arslane,\n\nI wanted to connect you both. Anass is co-founding a stealth startup. Arslane is active in the 4eme Revolution community at EM Lyon.\n\nEarly connections between founders and community builders always pay off.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-018",
-      "status": "pending",
-      "category": "Founder x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Nima Tamaddoni",
-        "company": "APURUN",
-        "title": "Founder & President",
-        "email": "Nima.tamaddoni.phd@gmail.com"
-      },
-      "person_b": {
-        "name": "Colleen Martell",
-        "company": "Santa Clara University",
-        "title": "Graduate School Quarterly Lecturer",
-        "email": "colleen.martell@gmail.com"
-      },
-      "rationale": "PhD founder meets a Silicon Valley academic. Santa Clara University is in the heart of SV. Academic partnerships can provide research credibility, talent pipeline, and speaking opportunities for APURUN.",
-      "draft_email_gaby": "Hi Nima, Hi Colleen,\n\nI wanted to introduce you both. Nima is the Founder & President of APURUN, bringing deep research expertise. Colleen lectures at Santa Clara University's Graduate School in the heart of Silicon Valley.\n\nI thought connecting a research-driven founder with SV academia could open interesting doors.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Nima, Hi Colleen,\n\nI wanted to introduce you both. Nima founded APURUN with deep research expertise. Colleen lectures at Santa Clara University's Graduate School.\n\nI see value in connecting research-driven founders with SV academia.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-019",
-      "status": "pending",
-      "category": "Ecosystem x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Karmen Rouhana",
-        "company": "J.P. Morgan Private Bank",
-        "title": "Executive Director",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Tamer Hegazy",
-        "company": "Opel Ventures",
-        "title": "President and CEO",
-        "email": "hon.thegazy@outlook.com"
-      },
-      "rationale": "J.P. Morgan Private Bank ED meets a venture CEO. High-net-worth banking meets venture investment. Potential for deal flow, co-investment, or client referrals.",
-      "draft_email_gaby": "Hi Karmen, Hi Tamer,\n\nI wanted to connect you both. Karmen is an Executive Director at J.P. Morgan Private Bank. Tamer is the President and CEO of Opel Ventures.\n\nI see potential overlap between private banking and venture investment, particularly around MENA high-growth opportunities.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Karmen, Hi Tamer,\n\nI wanted to connect you both. Karmen is an Executive Director at J.P. Morgan Private Bank. Tamer is the President and CEO of Opel Ventures.\n\nI see potential overlap between private banking and venture investment in MENA.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-020",
-      "status": "pending",
-      "category": "Founder x Founder",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Ben Buaron",
-        "company": "Windmill Growth",
-        "title": "Co-Founder & CEO",
-        "email": "ben.buaron1@gmail.com"
-      },
-      "person_b": {
-        "name": "Karim Yehia",
-        "company": "WundrX Marketing Agency",
-        "title": "CEO",
-        "email": "kyehia@live.com"
-      },
-      "rationale": "Windmill Growth (growth consultancy) and WundrX (marketing agency). Two growth-focused founders who could refer clients to each other or collaborate on client projects.",
-      "draft_email_gaby": "Hi Ben, Hi Karim,\n\nI wanted to connect two growth-minded founders. Ben is the Co-Founder & CEO of Windmill Growth. Karim is the CEO of WundrX Marketing Agency.\n\nI think there is natural potential for collaboration or client referrals between your businesses.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Ben, Hi Karim,\n\nI wanted to connect two growth-minded founders. Ben leads Windmill Growth. Karim leads WundrX Marketing Agency.\n\nNatural potential for collaboration or referrals.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-021",
-      "status": "pending",
-      "category": "Founder x Ecosystem",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Marwan Elkashef",
-        "company": "Learn it",
-        "title": "Founder",
-        "email": ""
-      },
-      "person_b": {
-        "name": "Leslie Ann Keeler",
-        "company": "TED Conferences",
-        "title": "TEDx Speaker",
-        "email": ""
-      },
-      "rationale": "EdTech founder meets a TED speaker. If Learn it is building in education, a TEDx connection could provide speaking opportunities, visibility, and credibility for the brand.",
-      "draft_email_gaby": "Hi Marwan, Hi Leslie,\n\nI wanted to introduce you both. Marwan is the Founder of Learn it, building in the education space. Leslie is a TEDx Speaker with the TED Conferences network.\n\nI thought connecting an EdTech founder with the TED community could create interesting visibility opportunities.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Marwan, Hi Leslie,\n\nI wanted to introduce you both. Marwan founded Learn it (EdTech). Leslie is a TEDx Speaker.\n\nI see potential for EdTech visibility through the TED community.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-022",
-      "status": "pending",
-      "category": "Founder x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Jonathan Wan",
-        "company": "Ironmind.ai",
-        "title": "CEO (Draper & BT150 Alumni)",
-        "email": "jwan415@gmail.com"
-      },
-      "person_b": {
-        "name": "Hazem Safwat",
-        "company": "Confidential",
-        "title": "Director of Artificial Intelligence",
-        "email": "hazem.safwat.abdelaal@gmail.com"
-      },
-      "rationale": "Two AI leaders. Jonathan is building an AI company as a Draper alumni. Hazem directs AI at a major (confidential) organization. Peer-to-peer AI leadership exchange with potential for partnerships.",
-      "draft_email_gaby": "Hi Jonathan, Hi Hazem,\n\nI wanted to connect two AI leaders in our network. Jonathan is the CEO of Ironmind.ai and a Draper University alumni. Hazem is a Director of Artificial Intelligence.\n\nI thought a peer-to-peer exchange between AI builders could be valuable for both of you.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Jonathan, Hi Hazem,\n\nI wanted to connect two AI leaders. Jonathan built Ironmind.ai (Draper alumni). Hazem directs AI at a major organization.\n\nPeer-to-peer exchange between AI builders always creates value.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-023",
-      "status": "pending",
-      "category": "Founder x Investor",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Maged Harby",
-        "company": "Value Makers Studio",
-        "title": "General Partner",
-        "email": "magedrashwan5@gmail.com"
-      },
-      "person_b": {
-        "name": "Sohayb Baset",
-        "company": "Sahat Venture Studio",
-        "title": "Vice President",
-        "email": "sohaybbaset@gmail.com"
-      },
-      "rationale": "Two venture studio operators. Value Makers Studio GP meets Sahat Venture Studio VP. Venture studios are a growing model in MENA. Connecting them could lead to co-ventures, knowledge sharing, or deal flow exchange.",
-      "draft_email_gaby": "Hi Maged, Hi Sohayb,\n\nI wanted to connect two venture studio operators. Maged is a General Partner at Value Makers Studio. Sohayb is Vice President at Sahat Venture Studio.\n\nVenture studios are reshaping how startups get built in MENA. I thought connecting two leaders in this space could spark interesting collaboration.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Maged, Hi Sohayb,\n\nI wanted to connect two venture studio operators. Maged leads Value Makers Studio. Sohayb leads at Sahat Venture Studio.\n\nVenture studios are reshaping MENA startups. Worth connecting.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
-    },
-    {
-      "id": "match-024",
-      "status": "pending",
-      "category": "Founder x Corporate",
-      "created": "2026-03-30",
-      "person_a": {
-        "name": "Ahmed Gamal",
-        "company": "Engaz AI",
+        "name": "Sara Rona",
+        "company": "Silicon Valley Bank",
         "title": "Managing Director",
-        "email": "ahmedgamalhussien@gmail.com"
+        "email": "srona@svb.com"
       },
-      "person_b": {
-        "name": "Michael Yehya",
-        "company": "Deloitte",
-        "title": "Director",
-        "email": "michael.yehya@gmail.com"
-      },
-      "rationale": "Engaz AI (AI company) meets a Deloitte Director. Deloitte is one of the biggest buyers of AI services and tools. If Engaz AI has enterprise AI solutions, Michael could be a channel partner or client.",
-      "draft_email_gaby": "Hi Ahmed, Hi Michael,\n\nI wanted to introduce you both. Ahmed is the Managing Director of Engaz AI. Michael is a Director at Deloitte.\n\nI see potential alignment between Engaz AI's capabilities and Deloitte's enterprise needs in the AI space.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Ahmed, Hi Michael,\n\nI wanted to introduce you both. Ahmed leads Engaz AI. Michael is a Director at Deloitte.\n\nI see alignment between AI capabilities and enterprise consulting needs.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
+      "rationale": "CloudCom is entering the US now, and Yousra already reopened the relationship with Sara Rona from SF. This is the cleanest immediate banking and ecosystem bridge."
     },
     {
-      "id": "match-025",
-      "status": "pending",
-      "category": "Ecosystem x Investor",
-      "created": "2026-03-30",
+      "id": "match-027",
+      "status": "new",
+      "category": "Founder x Ecosystem",
+      "created": "2026-04-13",
       "person_a": {
-        "name": "Mohammed Al-Emadi",
-        "company": "Qatar Development Bank",
-        "title": "ED of Investment & Incubation",
-        "email": ""
+        "name": "Satya",
+        "company": "Majesty™",
+        "title": "Founder",
+        "email": "satya@majestyexperiences.com"
       },
       "person_b": {
-        "name": "Hasan Jabarti",
-        "company": "Bridging to Saudi",
-        "title": "Founding Partner",
-        "email": "hasan@jabarti.net"
+        "name": "Kate Bunina",
+        "company": "Qatar Development Bank",
+        "title": "Ecosystem operator",
+        "email": "kbunina@qdb.qa"
       },
-      "rationale": "Qatar Development Bank's investment arm meets a Saudi bridge operator. QDB invests in startups, Hasan helps companies bridge to Saudi. Together they create a Qatar-Saudi corridor for startup expansion.",
-      "draft_email_gaby": "Hi Mohammed, Hi Hasan,\n\nI wanted to connect you both. Mohammed leads Investment & Incubation at Qatar Development Bank. Hasan is the Founding Partner of Bridging to Saudi.\n\nI see strong potential for a Qatar-Saudi startup corridor, connecting QDB-backed startups with Saudi market access.\n\nWarm regards,\nGaby\nExecutive Assistant to Yousra Gaballah\nSprintly Partners",
-      "draft_email_yousra": "Hi Mohammed, Hi Hasan,\n\nI wanted to connect you both. Mohammed leads Investment & Incubation at QDB. Hasan bridges companies to Saudi Arabia.\n\nI see potential for a Qatar-Saudi startup corridor.\n\nWarm regards,\nYousra Gaballah\nFounder, Sprintly Partners"
+      "rationale": "Both are on Yousra's calendar this week. Satya is looking for pricing guidance and GCC hospitality growth. Kate can open regional ecosystem perspective and potential Qatar pathways."
+    },
+    {
+      "id": "match-028",
+      "status": "new",
+      "category": "Founder x Corporate",
+      "created": "2026-04-13",
+      "person_a": {
+        "name": "Karunasagar Mohansundar",
+        "company": "Plato Tech",
+        "title": "Founder",
+        "email": "karunasagar.mohansundar@plato.tech"
+      },
+      "person_b": {
+        "name": "Khalid S. Al-Murshed",
+        "company": "Return On Health",
+        "title": "Founder & CEO",
+        "email": ""
+      },
+      "rationale": "Plato Tech is live with clinicians across the GCC and Return On Health is a Saudi healthtech founder. High sector overlap, likely mutual value on hospital access and GCC healthcare distribution."
     }
   ],
   "match_history": [],
   "feedback_log": [],
   "matching_rules": {
-    "version": 1,
-    "learned_preferences": [],
+    "version": 2,
+    "learned_preferences": [
+      "Prefer intros that can be activated immediately from live calendar or email momentum.",
+      "Prioritize MENA-to-US bridge opportunities over speculative warm introductions."
+    ],
     "disliked_patterns": [],
-    "liked_patterns": [],
-    "total_matches_generated": 25,
+    "liked_patterns": [
+      "Founder to bank or ecosystem connector when a warm thread already exists.",
+      "Founder to founder intros with direct sector overlap and GCC relevance."
+    ],
+    "total_matches_generated": 28,
     "total_approved": 0,
     "total_sent": 0,
     "total_liked": 0,
