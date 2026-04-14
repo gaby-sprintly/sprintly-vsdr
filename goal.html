@@ -560,6 +560,43 @@ a { text-decoration: none; color: inherit; }
 .stakeholder-card:hover .item-delete-btn { opacity: 1; }
 .item-delete-btn:hover { color: var(--coral); background: rgba(239,68,68,0.1); }
 
+/* ── EDIT BUTTON ── */
+.item-edit-btn {
+  width: 24px; height: 24px;
+  border: none;
+  background: none;
+  color: var(--n400);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+.kr-card:hover .item-edit-btn,
+.action-card:hover .item-edit-btn,
+.rec-card:hover .item-edit-btn,
+.followup-card:hover .item-edit-btn { opacity: 1; }
+.item-edit-btn:hover { color: var(--teal); background: rgba(45,212,191,0.1); }
+.item-edit-btn svg { width: 13px; height: 13px; }
+
+/* ── INLINE EDIT ROW (replaces text in-place) ── */
+.inline-edit-input {
+  flex: 1;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--teal);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 13px;
+  outline: none;
+}
+.inline-edit-input::placeholder { color: var(--n400); opacity: 0.5; }
+
 /* ── PM ACTIONS ── */
 .pm-actions {
   display: flex;
@@ -706,6 +743,7 @@ a { text-decoration: none; color: inherit; }
   }
 
   var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var editSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
 
   function saveData(data) {
     data.version = DATA_VERSION;
@@ -879,6 +917,7 @@ a { text-decoration: none; color: inherit; }
       html += '<div class="kr-card' + (kr.done ? ' completed' : '') + '" data-kr-index="' + i + '">';
       html += '<div class="kr-checkbox">' + (kr.done ? checkSvg : '') + '</div>';
       html += '<div class="kr-text">' + esc(kr.text) + '</div>';
+      html += '<button class="item-edit-btn" onclick="event.stopPropagation(); editItem(\'kr\',' + i + ')" title="Edit">' + editSvg + '</button>';
       html += '<button class="item-delete-btn" onclick="event.stopPropagation(); deleteItem(\'kr\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
@@ -891,6 +930,7 @@ a { text-decoration: none; color: inherit; }
       html += '<div class="action-card">';
       html += '<span class="action-icon">&rarr;</span>';
       html += '<div class="action-text">' + esc(a) + '</div>';
+      html += '<button class="item-edit-btn" onclick="editItem(\'action\',' + i + ')" title="Edit">' + editSvg + '</button>';
       html += '<button class="item-delete-btn" onclick="deleteItem(\'action\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
@@ -903,6 +943,7 @@ a { text-decoration: none; color: inherit; }
       html += '<div class="rec-card">';
       html += '<span class="rec-icon">&#9670;</span>';
       html += '<div class="rec-text">' + esc(a) + '</div>';
+      html += '<button class="item-edit-btn" onclick="editItem(\'rec\',' + i + ')" title="Edit">' + editSvg + '</button>';
       html += '<button class="item-delete-btn" onclick="deleteItem(\'rec\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
@@ -916,6 +957,7 @@ a { text-decoration: none; color: inherit; }
       html += '<span class="followup-icon">&#9203;</span>';
       html += '<div class="followup-text">' + esc(f.text) + '</div>';
       html += '<button class="followup-owner-btn" onclick="event.stopPropagation(); editFollowUpOwner(' + i + ')" title="Click to change assignee">' + esc(f.owner || 'Assign') + '</button>';
+      html += '<button class="item-edit-btn" onclick="editItem(\'followUp\',' + i + ')" title="Edit">' + editSvg + '</button>';
       html += '<button class="item-delete-btn" onclick="deleteItem(\'followUp\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
@@ -1188,6 +1230,89 @@ a { text-decoration: none; color: inherit; }
 
     window.cancelFollowUpOwner = function(idx) {
       renderGoal(goal, fullData);
+    };
+
+    // ── Edit items inline ──
+    window.editItem = function(type, idx) {
+      // Find the card element
+      var cards;
+      if (type === 'kr') cards = document.querySelectorAll('.kr-card');
+      else if (type === 'action') cards = document.querySelectorAll('.action-card');
+      else if (type === 'rec') cards = document.querySelectorAll('.rec-card');
+      else if (type === 'followUp') cards = document.querySelectorAll('.followup-card');
+      var card = cards ? cards[idx] : null;
+      if (!card || card.querySelector('.inline-edit-input')) return;
+
+      // Get current value
+      var currentVal;
+      if (type === 'kr') currentVal = goal.keyResults[idx].text;
+      else if (type === 'action') currentVal = goal.nextActions[idx];
+      else if (type === 'rec') currentVal = goal.recommendedActions[idx];
+      else if (type === 'followUp') currentVal = goal.followUps[idx].text;
+
+      // Find the text element and replace with input
+      var textEl;
+      if (type === 'kr') textEl = card.querySelector('.kr-text');
+      else if (type === 'action') textEl = card.querySelector('.action-text');
+      else if (type === 'rec') textEl = card.querySelector('.rec-text');
+      else if (type === 'followUp') textEl = card.querySelector('.followup-text');
+      if (!textEl) return;
+
+      var origDisplay = textEl.style.display;
+      textEl.style.display = 'none';
+
+      // Hide edit/delete buttons
+      card.querySelectorAll('.item-edit-btn, .item-delete-btn').forEach(function(b) { b.style.display = 'none'; });
+
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'inline-edit-input';
+      input.value = currentVal;
+
+      var saveBtn = document.createElement('button');
+      saveBtn.className = 'inline-save-btn';
+      saveBtn.textContent = 'Save';
+      saveBtn.style.cssText = 'padding:6px 12px;font-size:11px;margin-left:6px;';
+
+      var cancelBtn = document.createElement('button');
+      cancelBtn.className = 'inline-cancel-btn';
+      cancelBtn.innerHTML = '&times;';
+      cancelBtn.style.cssText = 'padding:6px 8px;font-size:11px;margin-left:4px;';
+
+      function doSave() {
+        var newVal = input.value.trim();
+        if (!newVal) return;
+        if (type === 'kr') goal.keyResults[idx].text = newVal;
+        else if (type === 'action') goal.nextActions[idx] = newVal;
+        else if (type === 'rec') goal.recommendedActions[idx] = newVal;
+        else if (type === 'followUp') goal.followUps[idx].text = newVal;
+        updateTimestamp(goal);
+        saveData(fullData);
+        renderGoal(goal, fullData);
+      }
+
+      function doCancel() {
+        input.remove();
+        saveBtn.remove();
+        cancelBtn.remove();
+        textEl.style.display = origDisplay || '';
+        card.querySelectorAll('.item-edit-btn, .item-delete-btn').forEach(function(b) { b.style.display = ''; });
+      }
+
+      saveBtn.onclick = function(e) { e.stopPropagation(); doSave(); };
+      cancelBtn.onclick = function(e) { e.stopPropagation(); doCancel(); };
+      input.addEventListener('keydown', function(e) {
+        e.stopPropagation();
+        if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+        if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
+      });
+      input.addEventListener('click', function(e) { e.stopPropagation(); });
+
+      textEl.parentNode.insertBefore(input, textEl.nextSibling);
+      textEl.parentNode.insertBefore(saveBtn, input.nextSibling);
+      textEl.parentNode.insertBefore(cancelBtn, saveBtn.nextSibling);
+      input.focus();
+      input.select();
     };
 
     // ── Delete items ──
