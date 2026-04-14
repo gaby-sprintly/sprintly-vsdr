@@ -328,7 +328,7 @@
 .kr-check {
   width: 16px; height: 16px;
   border-radius: 2px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--n400);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   margin-top: 1px;
@@ -337,6 +337,13 @@
 .kr-check.done { background: var(--green); border-color: var(--green); }
 .kr-check.done svg { width: 10px; height: 10px; color: #0F1923; }
 .kr-item:hover .kr-check { transform: scale(1.15); }
+/* Ensure items are visible after GSAP animation completes */
+.goal-card.expanded .kr-item,
+.goal-card.expanded .actions-list li,
+.goal-card.expanded .rec-actions-list li,
+.goal-card.expanded .followup-item,
+.goal-card.expanded .person-chip,
+.goal-card.expanded .stakeholder-chip { opacity: 1 !important; }
 
 /* Next actions */
 .actions-list {
@@ -1325,11 +1332,11 @@
       var followItems = details.querySelectorAll('.followup-item');
       var chips = details.querySelectorAll('.person-chip, .stakeholder-chip');
 
-      gsap.from(krItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.15 });
-      gsap.from(actionItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.2 });
-      gsap.from(recItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.25 });
-      gsap.from(followItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.28 });
-      gsap.from(chips, { scale: 0.8, opacity: 0, stagger: 0.04, duration: 0.25, ease: 'back.out(1.4)', delay: 0.3 });
+      gsap.fromTo(krItems, { x: -15, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.15, clearProps: 'opacity,transform' });
+      gsap.fromTo(actionItems, { x: -15, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.2, clearProps: 'opacity,transform' });
+      gsap.fromTo(recItems, { x: -15, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.25, clearProps: 'opacity,transform' });
+      gsap.fromTo(followItems, { x: -15, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.28, clearProps: 'opacity,transform' });
+      gsap.fromTo(chips, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, stagger: 0.04, duration: 0.25, ease: 'back.out(1.4)', delay: 0.3, clearProps: 'opacity,transform' });
     }
   }
 
