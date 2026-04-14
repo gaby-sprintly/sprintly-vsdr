@@ -996,7 +996,7 @@
   gsap.registerPlugin(ScrollTrigger);
 
   var GOALS_LS_KEY = 'vsdr-goals-data';
-  var DATA_VERSION = 3;
+  var DATA_VERSION = 4;
   var goalsData = null;
 
   // Track selected contact for follow-up autocomplete
@@ -1008,21 +1008,9 @@
   // ══════════════════════════════════
 
   function loadGoalsData() {
-    // Check localStorage first for user modifications
-    var stored = localStorage.getItem(GOALS_LS_KEY);
-    if (stored) {
-      try {
-        var parsed = JSON.parse(stored);
-        // Verify version matches — stale cache causes "undefined" text bugs
-        if (parsed && parsed.version === DATA_VERSION) {
-          goalsData = parsed;
-          renderAll();
-          return;
-        }
-      } catch(e) { /* fall through to fetch */ }
-      // Version mismatch or parse error — clear stale data
-      localStorage.removeItem(GOALS_LS_KEY);
-    }
+    // FORCE clear stale localStorage to fix "undefined" text corruption
+    localStorage.removeItem(GOALS_LS_KEY);
+
     fetch('goals-data.json')
       .then(function(r) { return r.json(); })
       .then(function(data) {
