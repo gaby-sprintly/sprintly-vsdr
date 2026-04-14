@@ -78,6 +78,49 @@ a { text-decoration: none; color: inherit; }
   color: var(--n400);
 }
 
+/* ── PM CARD ── */
+.pm-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 16px 20px;
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.pm-card-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(78,203,113,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pm-card-icon svg { width: 18px; height: 18px; color: var(--green); }
+.pm-card-info { display: flex; flex-direction: column; }
+.pm-card-label {
+  font-family: var(--body);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-bottom: 2px;
+}
+.pm-card-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--n50);
+}
+.pm-card-role {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  margin-top: 1px;
+}
+
 /* ── PROGRESS CARD ── */
 .progress-card {
   background: var(--n800);
@@ -442,6 +485,57 @@ a { text-decoration: none; color: inherit; }
 }
 .inline-cancel-btn:hover { color: var(--n50); }
 
+/* ── CONTACT AUTOCOMPLETE ── */
+.contact-ac-wrap {
+  position: relative;
+  flex: 1;
+}
+.contact-ac-wrap input {
+  width: 100%;
+}
+.contact-ac-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+}
+.contact-ac-dropdown.open { display: block; }
+.contact-ac-option {
+  padding: 8px 10px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n50);
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.contact-ac-option:hover,
+.contact-ac-option.active {
+  background: rgba(255,255,255,0.06);
+}
+.contact-ac-option .ac-company {
+  font-size: 10px;
+  color: var(--n400);
+}
+.contact-ac-loading,
+.contact-ac-empty {
+  padding: 8px 10px;
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--n400);
+  font-style: italic;
+}
+
 /* ── LOADING ── */
 .loading {
   font-family: var(--body);
@@ -481,29 +575,45 @@ a { text-decoration: none; color: inherit; }
 <script>
 (function() {
   var GOALS_LS_KEY = 'vsdr-goals-data';
+  var DATA_VERSION = 2;
   var params = new URLSearchParams(window.location.search);
   var goalId = params.get('id');
 
+  // Supabase autocomplete state
+  var _acSelectedContact = null;
+  var _acDebounceTimer = null;
+
   if (!goalId) { showError(); return; }
 
-  // Load data
+  // ── Load data with version check ──
   var stored = localStorage.getItem(GOALS_LS_KEY);
   if (stored) {
     try {
-      var data = JSON.parse(stored);
-      var goal = data.goals.find(function(g) { return g.id === goalId; });
-      if (goal) { renderGoal(goal, data); return; }
-    } catch(e) { /* fall through */ }
+      var parsed = JSON.parse(stored);
+      if (parsed && parsed.version === DATA_VERSION) {
+        var goal = parsed.goals.find(function(g) { return g.id === goalId; });
+        if (goal) { renderGoal(goal, parsed); return; }
+      } else {
+        // Version mismatch — clear stale data
+        localStorage.removeItem(GOALS_LS_KEY);
+      }
+    } catch(e) {
+      localStorage.removeItem(GOALS_LS_KEY);
+    }
   }
 
   fetch('goals-data.json')
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      data.version = DATA_VERSION;
+      localStorage.setItem(GOALS_LS_KEY, JSON.stringify(data));
       var goal = data.goals.find(function(g) { return g.id === goalId; });
       if (!goal) { showError(); return; }
       renderGoal(goal, data);
     })
     .catch(function() { showError(); });
+
+  // ── Helpers ──
 
   function showError() {
     document.getElementById('mainContent').innerHTML =
@@ -512,8 +622,9 @@ a { text-decoration: none; color: inherit; }
   }
 
   function esc(str) {
+    if (str === null || str === undefined) return '';
     var d = document.createElement('div');
-    d.textContent = str || '';
+    d.textContent = String(str);
     return d.innerHTML;
   }
 
@@ -532,17 +643,117 @@ a { text-decoration: none; color: inherit; }
   }
 
   function statusLabel(s) {
+    if (!s) return '';
     return s.split('-').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
   }
 
-  var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
   function saveData(data) {
+    data.version = DATA_VERSION;
     localStorage.setItem(GOALS_LS_KEY, JSON.stringify(data));
   }
 
+  function updateTimestamp(goal) {
+    var now = new Date();
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    goal.lastUpdated = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  }
+
+  // ── Supabase Contact Autocomplete ──
+
+  function searchContacts(query) {
+    var encoded = encodeURIComponent(query);
+    return sbGet('contacts', 'select=id,first_name,last_name,company&or=(first_name.ilike.*' + encoded + '*,last_name.ilike.*' + encoded + '*,company.ilike.*' + encoded + '*)&limit=8');
+  }
+
+  function setupContactAutocomplete(inputEl, dropdownEl) {
+    _acSelectedContact = null;
+
+    inputEl.addEventListener('input', function() {
+      var val = inputEl.value.trim();
+      if (val.length < 2) {
+        dropdownEl.classList.remove('open');
+        dropdownEl.innerHTML = '';
+        _acSelectedContact = null;
+        return;
+      }
+
+      clearTimeout(_acDebounceTimer);
+      _acDebounceTimer = setTimeout(function() {
+        dropdownEl.innerHTML = '<div class="contact-ac-loading">Searching...</div>';
+        dropdownEl.classList.add('open');
+
+        searchContacts(val).then(function(results) {
+          if (!results || results.length === 0) {
+            dropdownEl.innerHTML = '<div class="contact-ac-empty">No matches. Name will be added as new contact.</div>';
+            dropdownEl.classList.add('open');
+            _acSelectedContact = null;
+            return;
+          }
+          var html = '';
+          results.forEach(function(c) {
+            var displayName = ((c.first_name || '') + ' ' + (c.last_name || '')).trim();
+            var companyStr = c.company ? c.company : '';
+            html += '<div class="contact-ac-option" data-contact-id="' + c.id + '" data-name="' + esc(displayName) + '">';
+            html += '<span>' + esc(displayName) + '</span>';
+            if (companyStr) html += '<span class="ac-company">' + esc(companyStr) + '</span>';
+            html += '</div>';
+          });
+          dropdownEl.innerHTML = html;
+          dropdownEl.classList.add('open');
+
+          dropdownEl.querySelectorAll('.contact-ac-option').forEach(function(opt) {
+            opt.addEventListener('click', function(e) {
+              e.stopPropagation();
+              inputEl.value = opt.getAttribute('data-name');
+              _acSelectedContact = { id: parseInt(opt.getAttribute('data-contact-id')), name: opt.getAttribute('data-name') };
+              dropdownEl.classList.remove('open');
+              dropdownEl.innerHTML = '';
+            });
+          });
+        }).catch(function() {
+          dropdownEl.innerHTML = '<div class="contact-ac-empty">Search failed. Type a name manually.</div>';
+          dropdownEl.classList.add('open');
+        });
+      }, 300);
+    });
+
+    function closeAcDropdown(e) {
+      if (!inputEl.contains(e.target) && !dropdownEl.contains(e.target)) {
+        dropdownEl.classList.remove('open');
+      }
+    }
+    document.addEventListener('click', closeAcDropdown);
+
+    inputEl._acCleanup = function() {
+      document.removeEventListener('click', closeAcDropdown);
+    };
+  }
+
+  function autoInsertContact(ownerName) {
+    var parts = ownerName.trim().split(/\s+/);
+    var firstName = parts[0] || ownerName.trim();
+    var lastName = parts.length > 1 ? parts.slice(1).join(' ') : '';
+
+    return sbInsert('contacts', {
+      first_name: firstName,
+      last_name: lastName,
+      notes: 'Added from Goals follow-up'
+    }, { returnData: true }).then(function(result) {
+      if (result && result.length > 0) return result[0];
+      if (result && result.id) return result;
+      return null;
+    }).catch(function(err) {
+      console.error('Failed to auto-insert contact:', err);
+      return null;
+    });
+  }
+
+  // ── Main Render ──
+
   function renderGoal(goal, fullData) {
-    document.title = goal.title + ' — Safira';
+    document.title = esc(goal.title) + ' — Safira';
     var pct = calcProgress(goal);
 
     var html = '';
@@ -557,7 +768,22 @@ a { text-decoration: none; color: inherit; }
     html += '<div class="goal-status-row">';
     html += '<span class="badge ' + badgeClass(goal.status) + '">' + statusLabel(goal.status) + '</span>';
     html += '<span class="goal-updated-text">Updated ' + esc(goal.lastUpdated) + '</span>';
-    html += '</div></div>';
+    html += '</div>';
+
+    // Project Manager card (in header left, below status row)
+    if (goal.projectManager && goal.projectManager.name) {
+      html += '<div class="pm-card">';
+      html += '<div class="pm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+      html += '<div class="pm-card-info">';
+      html += '<div class="pm-card-label">Project Manager</div>';
+      html += '<div class="pm-card-name">' + esc(goal.projectManager.name) + '</div>';
+      if (goal.projectManager.role) {
+        html += '<div class="pm-card-role">' + esc(goal.projectManager.role) + '</div>';
+      }
+      html += '</div></div>';
+    }
+
+    html += '</div>'; // close goal-header-left
 
     // Progress card
     var ringColor = goal.status === 'on-track' ? 'var(--green)' : goal.status === 'behind' ? 'var(--coral)' : 'var(--amber)';
@@ -574,14 +800,16 @@ a { text-decoration: none; color: inherit; }
     html += '</div>';
     html += '<div class="progress-card-text">Completion</div>';
     html += '</div>';
-    html += '</div>';
+    html += '</div>'; // close goal-header-area
 
     // Description
     html += '<div class="section-label">Description</div>';
     html += '<div class="glass-card"><p>' + esc(goal.description) + '</p></div>';
 
     // Key Results
-    html += '<div class="section-label">Key Results (' + (goal.keyResults || []).filter(function(k){return k.done;}).length + '/' + (goal.keyResults || []).length + ')</div>';
+    var krDone = (goal.keyResults || []).filter(function(k) { return k.done; }).length;
+    var krTotal = (goal.keyResults || []).length;
+    html += '<div class="section-label">Key Results (' + krDone + '/' + krTotal + ')</div>';
     (goal.keyResults || []).forEach(function(kr, i) {
       html += '<div class="kr-card' + (kr.done ? ' completed' : '') + '" data-kr-index="' + i + '">';
       html += '<div class="kr-checkbox">' + (kr.done ? checkSvg : '') + '</div>';
@@ -664,7 +892,7 @@ a { text-decoration: none; color: inherit; }
 
     document.getElementById('mainContent').innerHTML = html;
 
-    // Wire up KR checkboxes
+    // ── Wire up KR checkboxes ──
     document.querySelectorAll('.kr-card').forEach(function(card) {
       card.addEventListener('click', function() {
         var idx = parseInt(card.getAttribute('data-kr-index'));
@@ -676,39 +904,64 @@ a { text-decoration: none; color: inherit; }
       });
     });
 
-    // Expose inline add functions to global scope
+    // ── Inline add: show form ──
     window.showInlineAdd = function(type) {
       var container = document.getElementById('inline' + type.charAt(0).toUpperCase() + type.slice(1));
       if (!container || container.querySelector('.inline-input-row')) return;
 
-      var html = '<div class="inline-input-row">';
+      var formHtml = '<div class="inline-input-row">';
       if (type === 'team') {
-        html += '<input type="text" placeholder="Name" id="inlineName"><input type="text" placeholder="Role" id="inlineRole">';
+        formHtml += '<input type="text" placeholder="Name" id="inlineName"><input type="text" placeholder="Role" id="inlineRole">';
       } else if (type === 'followUp') {
-        html += '<input type="text" placeholder="Waiting for..." id="inlineText" style="flex:2"><input type="text" placeholder="Owner" id="inlineOwner" style="flex:1">';
+        formHtml += '<input type="text" placeholder="Waiting for..." id="inlineText" style="flex:2">';
+        formHtml += '<div class="contact-ac-wrap" style="flex:1">';
+        formHtml += '<input type="text" placeholder="Owner" id="inlineOwner" autocomplete="off">';
+        formHtml += '<div class="contact-ac-dropdown" id="acDropdownGoal"></div>';
+        formHtml += '</div>';
       } else {
         var ph = { kr: 'New key result...', action: 'New action...', rec: 'New recommendation...' };
-        html += '<input type="text" placeholder="' + (ph[type] || 'Add...') + '" id="inlineText">';
+        formHtml += '<input type="text" placeholder="' + (ph[type] || 'Add...') + '" id="inlineText">';
       }
-      html += '<button class="inline-save-btn" onclick="saveInline(\'' + type + '\')">Add</button>';
-      html += '<button class="inline-cancel-btn" onclick="cancelInline(\'' + type + '\')">&times;</button>';
-      html += '</div>';
-      container.innerHTML = html;
+      formHtml += '<button class="inline-save-btn" onclick="saveInline(\'' + type + '\')">Add</button>';
+      formHtml += '<button class="inline-cancel-btn" onclick="cancelInline(\'' + type + '\')">&times;</button>';
+      formHtml += '</div>';
+      container.innerHTML = formHtml;
       container.querySelector('input').focus();
+
+      // Set up autocomplete for follow-up owner field
+      if (type === 'followUp') {
+        var ownerInput = document.getElementById('inlineOwner');
+        var dropdown = document.getElementById('acDropdownGoal');
+        if (ownerInput && dropdown) {
+          setupContactAutocomplete(ownerInput, dropdown);
+        }
+      }
 
       container.querySelectorAll('input').forEach(function(inp) {
         inp.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') { e.preventDefault(); saveInline(type); }
+          if (e.key === 'Enter') {
+            var dd = container.querySelector('.contact-ac-dropdown.open');
+            if (dd) { dd.classList.remove('open'); return; }
+            e.preventDefault();
+            saveInline(type);
+          }
           if (e.key === 'Escape') { e.preventDefault(); cancelInline(type); }
         });
       });
     };
 
+    // ── Inline add: cancel ──
     window.cancelInline = function(type) {
       var container = document.getElementById('inline' + type.charAt(0).toUpperCase() + type.slice(1));
-      if (container) container.innerHTML = '';
+      if (container) {
+        var ownerInput = container.querySelector('input[id="inlineOwner"]');
+        if (ownerInput && ownerInput._acCleanup) ownerInput._acCleanup();
+        container.innerHTML = '';
+      }
+      _acSelectedContact = null;
     };
 
+    // ── Inline add: save ──
     window.saveInline = function(type) {
       if (type === 'kr') {
         var t = document.getElementById('inlineText').value.trim();
@@ -727,10 +980,36 @@ a { text-decoration: none; color: inherit; }
         goal.recommendedActions.push(t);
       } else if (type === 'followUp') {
         var t = document.getElementById('inlineText').value.trim();
-        var o = document.getElementById('inlineOwner').value.trim();
+        var ownerInput = document.getElementById('inlineOwner');
+        var ownerName = ownerInput ? ownerInput.value.trim() : '';
         if (!t) return;
         if (!goal.followUps) goal.followUps = [];
-        goal.followUps.push({ text: t, owner: o });
+
+        var followUpEntry = { text: t, owner: ownerName };
+
+        if (_acSelectedContact && _acSelectedContact.id) {
+          followUpEntry.contactId = _acSelectedContact.id;
+          goal.followUps.push(followUpEntry);
+          _acSelectedContact = null;
+        } else if (ownerName) {
+          goal.followUps.push(followUpEntry);
+          var fuIdx = goal.followUps.length - 1;
+          autoInsertContact(ownerName).then(function(contact) {
+            if (contact && contact.id) {
+              goal.followUps[fuIdx].contactId = contact.id;
+              saveData(fullData);
+            }
+          });
+          _acSelectedContact = null;
+        } else {
+          goal.followUps.push(followUpEntry);
+          _acSelectedContact = null;
+        }
+
+        updateTimestamp(goal);
+        saveData(fullData);
+        renderGoal(goal, fullData);
+        return;
       } else if (type === 'team') {
         var n = document.getElementById('inlineName').value.trim();
         var r = document.getElementById('inlineRole').value.trim();
@@ -743,17 +1022,18 @@ a { text-decoration: none; color: inherit; }
       renderGoal(goal, fullData);
     };
 
+    // ── Notes editing ──
     window.showNotesEdit = function() {
       var container = document.getElementById('inlineNotes');
       if (!container || container.querySelector('.inline-notes-area')) return;
       var current = goal.notes || '';
-      var html = '<div class="inline-notes-area">';
-      html += '<textarea id="notesTextarea" placeholder="Add notes...">' + esc(current) + '</textarea>';
-      html += '<div style="display:flex;gap:8px;margin-top:8px;">';
-      html += '<button class="inline-save-btn" onclick="saveNotes()">Save</button>';
-      html += '<button class="inline-cancel-btn" onclick="cancelNotes()">Cancel</button>';
-      html += '</div></div>';
-      container.innerHTML = html;
+      var notesHtml = '<div class="inline-notes-area">';
+      notesHtml += '<textarea id="notesTextarea" placeholder="Add notes...">' + esc(current) + '</textarea>';
+      notesHtml += '<div style="display:flex;gap:8px;margin-top:8px;">';
+      notesHtml += '<button class="inline-save-btn" onclick="saveNotes()">Save</button>';
+      notesHtml += '<button class="inline-cancel-btn" onclick="cancelNotes()">Cancel</button>';
+      notesHtml += '</div></div>';
+      container.innerHTML = notesHtml;
       document.getElementById('notesTextarea').focus();
     };
 
@@ -772,16 +1052,13 @@ a { text-decoration: none; color: inherit; }
     runPageAnimation();
   }
 
-  function updateTimestamp(goal) {
-    var now = new Date();
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    goal.lastUpdated = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
-  }
+  // ── GSAP Page Animation ──
 
   function runPageAnimation() {
     gsap.from('.back-link', { x: -20, opacity: 0, duration: 0.4, ease: 'power2.out' });
     gsap.from('.goal-page-title', { y: 30, opacity: 0, duration: 0.6, ease: 'power3.out', delay: 0.1 });
     gsap.from('.goal-status-row', { y: 20, opacity: 0, duration: 0.4, ease: 'power2.out', delay: 0.2 });
+    gsap.from('.pm-card', { y: 20, opacity: 0, duration: 0.4, ease: 'power2.out', delay: 0.25 });
     gsap.from('.progress-card', { scale: 0.9, opacity: 0, duration: 0.5, ease: 'back.out(1.4)', delay: 0.3 });
     gsap.from('.glass-card', { y: 20, opacity: 0, duration: 0.4, ease: 'power2.out', delay: 0.35 });
     gsap.from('.kr-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.4 });

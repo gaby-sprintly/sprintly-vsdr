@@ -39,6 +39,8 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
 }
 
 /* Add Goal button */
@@ -215,6 +217,26 @@
   line-height: 1.55;
   margin-bottom: 12px;
 }
+
+/* Project Manager chip below title */
+.pm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--teal);
+  padding: 3px 10px;
+  background: rgba(45,212,191,0.08);
+  border: 1px solid rgba(45,212,191,0.15);
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
+.pm-chip-role {
+  color: var(--n400);
+  font-size: 10px;
+}
+
 .goal-footer-row {
   display: flex;
   align-items: center;
@@ -252,11 +274,17 @@
   color: var(--green);
 }
 
-/* Expandable details */
+/* Expandable details — strictly hidden when collapsed */
 .goal-details {
   height: 0;
   overflow: hidden;
   opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.goal-card.expanded .goal-details {
+  visibility: visible;
+  pointer-events: auto;
 }
 .goal-details-inner {
   padding: 0 28px 24px 32px;
@@ -557,6 +585,7 @@
   border: 1px solid var(--border);
   border-radius: 2px;
   padding: 16px 18px;
+  cursor: pointer;
   transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 .q-card:hover {
@@ -599,6 +628,57 @@
 /* Stat number counter initial state */
 .stat-number {
   clip-path: inset(0);
+}
+
+/* ── Contact Autocomplete Dropdown ── */
+.contact-ac-wrap {
+  position: relative;
+  flex: 1;
+}
+.contact-ac-wrap input {
+  width: 100%;
+}
+.contact-ac-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+}
+.contact-ac-dropdown.open { display: block; }
+.contact-ac-option {
+  padding: 8px 10px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n50);
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.contact-ac-option:hover,
+.contact-ac-option.active {
+  background: rgba(255,255,255,0.06);
+}
+.contact-ac-option .ac-company {
+  font-size: 10px;
+  color: var(--n400);
+}
+.contact-ac-loading,
+.contact-ac-empty {
+  padding: 8px 10px;
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--n400);
+  font-style: italic;
 }
 
 /* ── New Goal Modal ── */
@@ -916,7 +996,12 @@
   gsap.registerPlugin(ScrollTrigger);
 
   var GOALS_LS_KEY = 'vsdr-goals-data';
+  var DATA_VERSION = 2;
   var goalsData = null;
+
+  // Track selected contact for follow-up autocomplete
+  var _acSelectedContact = null;
+  var _acDebounceTimer = null;
 
   // ══════════════════════════════════
   //  LOAD DATA
@@ -927,20 +1012,28 @@
     var stored = localStorage.getItem(GOALS_LS_KEY);
     if (stored) {
       try {
-        goalsData = JSON.parse(stored);
-        renderAll();
-        return;
+        var parsed = JSON.parse(stored);
+        // Verify version matches — stale cache causes "undefined" text bugs
+        if (parsed && parsed.version === DATA_VERSION) {
+          goalsData = parsed;
+          renderAll();
+          return;
+        }
       } catch(e) { /* fall through to fetch */ }
+      // Version mismatch or parse error — clear stale data
+      localStorage.removeItem(GOALS_LS_KEY);
     }
     fetch('goals-data.json')
       .then(function(r) { return r.json(); })
       .then(function(data) {
         goalsData = data;
+        saveGoalsData();
         renderAll();
       });
   }
 
   function saveGoalsData() {
+    goalsData.version = DATA_VERSION;
     localStorage.setItem(GOALS_LS_KEY, JSON.stringify(goalsData));
   }
 
@@ -1018,6 +1111,14 @@
       html += '<span class="status-badge status--' + esc(g.status) + '">' + statusLabel(g.status) + '</span>';
       html += chevronSvg;
       html += '</div></div>';
+
+      // Project Manager chip
+      if (g.projectManager && g.projectManager.name) {
+        html += '<div class="pm-chip">' + esc(g.projectManager.name);
+        if (g.projectManager.role) html += ' <span class="pm-chip-role">' + esc(g.projectManager.role) + '</span>';
+        html += '</div>';
+      }
+
       html += '<div class="goal-desc">' + esc(g.description) + '</div>';
       html += '<div class="goal-footer-row">';
       html += '<div class="goal-updated">Last updated: ' + esc(g.lastUpdated) + '</div>';
@@ -1027,6 +1128,14 @@
 
       // Details
       html += '<div class="goal-details"><div class="goal-details-inner"><div class="details-grid">';
+
+      // Project Manager in expanded details
+      if (g.projectManager && g.projectManager.name) {
+        html += '<div style="grid-column:1/-1;"><div class="details-section-title">Project Manager</div>';
+        html += '<div class="people-chips"><span class="person-chip">' + esc(g.projectManager.name);
+        if (g.projectManager.role) html += ' <span class="person-chip-role">' + esc(g.projectManager.role) + '</span>';
+        html += '</span></div></div>';
+      }
 
       // Key Results
       html += '<div><div class="details-section-title">Key Results</div><ul class="kr-list">';
@@ -1091,6 +1200,16 @@
       html += '<button class="inline-add-btn" onclick="event.stopPropagation(); showInlineAdd(\'team\',' + gi + ')">+ Add Member</button>';
       html += '</div>';
 
+      // Stakeholders
+      if (g.stakeholders && g.stakeholders.length > 0) {
+        html += '<div><div class="details-section-title">Stakeholders</div>';
+        html += '<div class="people-chips">';
+        g.stakeholders.forEach(function(s) {
+          html += '<span class="stakeholder-chip">' + esc(s.name) + ' <span class="stakeholder-chip-role">' + esc(s.role) + '</span></span>';
+        });
+        html += '</div></div>';
+      }
+
       // Notes
       html += '<div style="grid-column:1/-1;"><div class="details-section-title">Notes</div>';
       var noteText = (g.notes && g.notes.trim()) ? g.notes : '';
@@ -1108,12 +1227,19 @@
   function renderQuarterly() {
     var html = '';
     (goalsData.quarterlyGoals || []).forEach(function(q) {
-      html += '<div class="q-card"><div class="q-card-top">';
+      html += '<div class="q-card" onclick="navigateToParentGoal(\'' + esc(q.parentGoalId) + '\')">';
+      html += '<div class="q-card-top">';
       html += '<div class="q-title">' + esc(q.title) + '</div>';
       html += '<span class="status-badge status--' + esc(q.status) + '">' + statusLabel(q.status) + '</span>';
       html += '</div></div>';
     });
     document.getElementById('qGrid').innerHTML = html;
+  }
+
+  function navigateToParentGoal(parentGoalId) {
+    if (parentGoalId) {
+      window.location.href = 'goal.html?id=' + encodeURIComponent(parentGoalId);
+    }
   }
 
   // ══════════════════════════════════
@@ -1302,6 +1428,104 @@
   }
 
   // ══════════════════════════════════
+  //  SUPABASE CONTACT AUTOCOMPLETE
+  // ══════════════════════════════════
+
+  function searchContacts(query) {
+    var encoded = encodeURIComponent(query);
+    return sbGet('contacts', 'select=id,first_name,last_name,company&or=(first_name.ilike.*' + encoded + '*,last_name.ilike.*' + encoded + '*,company.ilike.*' + encoded + '*)&limit=8');
+  }
+
+  function setupContactAutocomplete(inputEl, dropdownEl) {
+    _acSelectedContact = null;
+
+    inputEl.addEventListener('input', function() {
+      var val = inputEl.value.trim();
+      if (val.length < 2) {
+        dropdownEl.classList.remove('open');
+        dropdownEl.innerHTML = '';
+        _acSelectedContact = null;
+        return;
+      }
+
+      // Debounce 300ms
+      clearTimeout(_acDebounceTimer);
+      _acDebounceTimer = setTimeout(function() {
+        dropdownEl.innerHTML = '<div class="contact-ac-loading">Searching...</div>';
+        dropdownEl.classList.add('open');
+
+        searchContacts(val).then(function(results) {
+          if (!results || results.length === 0) {
+            dropdownEl.innerHTML = '<div class="contact-ac-empty">No matches. Name will be added as new contact.</div>';
+            dropdownEl.classList.add('open');
+            _acSelectedContact = null;
+            return;
+          }
+          var html = '';
+          results.forEach(function(c) {
+            var displayName = (c.first_name || '') + ' ' + (c.last_name || '');
+            displayName = displayName.trim();
+            var companyStr = c.company ? c.company : '';
+            html += '<div class="contact-ac-option" data-contact-id="' + c.id + '" data-name="' + esc(displayName) + '">';
+            html += '<span>' + esc(displayName) + '</span>';
+            if (companyStr) html += '<span class="ac-company">' + esc(companyStr) + '</span>';
+            html += '</div>';
+          });
+          dropdownEl.innerHTML = html;
+          dropdownEl.classList.add('open');
+
+          // Attach click handlers
+          dropdownEl.querySelectorAll('.contact-ac-option').forEach(function(opt) {
+            opt.addEventListener('click', function(e) {
+              e.stopPropagation();
+              inputEl.value = opt.getAttribute('data-name');
+              _acSelectedContact = { id: parseInt(opt.getAttribute('data-contact-id')), name: opt.getAttribute('data-name') };
+              dropdownEl.classList.remove('open');
+              dropdownEl.innerHTML = '';
+            });
+          });
+        }).catch(function() {
+          dropdownEl.innerHTML = '<div class="contact-ac-empty">Search failed. Type a name manually.</div>';
+          dropdownEl.classList.add('open');
+        });
+      }, 300);
+    });
+
+    // Close dropdown on outside click
+    function closeAcDropdown(e) {
+      if (!inputEl.contains(e.target) && !dropdownEl.contains(e.target)) {
+        dropdownEl.classList.remove('open');
+      }
+    }
+    document.addEventListener('click', closeAcDropdown);
+
+    // Store cleanup reference
+    inputEl._acCleanup = function() {
+      document.removeEventListener('click', closeAcDropdown);
+    };
+  }
+
+  function autoInsertContact(ownerName) {
+    // Split into first_name / last_name
+    var parts = ownerName.trim().split(/\s+/);
+    var firstName = parts[0] || ownerName.trim();
+    var lastName = parts.length > 1 ? parts.slice(1).join(' ') : '';
+
+    return sbInsert('contacts', {
+      first_name: firstName,
+      last_name: lastName,
+      notes: 'Added from Goals follow-up'
+    }, { returnData: true }).then(function(result) {
+      if (result && result.length > 0) return result[0];
+      if (result && result.id) return result;
+      return null;
+    }).catch(function(err) {
+      console.error('Failed to auto-insert contact:', err);
+      return null;
+    });
+  }
+
+  // ══════════════════════════════════
   //  INLINE ADD FUNCTIONS
   // ══════════════════════════════════
 
@@ -1316,7 +1540,10 @@
       html += '<input type="text" placeholder="Role" id="inlineRole_' + type + '_' + gi + '">';
     } else if (type === 'followUp') {
       html += '<input type="text" placeholder="Waiting for..." id="inlineText_' + type + '_' + gi + '" style="flex:2">';
-      html += '<input type="text" placeholder="Owner" id="inlineOwner_' + type + '_' + gi + '" style="flex:1">';
+      html += '<div class="contact-ac-wrap" style="flex:1">';
+      html += '<input type="text" placeholder="Owner" id="inlineOwner_' + type + '_' + gi + '" autocomplete="off">';
+      html += '<div class="contact-ac-dropdown" id="acDropdown_' + gi + '"></div>';
+      html += '</div>';
     } else {
       var placeholders = { kr: 'New key result...', action: 'New action...', rec: 'New recommendation...' };
       html += '<input type="text" placeholder="' + (placeholders[type] || 'Add item...') + '" id="inlineText_' + type + '_' + gi + '">';
@@ -1329,10 +1556,25 @@
     var firstInput = container.querySelector('input');
     if (firstInput) firstInput.focus();
 
+    // Set up autocomplete for follow-up owner field
+    if (type === 'followUp') {
+      var ownerInput = document.getElementById('inlineOwner_' + type + '_' + gi);
+      var dropdown = document.getElementById('acDropdown_' + gi);
+      if (ownerInput && dropdown) {
+        setupContactAutocomplete(ownerInput, dropdown);
+      }
+    }
+
     // Allow Enter to save
     container.querySelectorAll('input').forEach(function(inp) {
       inp.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); saveInlineAdd(type, gi); }
+        if (e.key === 'Enter') {
+          // Don't submit if the autocomplete dropdown is open — let them pick
+          var dd = container.querySelector('.contact-ac-dropdown.open');
+          if (dd) { dd.classList.remove('open'); return; }
+          e.preventDefault();
+          saveInlineAdd(type, gi);
+        }
         if (e.key === 'Escape') { e.preventDefault(); cancelInlineAdd(type, gi); }
       });
     });
@@ -1341,7 +1583,13 @@
   function cancelInlineAdd(type, gi) {
     var containerId = 'inline' + type.charAt(0).toUpperCase() + type.slice(1) + '_' + gi;
     var container = document.getElementById(containerId);
-    if (container) container.innerHTML = '';
+    if (container) {
+      // Clean up autocomplete listener if present
+      var ownerInput = container.querySelector('input[id^="inlineOwner_"]');
+      if (ownerInput && ownerInput._acCleanup) ownerInput._acCleanup();
+      container.innerHTML = '';
+    }
+    _acSelectedContact = null;
   }
 
   function saveInlineAdd(type, gi) {
@@ -1364,10 +1612,38 @@
       goal.recommendedActions.push(text);
     } else if (type === 'followUp') {
       var text = document.getElementById('inlineText_followUp_' + gi).value.trim();
-      var owner = document.getElementById('inlineOwner_followUp_' + gi).value.trim();
+      var ownerInput = document.getElementById('inlineOwner_followUp_' + gi);
+      var ownerName = ownerInput ? ownerInput.value.trim() : '';
       if (!text) return;
       if (!goal.followUps) goal.followUps = [];
-      goal.followUps.push({ text: text, owner: owner });
+
+      var followUpEntry = { text: text, owner: ownerName };
+
+      if (_acSelectedContact && _acSelectedContact.id) {
+        // User selected an existing contact
+        followUpEntry.contactId = _acSelectedContact.id;
+        goal.followUps.push(followUpEntry);
+        _acSelectedContact = null;
+        finishInlineSave(gi, type);
+      } else if (ownerName) {
+        // User typed a new name — auto-insert into Supabase
+        goal.followUps.push(followUpEntry);
+        var fuIdx = goal.followUps.length - 1;
+        autoInsertContact(ownerName).then(function(contact) {
+          if (contact && contact.id) {
+            goal.followUps[fuIdx].contactId = contact.id;
+            saveGoalsData();
+          }
+        });
+        _acSelectedContact = null;
+        finishInlineSave(gi, type);
+      } else {
+        // No owner specified
+        goal.followUps.push(followUpEntry);
+        _acSelectedContact = null;
+        finishInlineSave(gi, type);
+      }
+      return; // finishInlineSave handles the rest
     } else if (type === 'team') {
       var name = document.getElementById('inlineName_team_' + gi).value.trim();
       var role = document.getElementById('inlineRole_team_' + gi).value.trim();
@@ -1376,6 +1652,11 @@
       goal.teamMembers.push({ name: name, role: role });
     }
 
+    finishInlineSave(gi, type);
+  }
+
+  function finishInlineSave(gi, type) {
+    var goal = goalsData.goals[gi];
     updateTimestamp(goal);
     saveGoalsData();
 

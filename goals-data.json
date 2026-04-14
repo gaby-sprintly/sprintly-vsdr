@@ -1,7 +1,9 @@
 {
+  "version": 2,
   "goals": [
     {
       "id": "mena-to-valley-cohort",
+      "projectManager": { "name": "Yousra Gaballah", "role": "Program Lead" },
       "title": "Deliver MENA to the Valley 2026 Cohort",
       "description": "31 founders confirmed. 23 deposits locked, $92K collected. 8 pending ($32K). Two founder dinners and partner meetings now booked in SF, but deposit collection is still below target with 2 days left.",
       "status": "at-risk",
@@ -41,6 +43,7 @@
     },
     {
       "id": "institutional-partnerships",
+      "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Close 3+ Institutional Partnerships",
       "description": "Monshaat is signed, HBKU remains in review, and new Money Fellows plus CloudCom/ARPU Plus momentum strengthens the institutional pipeline.",
       "status": "on-track",
@@ -76,6 +79,7 @@
     },
     {
       "id": "ai-squad",
+      "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Launch AI Squad with 2+ Corporate Clients",
       "description": "NVIDIA content and deck are ready, but no paying client has closed and AI Squad is still reliant on outreach rather than active revenue conversations.",
       "status": "behind",
@@ -110,6 +114,7 @@
     },
     {
       "id": "network-growth",
+      "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Grow Network to 8,000+ Contacts",
       "description": "Database remains at roughly 6,000 contacts, but enrichment is still blocked pending approval and several VIP follow-ups are now overdue.",
       "status": "at-risk",
@@ -140,6 +145,7 @@
     },
     {
       "id": "revenue-target",
+      "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Hit Annual Revenue Target",
       "description": "Revenue target is still not formalized in VSDR, but $92K of founder deposits are already in and partnership revenue opportunities are active this week.",
       "status": "on-track",
@@ -170,27 +176,32 @@
     {
       "id": "close-deposits",
       "title": "Close all MENA to Valley deposits by Apr 15",
-      "status": "at-risk"
+      "status": "at-risk",
+      "parentGoalId": "mena-to-valley-cohort"
     },
     {
       "id": "virtual-mentorship",
       "title": "Execute virtual mentorship (mid-May)",
-      "status": "in-progress"
+      "status": "in-progress",
+      "parentGoalId": "mena-to-valley-cohort"
     },
     {
       "id": "sv-immersion",
       "title": "Silicon Valley immersion (June 2\u20138)",
-      "status": "on-track"
+      "status": "on-track",
+      "parentGoalId": "mena-to-valley-cohort"
     },
     {
       "id": "close-hbku",
       "title": "Close HBKU contract",
-      "status": "at-risk"
+      "status": "at-risk",
+      "parentGoalId": "institutional-partnerships"
     },
     {
       "id": "arpu-cloudcom",
       "title": "Convert ARPU Plus / CloudCom into first US partnerships",
-      "status": "in-progress"
+      "status": "in-progress",
+      "parentGoalId": "institutional-partnerships"
     }
   ]
 }
