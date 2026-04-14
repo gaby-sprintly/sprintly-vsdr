@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; font-src https://fonts.gstatic.com https://cdn.fontshare.com; connect-src 'self' https://gxunrnyehltpbgdodkkm.supabase.co; img-src 'self' data: blob: https:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Goals &amp; OKRs — VSDR</title>
+<title>Goals &amp; OKRs — Safira</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -31,6 +31,39 @@
 }
 
 .main-inner { position: relative; }
+
+/* Page header row */
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Add Goal button */
+.btn-add-goal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  background: var(--green);
+  color: #0F1923;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-add-goal:hover {
+  background: #3fba62;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(78,203,113,0.25);
+}
+.btn-add-goal svg { width: 16px; height: 16px; }
 
 /* Status badge */
 .status-badge {
@@ -74,7 +107,6 @@
   border-radius: 2px;
   position: relative;
   overflow: hidden;
-  cursor: pointer;
   transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 .goal-card:hover {
@@ -113,6 +145,7 @@
   display: flex;
   align-items: flex-start;
   gap: 24px;
+  cursor: pointer;
 }
 
 /* Progress ring */
@@ -194,6 +227,20 @@
   color: var(--n400);
   opacity: 0.6;
 }
+.goal-view-link {
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--teal);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s ease;
+  text-decoration: none;
+}
+.goal-view-link:hover { color: var(--green); }
+.goal-view-link svg { width: 12px; height: 12px; }
+
 .goal-chevron {
   width: 18px; height: 18px;
   color: var(--n400);
@@ -246,7 +293,10 @@
   font-size: 13px;
   color: var(--n50);
   line-height: 1.4;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
+.kr-item:hover { opacity: 0.85; }
 .kr-check {
   width: 16px; height: 16px;
   border-radius: 2px;
@@ -254,7 +304,7 @@
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   margin-top: 1px;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 .kr-check.done { background: var(--green); border-color: var(--green); }
 .kr-check.done svg { width: 10px; height: 10px; color: #0F1923; }
@@ -277,7 +327,7 @@
   transition: color 0.2s ease, padding-left 0.2s ease;
 }
 .actions-list li::before {
-  content: '→';
+  content: '\2192';
   position: absolute;
   left: 0;
   color: var(--teal);
@@ -287,6 +337,77 @@
 }
 .actions-list li:hover { color: var(--n50); padding-left: 18px; }
 .actions-list li:hover::before { transform: translateX(2px); }
+
+/* Recommended actions */
+.rec-actions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rec-actions-list li {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  line-height: 1.4;
+  padding-left: 14px;
+  position: relative;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.rec-actions-list li::before {
+  content: '\25C6';
+  position: absolute;
+  left: 0;
+  color: var(--purple);
+  font-size: 8px;
+  top: 4px;
+  transition: transform 0.2s ease;
+}
+.rec-actions-list li:hover { color: var(--n50); padding-left: 18px; }
+.rec-actions-list li:hover::before { transform: translateX(2px); }
+
+/* Team & Stakeholder chips */
+.people-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.person-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n50);
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: border-color 0.2s ease;
+}
+.person-chip:hover { border-color: rgba(255,255,255,0.15); }
+.person-chip-role {
+  color: var(--n400);
+  font-size: 11px;
+}
+.stakeholder-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n50);
+  padding: 5px 12px;
+  background: rgba(167,139,250,0.06);
+  border: 1px solid rgba(167,139,250,0.15);
+  border-radius: 2px;
+  transition: border-color 0.2s ease;
+}
+.stakeholder-chip:hover { border-color: rgba(167,139,250,0.3); }
+.stakeholder-chip-role {
+  color: var(--n400);
+  font-size: 11px;
+}
 
 /* Quarterly cards */
 .q-grid {
@@ -343,6 +464,165 @@
   clip-path: inset(0);
 }
 
+/* ── New Goal Modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.open { opacity: 1; }
+.modal-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 32px;
+  width: 90%;
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.open .modal-card { transform: translateY(0); }
+.modal-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--n50);
+  margin-bottom: 24px;
+}
+.form-group {
+  margin-bottom: 20px;
+}
+.form-label {
+  display: block;
+  font-family: var(--body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--n400);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--green);
+}
+.form-textarea { resize: vertical; min-height: 60px; }
+.form-select { cursor: pointer; }
+.form-select option { background: var(--n800); }
+
+/* Dynamic list inputs */
+.dynamic-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dynamic-list-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dynamic-list-row input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.dynamic-list-row input:focus { border-color: var(--green); }
+.dynamic-list-row input::placeholder { color: var(--n400); opacity: 0.5; }
+.btn-remove-row {
+  width: 28px; height: 28px;
+  border: none; background: none;
+  color: var(--coral);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.btn-remove-row:hover { opacity: 1; }
+.btn-add-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--teal);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+.btn-add-row:hover { color: var(--green); }
+
+/* Person row (name + role) */
+.person-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.person-input-row input { flex: 1; }
+.person-input-row input:first-child { flex: 1.5; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.modal-btn {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 24px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.modal-btn-cancel {
+  background: transparent;
+  color: var(--n400);
+  border: 1px solid var(--border);
+}
+.modal-btn-cancel:hover { border-color: var(--n400); color: var(--n50); }
+.modal-btn-confirm {
+  background: var(--green);
+  color: #0F1923;
+}
+.modal-btn-confirm:hover { background: #3fba62; }
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -360,6 +640,8 @@
   .q-grid { grid-template-columns: 1fr; }
   .goal-title { font-size: 16px; }
   .page-glow { width: 300px; height: 200px; }
+  .page-header-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .modal-card { width: 95%; padding: 24px; }
 }
 @media (max-width: 480px) {
   .q-grid { grid-template-columns: 1fr; }
@@ -375,322 +657,102 @@
     <div class="page-glow"></div>
 
     <!-- Page Header -->
-    <div class="page-header" id="pageHeader">Goals &amp; OKRs</div>
-    <p class="page-subtitle" id="pageSubtitle">2026 annual goals · updated by Yousra · ask Gaby anytime</p>
+    <div class="page-header-row">
+      <div class="page-header" id="pageHeader">Goals &amp; OKRs</div>
+      <button class="btn-add-goal" id="btnAddGoal" onclick="openNewGoalModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Goal
+      </button>
+    </div>
+    <p class="page-subtitle" id="pageSubtitle">2026 annual goals &middot; updated by Yousra &middot; ask Gaby anytime</p>
 
     <!-- Stats Bar -->
-    <div class="stats-bar" id="statsBar">
-      <div class="stat-block">
-        <div class="stat-number" data-count="5">0</div>
-        <div class="stat-label">Total Goals</div>
-      </div>
-      <div class="stat-block">
-        <div class="stat-number" data-count="2" data-color="green" style="color:var(--green)">0</div>
-        <div class="stat-label">On Track</div>
-      </div>
-      <div class="stat-block">
-        <div class="stat-number" data-count="2" data-color="amber" style="color:var(--amber)">0</div>
-        <div class="stat-label">At Risk</div>
-      </div>
-      <div class="stat-block">
-        <div class="stat-number" data-count="1" data-color="coral" style="color:var(--coral)">0</div>
-        <div class="stat-label">Behind</div>
-      </div>
-      <div class="stat-block">
-        <div class="stat-number" data-count="45" data-suffix="%">0%</div>
-        <div class="stat-label">Avg Progress</div>
-      </div>
-    </div>
+    <div class="stats-bar" id="statsBar"></div>
 
     <!-- Annual Goals -->
     <div class="section-eyebrow" id="annualEyebrow">2026 Annual Goals</div>
-    <div class="goals-grid" id="goalsGrid">
-
-      <!-- Goal 1: MENA to Valley Cohort -->
-      <div class="goal-card" data-status="at-risk" data-progress="58" onclick="toggleGoal(this)">
-        <div class="goal-main">
-          <div class="progress-ring-wrap">
-            <svg viewBox="0 0 72 72">
-              <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
-              <circle class="progress-ring-fill" cx="36" cy="36" r="30"/>
-            </svg>
-            <div class="progress-ring-label">58%</div>
-          </div>
-          <div class="goal-info">
-            <div class="goal-header">
-              <div class="goal-title">Deliver MENA to the Valley 2026 Cohort</div>
-              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                <span class="status-badge status--behind">Behind</span>
-                <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
-            <div class="goal-desc">31 founders confirmed. 23 deposits locked, $92K collected. 8 pending ($32K). Two founder dinners and partner meetings now booked in SF, but deposit collection is still below target with 2 days left.</div>
-            <div class="goal-footer-row">
-              <div class="goal-updated">Last updated: Apr 13, 2026</div>
-            </div>
-          </div>
-        </div>
-        <div class="goal-details">
-          <div class="goal-details-inner">
-            <div class="details-grid">
-              <div>
-                <div class="details-section-title">Key Results</div>
-                <ul class="kr-list">
-                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>31 founders confirmed from 37 responses</span></li>
-                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>23 deposits locked ($92K)</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>8 deposits still pending, $32K outstanding by Apr 15</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>SF execution week underway with Kate, CloudCom and founder meetings booked</span></li>
-                </ul>
-              </div>
-              <div>
-                <div class="details-section-title">Next Actions</div>
-                <ul class="actions-list">
-                  <li>Run direct deposit follow-up with the 8 laggards before Apr 15</li>
-                  <li>Convert Sarah Rona, Kate and SF meetings into credibility signals for founders</li>
-                  <li>Attach bank details to remaining founder threads</li>
-                  <li>Finalize virtual mentorship agenda for mid-May</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Goal 2: Institutional Partnerships -->
-      <div class="goal-card" data-status="on-track" data-progress="72" onclick="toggleGoal(this)">
-        <div class="goal-main">
-          <div class="progress-ring-wrap">
-            <svg viewBox="0 0 72 72">
-              <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
-              <circle class="progress-ring-fill" cx="36" cy="36" r="30"/>
-            </svg>
-            <div class="progress-ring-label">72%</div>
-          </div>
-          <div class="goal-info">
-            <div class="goal-header">
-              <div class="goal-title">Close 3+ Institutional Partnerships</div>
-              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                <span class="status-badge status--on-track">On Track</span>
-                <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
-            <div class="goal-desc">Monshaat is signed, HBKU remains in review, and new Money Fellows plus CloudCom/ARPU Plus momentum strengthens the institutional pipeline.</div>
-            <div class="goal-footer-row">
-              <div class="goal-updated">Last updated: Apr 10, 2026</div>
-            </div>
-          </div>
-        </div>
-        <div class="goal-details">
-          <div class="goal-details-inner">
-            <div class="details-grid">
-              <div>
-                <div class="details-section-title">Key Results</div>
-                <ul class="kr-list">
-                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>Monshaat signed and in delivery mode</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>HBKU partnership still awaiting final update and contract movement</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>Money Fellows US entry meeting added as a live strategic partnership track</span></li>
-                </ul>
-              </div>
-              <div>
-                <div class="details-section-title">Next Actions</div>
-                <ul class="actions-list">
-                  <li>Push Nada for HBKU contract movement this week</li>
-                  <li>Convert Money Fellows meeting into a scoped partnership path</li>
-                  <li>Package Monshaat proof into the next partner deck</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Goal 3: AI Squad -->
-      <div class="goal-card" data-status="behind" data-progress="22" onclick="toggleGoal(this)">
-        <div class="goal-main">
-          <div class="progress-ring-wrap">
-            <svg viewBox="0 0 72 72">
-              <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
-              <circle class="progress-ring-fill" cx="36" cy="36" r="30"/>
-            </svg>
-            <div class="progress-ring-label">22%</div>
-          </div>
-          <div class="goal-info">
-            <div class="goal-header">
-              <div class="goal-title">Launch AI Squad with 2+ Corporate Clients</div>
-              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                <span class="status-badge status--at-risk">At Risk</span>
-                <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
-            <div class="goal-desc">NVIDIA content and deck are ready, but no paying client has closed and AI Squad is still reliant on outreach rather than active revenue conversations.</div>
-            <div class="goal-footer-row">
-              <div class="goal-updated">Last updated: Apr 10, 2026</div>
-            </div>
-          </div>
-        </div>
-        <div class="goal-details">
-          <div class="goal-details-inner">
-            <div class="details-grid">
-              <div>
-                <div class="details-section-title">Key Results</div>
-                <ul class="kr-list">
-                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>NVIDIA content produced</span></li>
-                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>AI Squad deck ready</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>First paying corporate client signed</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>Second corporate client signed</span></li>
-                </ul>
-              </div>
-              <div>
-                <div class="details-section-title">Next Actions</div>
-                <ul class="actions-list">
-                  <li>Turn the deck into 5 founder-led corporate outreach conversations</li>
-                  <li>Use Money Fellows and CloudCom momentum to test AI Squad adjacency</li>
-                  <li>Package NVIDIA proof into a sharper commercial pitch</li>
-                  <li>Start a weekly AI Squad revenue review until first deal closes</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Goal 4: Network -->
-      <div class="goal-card" data-status="at-risk" data-progress="48" onclick="toggleGoal(this)">
-        <div class="goal-main">
-          <div class="progress-ring-wrap">
-            <svg viewBox="0 0 72 72">
-              <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
-              <circle class="progress-ring-fill" cx="36" cy="36" r="30"/>
-            </svg>
-            <div class="progress-ring-label">48%</div>
-          </div>
-          <div class="goal-info">
-            <div class="goal-header">
-              <div class="goal-title">Grow Network to 8,000+ Contacts</div>
-              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                <span class="status-badge status--on-track">On Track</span>
-                <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
-            <div class="goal-desc">Database remains at roughly 6,000 contacts, but enrichment is still blocked pending approval and several VIP follow-ups are now overdue.</div>
-            <div class="goal-footer-row">
-              <div class="goal-updated">Last updated: Apr 10, 2026</div>
-            </div>
-          </div>
-        </div>
-        <div class="goal-details">
-          <div class="goal-details-inner">
-            <div class="details-grid">
-              <div>
-                <div class="details-section-title">Key Results</div>
-                <ul class="kr-list">
-                  <li class="kr-item"><div class="kr-check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><span>~6,000 contacts remain available in CRM</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>100-contact enrichment batch still awaiting approval</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>Resolve overdue VIP and founder follow-ups before growth push</span></li>
-                </ul>
-              </div>
-              <div>
-                <div class="details-section-title">Next Actions</div>
-                <ul class="actions-list">
-                  <li>Unblock enrichment approval and process the top 10 strategic contacts first</li>
-                  <li>Clear overdue VIP follow-ups from April 7-8</li>
-                  <li>Add new SF and IMF/World Bank contacts after this week's meetings</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Goal 5: Revenue -->
-      <div class="goal-card" data-status="on-track" data-progress="24" onclick="toggleGoal(this)">
-        <div class="goal-main">
-          <div class="progress-ring-wrap">
-            <svg viewBox="0 0 72 72">
-              <circle class="progress-ring-bg" cx="36" cy="36" r="30"/>
-              <circle class="progress-ring-fill" cx="36" cy="36" r="30"/>
-            </svg>
-            <div class="progress-ring-label">24%</div>
-          </div>
-          <div class="goal-info">
-            <div class="goal-header">
-              <div class="goal-title">Hit Annual Revenue Target</div>
-              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                <span class="status-badge status--on-track">On Track</span>
-                <svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
-            <div class="goal-desc">Revenue target is still not formalized in VSDR, but $92K of founder deposits are already in and partnership revenue opportunities are active this week.</div>
-            <div class="goal-footer-row">
-              <div class="goal-updated">Last updated: Apr 10, 2026</div>
-            </div>
-          </div>
-        </div>
-        <div class="goal-details">
-          <div class="goal-details-inner">
-            <div class="details-grid">
-              <div>
-                <div class="details-section-title">Key Results</div>
-                <ul class="kr-list">
-                  <li class="kr-item"><div class="kr-check"></div><span>Annual revenue target still needs to be formally defined in VSDR</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>$92K founder deposits already collected toward Q2 cash generation</span></li>
-                  <li class="kr-item"><div class="kr-check"></div><span>Convert current partnership pipeline into contracted revenue</span></li>
-                </ul>
-              </div>
-              <div>
-                <div class="details-section-title">Next Actions</div>
-                <ul class="actions-list">
-                  <li>Define the annual revenue target inside VSDR this month</li>
-                  <li>Track founder deposits plus partnership revenue in one operating view</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /.goals-grid -->
+    <div class="goals-grid" id="goalsGrid"></div>
 
     <!-- Q2 Quarterly Goals -->
     <hr class="section-divider" id="q2Divider">
     <div class="section-eyebrow" id="q2Eyebrow">Q2 2026</div>
     <h2 class="page-header" style="font-size:22px;margin-bottom:24px;" id="q2Header">Quarterly Goals</h2>
-
-    <div class="q-grid" id="qGrid">
-      <div class="q-card">
-        <div class="q-card-top">
-          <div class="q-title">Close all MENA to Valley deposits by Apr 15</div>
-          <span class="status-badge status--at-risk">At Risk</span>
-        </div>
-      </div>
-      <div class="q-card">
-        <div class="q-card-top">
-          <div class="q-title">Execute virtual mentorship (mid-May)</div>
-          <span class="status-badge status--in-progress">In Progress</span>
-        </div>
-      </div>
-      <div class="q-card">
-        <div class="q-card-top">
-          <div class="q-title">Silicon Valley immersion (June 2–8)</div>
-          <span class="status-badge status--on-track">On Track</span>
-        </div>
-      </div>
-      <div class="q-card">
-        <div class="q-card-top">
-          <div class="q-title">Close HBKU contract</div>
-          <span class="status-badge status--at-risk">At Risk</span>
-        </div>
-      </div>
-      <div class="q-card">
-        <div class="q-card-top">
-          <div class="q-title">Convert ARPU Plus / CloudCom into first US partnerships</div>
-          <span class="status-badge status--in-progress">In Progress</span>
-        </div>
-      </div>
-    </div>
+    <div class="q-grid" id="qGrid"></div>
 
   </div>
 </main>
+
+<!-- New Goal Modal -->
+<div class="modal-overlay" id="newGoalModal">
+  <div class="modal-card">
+    <div class="modal-title">New Goal</div>
+
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input type="text" class="form-input" id="ngTitle" placeholder="e.g., Launch AI Squad with 2+ Clients">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea" id="ngDesc" placeholder="Brief context on this goal..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-select" id="ngStatus">
+        <option value="on-track">On Track</option>
+        <option value="at-risk">At Risk</option>
+        <option value="behind">Behind</option>
+        <option value="not-started" selected>Not Started</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Key Results</label>
+      <div class="dynamic-list" id="ngKrList">
+        <div class="dynamic-list-row"><input type="text" placeholder="Key result..."><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>
+      </div>
+      <button class="btn-add-row" onclick="addRow('ngKrList','Key result...')">+ Add Key Result</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Next Actions</label>
+      <div class="dynamic-list" id="ngActionsList">
+        <div class="dynamic-list-row"><input type="text" placeholder="Action item..."><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>
+      </div>
+      <button class="btn-add-row" onclick="addRow('ngActionsList','Action item...')">+ Add Action</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Recommended Actions</label>
+      <div class="dynamic-list" id="ngRecList">
+        <div class="dynamic-list-row"><input type="text" placeholder="Recommended action..."><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>
+      </div>
+      <button class="btn-add-row" onclick="addRow('ngRecList','Recommended action...')">+ Add Recommendation</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Team Members</label>
+      <div class="dynamic-list" id="ngTeamList">
+        <div class="person-input-row"><input type="text" placeholder="Name"><input type="text" placeholder="Role"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>
+      </div>
+      <button class="btn-add-row" onclick="addPersonRow('ngTeamList')">+ Add Member</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Stakeholders</label>
+      <div class="dynamic-list" id="ngStakeList">
+        <div class="person-input-row"><input type="text" placeholder="Name / Org"><input type="text" placeholder="Role"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>
+      </div>
+      <button class="btn-add-row" onclick="addPersonRow('ngStakeList')">+ Add Stakeholder</button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal('newGoalModal')">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="submitNewGoal()">Create Goal</button>
+    </div>
+  </div>
+</div>
 
 <!-- GSAP Core + ScrollTrigger -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
@@ -703,123 +765,230 @@
   initSidebar('goals');
   gsap.registerPlugin(ScrollTrigger);
 
+  var GOALS_LS_KEY = 'vsdr-goals-data';
+  var goalsData = null;
+
   // ══════════════════════════════════
-  //  PAGE LOAD TIMELINE
+  //  LOAD DATA
   // ══════════════════════════════════
 
-  var master = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  function loadGoalsData() {
+    // Check localStorage first for user modifications
+    var stored = localStorage.getItem(GOALS_LS_KEY);
+    if (stored) {
+      try {
+        goalsData = JSON.parse(stored);
+        renderAll();
+        return;
+      } catch(e) { /* fall through to fetch */ }
+    }
+    fetch('goals-data.json')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        goalsData = data;
+        renderAll();
+      });
+  }
 
-  // 1. Header + subtitle fade in
-  master
-    .from('#pageHeader', { y: 40, opacity: 0, duration: 0.7 })
-    .from('#pageSubtitle', { y: 20, opacity: 0, duration: 0.5 }, '-=0.4');
+  function saveGoalsData() {
+    localStorage.setItem(GOALS_LS_KEY, JSON.stringify(goalsData));
+  }
 
-  // 2. Stats bar — stagger each stat block
-  master.from('#statsBar .stat-block', {
-    y: 30,
-    opacity: 0,
-    stagger: 0.08,
-    duration: 0.5
-  }, '-=0.2');
+  // ══════════════════════════════════
+  //  HELPERS
+  // ══════════════════════════════════
 
-  // 3. Count-up animation for stat numbers
-  document.querySelectorAll('.stat-number[data-count]').forEach(function(el) {
-    var target = parseInt(el.getAttribute('data-count'));
-    var suffix = el.getAttribute('data-suffix') || '';
-    var obj = { val: 0 };
-    master.to(obj, {
-      val: target,
-      duration: 1.2,
-      ease: 'power2.out',
-      onUpdate: function() {
-        el.textContent = Math.round(obj.val) + suffix;
+  function esc(str) {
+    var d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  function calcProgress(goal) {
+    var krs = goal.keyResults || [];
+    if (krs.length === 0) return 0;
+    var done = krs.filter(function(k) { return k.done; }).length;
+    return Math.round((done / krs.length) * 100);
+  }
+
+  function statusLabel(s) {
+    return s.split('-').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+  }
+
+  var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var chevronSvg = '<svg class="goal-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  var arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+  // ══════════════════════════════════
+  //  RENDER
+  // ══════════════════════════════════
+
+  function renderAll() {
+    renderStats();
+    renderGoals();
+    renderQuarterly();
+    runAnimations();
+  }
+
+  function renderStats() {
+    var goals = goalsData.goals;
+    var total = goals.length;
+    var onTrack = goals.filter(function(g) { return g.status === 'on-track'; }).length;
+    var atRisk = goals.filter(function(g) { return g.status === 'at-risk'; }).length;
+    var behind = goals.filter(function(g) { return g.status === 'behind'; }).length;
+    var avgProgress = total === 0 ? 0 : Math.round(goals.reduce(function(sum, g) { return sum + calcProgress(g); }, 0) / total);
+
+    var html = '';
+    html += '<div class="stat-block"><div class="stat-number" data-count="' + total + '">0</div><div class="stat-label">Total Goals</div></div>';
+    html += '<div class="stat-block"><div class="stat-number" data-count="' + onTrack + '" style="color:var(--green)">0</div><div class="stat-label">On Track</div></div>';
+    html += '<div class="stat-block"><div class="stat-number" data-count="' + atRisk + '" style="color:var(--amber)">0</div><div class="stat-label">At Risk</div></div>';
+    html += '<div class="stat-block"><div class="stat-number" data-count="' + behind + '" style="color:var(--coral)">0</div><div class="stat-label">Behind</div></div>';
+    html += '<div class="stat-block"><div class="stat-number" data-count="' + avgProgress + '" data-suffix="%">0%</div><div class="stat-label">Avg Progress</div></div>';
+    document.getElementById('statsBar').innerHTML = html;
+  }
+
+  function renderGoals() {
+    var html = '';
+    goalsData.goals.forEach(function(g, gi) {
+      var pct = calcProgress(g);
+      html += '<div class="goal-card" data-status="' + esc(g.status) + '" data-goal-index="' + gi + '">';
+      html += '<div class="goal-main" onclick="toggleGoal(this.parentNode)">';
+
+      // Progress ring
+      html += '<div class="progress-ring-wrap">';
+      html += '<svg viewBox="0 0 72 72"><circle class="progress-ring-bg" cx="36" cy="36" r="30"/><circle class="progress-ring-fill" cx="36" cy="36" r="30"/></svg>';
+      html += '<div class="progress-ring-label">' + pct + '%</div>';
+      html += '</div>';
+
+      // Info
+      html += '<div class="goal-info">';
+      html += '<div class="goal-header">';
+      html += '<div class="goal-title">' + esc(g.title) + '</div>';
+      html += '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">';
+      html += '<span class="status-badge status--' + esc(g.status) + '">' + statusLabel(g.status) + '</span>';
+      html += chevronSvg;
+      html += '</div></div>';
+      html += '<div class="goal-desc">' + esc(g.description) + '</div>';
+      html += '<div class="goal-footer-row">';
+      html += '<div class="goal-updated">Last updated: ' + esc(g.lastUpdated) + '</div>';
+      html += '<a href="goal.html?id=' + encodeURIComponent(g.id) + '" class="goal-view-link" onclick="event.stopPropagation()">View Project ' + arrowSvg + '</a>';
+      html += '</div>';
+      html += '</div></div>';
+
+      // Details
+      html += '<div class="goal-details"><div class="goal-details-inner"><div class="details-grid">';
+
+      // Key Results
+      html += '<div><div class="details-section-title">Key Results</div><ul class="kr-list">';
+      (g.keyResults || []).forEach(function(kr, ki) {
+        html += '<li class="kr-item" onclick="event.stopPropagation(); toggleKR(' + gi + ',' + ki + ')">';
+        html += '<div class="kr-check' + (kr.done ? ' done' : '') + '">' + (kr.done ? checkSvg : '') + '</div>';
+        html += '<span>' + esc(kr.text) + '</span></li>';
+      });
+      html += '</ul></div>';
+
+      // Next Actions
+      html += '<div><div class="details-section-title">Next Actions</div><ul class="actions-list">';
+      (g.nextActions || []).forEach(function(a) {
+        html += '<li>' + esc(a) + '</li>';
+      });
+      html += '</ul></div>';
+
+      // Recommended Actions
+      if (g.recommendedActions && g.recommendedActions.length > 0) {
+        html += '<div><div class="details-section-title">Recommended Actions</div><ul class="rec-actions-list">';
+        g.recommendedActions.forEach(function(a) {
+          html += '<li>' + esc(a) + '</li>';
+        });
+        html += '</ul></div>';
       }
-    }, '-=1.0');
-  });
 
-  // 4. Section eyebrow
-  master.from('#annualEyebrow', { x: -30, opacity: 0, duration: 0.4 }, '-=0.8');
+      // Team Members & Stakeholders
+      html += '<div>';
+      if (g.teamMembers && g.teamMembers.length > 0) {
+        html += '<div class="details-section-title">Team Members</div>';
+        html += '<div class="people-chips" style="margin-bottom:14px;">';
+        g.teamMembers.forEach(function(m) {
+          html += '<span class="person-chip">' + esc(m.name) + ' <span class="person-chip-role">' + esc(m.role) + '</span></span>';
+        });
+        html += '</div>';
+      }
+      if (g.stakeholders && g.stakeholders.length > 0) {
+        html += '<div class="details-section-title">Stakeholders</div>';
+        html += '<div class="people-chips">';
+        g.stakeholders.forEach(function(s) {
+          html += '<span class="stakeholder-chip">' + esc(s.name) + ' <span class="stakeholder-chip-role">' + esc(s.role) + '</span></span>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
 
-  // 5. Goal cards — stagger in
-  master.from('.goal-card', {
-    y: 50,
-    opacity: 0,
-    stagger: 0.12,
-    duration: 0.6,
-    ease: 'power3.out'
-  }, '-=0.5');
+      html += '</div></div></div>'; // close details-grid, details-inner, details
+      html += '</div>'; // close goal-card
+    });
+    document.getElementById('goalsGrid').innerHTML = html;
+  }
 
-  // 6. Progress rings — animate stroke + label
-  document.querySelectorAll('.goal-card[data-progress]').forEach(function(card, i) {
-    var pct = parseFloat(card.getAttribute('data-progress')) || 0;
+  function renderQuarterly() {
+    var html = '';
+    (goalsData.quarterlyGoals || []).forEach(function(q) {
+      html += '<div class="q-card"><div class="q-card-top">';
+      html += '<div class="q-title">' + esc(q.title) + '</div>';
+      html += '<span class="status-badge status--' + esc(q.status) + '">' + statusLabel(q.status) + '</span>';
+      html += '</div></div>';
+    });
+    document.getElementById('qGrid').innerHTML = html;
+  }
+
+  // ══════════════════════════════════
+  //  TOGGLE KEY RESULT (CHECKBOX)
+  // ══════════════════════════════════
+
+  function toggleKR(goalIdx, krIdx) {
+    var goal = goalsData.goals[goalIdx];
+    var kr = goal.keyResults[krIdx];
+    kr.done = !kr.done;
+
+    // Update the today string
+    var now = new Date();
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    goal.lastUpdated = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+
+    saveGoalsData();
+
+    // Update just this card's UI without full re-render
+    var card = document.querySelector('.goal-card[data-goal-index="' + goalIdx + '"]');
+    if (!card) return;
+
+    var newPct = calcProgress(goal);
+
+    // Update KR checkbox
+    var krItems = card.querySelectorAll('.kr-item');
+    var krEl = krItems[krIdx];
+    if (krEl) {
+      var check = krEl.querySelector('.kr-check');
+      if (kr.done) {
+        check.classList.add('done');
+        check.innerHTML = checkSvg;
+      } else {
+        check.classList.remove('done');
+        check.innerHTML = '';
+      }
+    }
+
+    // Animate progress ring
     var fill = card.querySelector('.progress-ring-fill');
     var label = card.querySelector('.progress-ring-label');
-    if (!fill) return;
     var circumference = 188.5;
-    var offset = circumference - (pct / 100) * circumference;
+    var offset = circumference - (newPct / 100) * circumference;
 
-    master.to(fill, {
-      strokeDashoffset: offset,
-      duration: 1.2,
-      ease: 'power2.out'
-    }, '-=1.0');
+    gsap.to(fill, { strokeDashoffset: offset, duration: 0.6, ease: 'power2.out' });
+    label.textContent = newPct + '%';
 
-    // Fade in the percentage label
-    master.to(label, {
-      opacity: 1,
-      duration: 0.4,
-      ease: 'power2.out'
-    }, '-=0.8');
-  });
-
-  // ══════════════════════════════════
-  //  Q2 SECTION — SCROLL TRIGGERED
-  // ══════════════════════════════════
-
-  gsap.from('#q2Divider', {
-    scaleX: 0,
-    transformOrigin: 'left center',
-    duration: 0.6,
-    ease: 'power2.out',
-    scrollTrigger: {
-      trigger: '#q2Divider',
-      start: 'top 85%'
-    }
-  });
-
-  gsap.from('#q2Eyebrow', {
-    x: -30,
-    opacity: 0,
-    duration: 0.5,
-    ease: 'power3.out',
-    scrollTrigger: {
-      trigger: '#q2Eyebrow',
-      start: 'top 85%'
-    }
-  });
-
-  gsap.from('#q2Header', {
-    y: 30,
-    opacity: 0,
-    duration: 0.5,
-    ease: 'power3.out',
-    scrollTrigger: {
-      trigger: '#q2Header',
-      start: 'top 85%'
-    }
-  });
-
-  gsap.from('.q-card', {
-    y: 40,
-    opacity: 0,
-    stagger: 0.1,
-    duration: 0.5,
-    ease: 'power3.out',
-    scrollTrigger: {
-      trigger: '#qGrid',
-      start: 'top 85%'
-    }
-  });
+    // Update stats bar
+    renderStats();
+    animateStatCounters();
+  }
 
   // ══════════════════════════════════
   //  GOAL EXPAND / COLLAPSE (GSAP)
@@ -842,15 +1011,11 @@
     });
 
     if (wasExpanded) {
-      // Collapse
       card.classList.remove('expanded');
       gsap.to(details, { height: 0, opacity: 0, duration: 0.35, ease: 'power2.inOut' });
       gsap.to(chevron, { rotation: 0, duration: 0.3, ease: 'power2.out' });
     } else {
-      // Expand
       card.classList.add('expanded');
-
-      // Measure natural height
       gsap.set(details, { height: 'auto', opacity: 1 });
       var naturalHeight = details.offsetHeight;
       gsap.set(details, { height: 0, opacity: 0 });
@@ -860,33 +1025,255 @@
         opacity: 1,
         duration: 0.45,
         ease: 'power2.out',
-        onComplete: function() {
-          gsap.set(details, { height: 'auto' }); // allow content reflow
-        }
+        onComplete: function() { gsap.set(details, { height: 'auto' }); }
       });
       gsap.to(chevron, { rotation: 180, duration: 0.3, ease: 'power2.out' });
 
-      // Stagger in the key results and actions
       var krItems = details.querySelectorAll('.kr-item');
       var actionItems = details.querySelectorAll('.actions-list li');
-      gsap.from(krItems, {
-        x: -15,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 0.3,
-        ease: 'power2.out',
-        delay: 0.15
-      });
-      gsap.from(actionItems, {
-        x: -15,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 0.3,
-        ease: 'power2.out',
-        delay: 0.2
-      });
+      var recItems = details.querySelectorAll('.rec-actions-list li');
+      var chips = details.querySelectorAll('.person-chip, .stakeholder-chip');
+
+      gsap.from(krItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.15 });
+      gsap.from(actionItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.2 });
+      gsap.from(recItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.25 });
+      gsap.from(chips, { scale: 0.8, opacity: 0, stagger: 0.04, duration: 0.25, ease: 'back.out(1.4)', delay: 0.3 });
     }
   }
+
+  // ══════════════════════════════════
+  //  ANIMATIONS
+  // ══════════════════════════════════
+
+  function animateStatCounters() {
+    document.querySelectorAll('.stat-number[data-count]').forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-count'));
+      var suffix = el.getAttribute('data-suffix') || '';
+      var obj = { val: parseInt(el.textContent) || 0 };
+      gsap.to(obj, {
+        val: target,
+        duration: 0.8,
+        ease: 'power2.out',
+        onUpdate: function() { el.textContent = Math.round(obj.val) + suffix; }
+      });
+    });
+  }
+
+  function runAnimations() {
+    var master = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    // Header + subtitle
+    master
+      .from('#pageHeader', { y: 40, opacity: 0, duration: 0.7 })
+      .from('#btnAddGoal', { x: 20, opacity: 0, duration: 0.4 }, '-=0.4')
+      .from('#pageSubtitle', { y: 20, opacity: 0, duration: 0.5 }, '-=0.4');
+
+    // Stats bar
+    master.from('#statsBar .stat-block', { y: 30, opacity: 0, stagger: 0.08, duration: 0.5 }, '-=0.2');
+
+    // Count-up
+    document.querySelectorAll('.stat-number[data-count]').forEach(function(el) {
+      var target = parseInt(el.getAttribute('data-count'));
+      var suffix = el.getAttribute('data-suffix') || '';
+      var obj = { val: 0 };
+      master.to(obj, {
+        val: target,
+        duration: 1.2,
+        ease: 'power2.out',
+        onUpdate: function() { el.textContent = Math.round(obj.val) + suffix; }
+      }, '-=1.0');
+    });
+
+    // Section eyebrow
+    master.from('#annualEyebrow', { x: -30, opacity: 0, duration: 0.4 }, '-=0.8');
+
+    // Goal cards
+    master.from('.goal-card', { y: 50, opacity: 0, stagger: 0.12, duration: 0.6, ease: 'power3.out' }, '-=0.5');
+
+    // Progress rings
+    document.querySelectorAll('.goal-card').forEach(function(card) {
+      var gi = parseInt(card.getAttribute('data-goal-index'));
+      var pct = calcProgress(goalsData.goals[gi]);
+      var fill = card.querySelector('.progress-ring-fill');
+      var label = card.querySelector('.progress-ring-label');
+      if (!fill) return;
+      var circumference = 188.5;
+      var offset = circumference - (pct / 100) * circumference;
+
+      master.to(fill, { strokeDashoffset: offset, duration: 1.2, ease: 'power2.out' }, '-=1.0');
+      master.to(label, { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.8');
+    });
+
+    // Q2 section — scroll triggered
+    gsap.from('#q2Divider', {
+      scaleX: 0, transformOrigin: 'left center', duration: 0.6, ease: 'power2.out',
+      scrollTrigger: { trigger: '#q2Divider', start: 'top 85%' }
+    });
+    gsap.from('#q2Eyebrow', {
+      x: -30, opacity: 0, duration: 0.5, ease: 'power3.out',
+      scrollTrigger: { trigger: '#q2Eyebrow', start: 'top 85%' }
+    });
+    gsap.from('#q2Header', {
+      y: 30, opacity: 0, duration: 0.5, ease: 'power3.out',
+      scrollTrigger: { trigger: '#q2Header', start: 'top 85%' }
+    });
+    gsap.from('.q-card', {
+      y: 40, opacity: 0, stagger: 0.1, duration: 0.5, ease: 'power3.out',
+      scrollTrigger: { trigger: '#qGrid', start: 'top 85%' }
+    });
+  }
+
+  // ══════════════════════════════════
+  //  NEW GOAL MODAL
+  // ══════════════════════════════════
+
+  function openNewGoalModal() {
+    // Reset form
+    document.getElementById('ngTitle').value = '';
+    document.getElementById('ngDesc').value = '';
+    document.getElementById('ngStatus').value = 'not-started';
+    resetDynamicList('ngKrList', 'Key result...');
+    resetDynamicList('ngActionsList', 'Action item...');
+    resetDynamicList('ngRecList', 'Recommended action...');
+    resetPersonList('ngTeamList');
+    resetPersonList('ngStakeList');
+
+    var modal = document.getElementById('newGoalModal');
+    modal.style.display = 'flex';
+    requestAnimationFrame(function() { modal.classList.add('open'); });
+  }
+
+  function closeModal(id) {
+    var modal = document.getElementById(id);
+    modal.classList.remove('open');
+    setTimeout(function() { modal.style.display = 'none'; }, 300);
+  }
+
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeModal(overlay.id);
+    });
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(function(m) { closeModal(m.id); });
+    }
+  });
+
+  // Dynamic list helpers
+  function addRow(listId, placeholder) {
+    var list = document.getElementById(listId);
+    var row = document.createElement('div');
+    row.className = 'dynamic-list-row';
+    row.innerHTML = '<input type="text" placeholder="' + placeholder + '"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button>';
+    list.appendChild(row);
+    row.querySelector('input').focus();
+  }
+
+  function addPersonRow(listId) {
+    var list = document.getElementById(listId);
+    var row = document.createElement('div');
+    row.className = 'person-input-row';
+    row.innerHTML = '<input type="text" placeholder="Name"><input type="text" placeholder="Role"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button>';
+    list.appendChild(row);
+    row.querySelector('input').focus();
+  }
+
+  function removeRow(btn) {
+    var row = btn.parentNode;
+    var list = row.parentNode;
+    if (list.children.length > 1) {
+      row.remove();
+    } else {
+      // Don't remove last row, just clear it
+      row.querySelectorAll('input').forEach(function(i) { i.value = ''; });
+    }
+  }
+
+  function resetDynamicList(listId, placeholder) {
+    var list = document.getElementById(listId);
+    list.innerHTML = '<div class="dynamic-list-row"><input type="text" placeholder="' + placeholder + '"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>';
+  }
+
+  function resetPersonList(listId) {
+    var list = document.getElementById(listId);
+    list.innerHTML = '<div class="person-input-row"><input type="text" placeholder="Name"><input type="text" placeholder="Role"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>';
+  }
+
+  function getListValues(listId) {
+    var vals = [];
+    document.getElementById(listId).querySelectorAll('.dynamic-list-row input, .person-input-row input:first-child').forEach(function(input) {
+      // For simple lists (single input rows)
+      var row = input.closest('.dynamic-list-row');
+      if (row && row.querySelectorAll('input').length === 1) {
+        var v = input.value.trim();
+        if (v) vals.push(v);
+      }
+    });
+    return vals;
+  }
+
+  function getSimpleListValues(listId) {
+    var vals = [];
+    document.getElementById(listId).querySelectorAll('.dynamic-list-row').forEach(function(row) {
+      var input = row.querySelector('input');
+      if (input) {
+        var v = input.value.trim();
+        if (v) vals.push(v);
+      }
+    });
+    return vals;
+  }
+
+  function getPersonListValues(listId) {
+    var vals = [];
+    document.getElementById(listId).querySelectorAll('.person-input-row').forEach(function(row) {
+      var inputs = row.querySelectorAll('input');
+      var name = inputs[0] ? inputs[0].value.trim() : '';
+      var role = inputs[1] ? inputs[1].value.trim() : '';
+      if (name) vals.push({ name: name, role: role });
+    });
+    return vals;
+  }
+
+  function submitNewGoal() {
+    var title = document.getElementById('ngTitle').value.trim();
+    if (!title) {
+      document.getElementById('ngTitle').style.borderColor = 'var(--coral)';
+      document.getElementById('ngTitle').focus();
+      return;
+    }
+
+    var now = new Date();
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    var newGoal = {
+      id: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      title: title,
+      description: document.getElementById('ngDesc').value.trim(),
+      status: document.getElementById('ngStatus').value,
+      lastUpdated: months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear(),
+      keyResults: getSimpleListValues('ngKrList').map(function(t) { return { text: t, done: false }; }),
+      nextActions: getSimpleListValues('ngActionsList'),
+      recommendedActions: getSimpleListValues('ngRecList'),
+      teamMembers: getPersonListValues('ngTeamList'),
+      stakeholders: getPersonListValues('ngStakeList')
+    };
+
+    goalsData.goals.push(newGoal);
+    saveGoalsData();
+    closeModal('newGoalModal');
+
+    // Re-render with animation for new card
+    renderAll();
+  }
+
+  // ══════════════════════════════════
+  //  INIT
+  // ══════════════════════════════════
+
+  loadGoalsData();
 </script>
 </body>
 </html>
