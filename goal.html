@@ -331,6 +331,117 @@ a { text-decoration: none; color: inherit; }
 }
 .error-card a { color: var(--teal); text-decoration: underline; }
 
+/* ── FOLLOW UPS ── */
+.followup-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: 2px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.followup-card:hover { border-color: rgba(255,255,255,0.12); }
+.followup-icon { font-size: 14px; flex-shrink: 0; }
+.followup-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+  line-height: 1.4;
+  flex: 1;
+}
+.followup-owner {
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--amber);
+  white-space: nowrap;
+}
+
+/* ── NOTES ── */
+.notes-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px 24px;
+}
+.notes-card p {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+  line-height: 1.6;
+}
+.notes-card .empty-note {
+  color: var(--n400);
+  font-style: italic;
+}
+
+/* ── INLINE ADD ── */
+.inline-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--teal);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+  margin-top: 8px;
+  transition: color 0.15s;
+}
+.inline-add-btn:hover { color: var(--green); }
+.inline-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+.inline-input-row input, .inline-notes-area textarea {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.inline-input-row input:focus, .inline-notes-area textarea:focus { border-color: var(--teal); }
+.inline-input-row input::placeholder, .inline-notes-area textarea::placeholder { color: var(--n400); opacity: 0.5; }
+.inline-notes-area textarea { width: 100%; resize: vertical; min-height: 60px; }
+.inline-notes-area { margin-top: 10px; }
+.inline-save-btn {
+  padding: 8px 16px;
+  background: var(--green);
+  color: #0F1923;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.inline-save-btn:hover { background: #3fba62; }
+.inline-cancel-btn {
+  padding: 8px 10px;
+  background: none;
+  color: var(--n400);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.inline-cancel-btn:hover { color: var(--n50); }
+
 /* ── LOADING ── */
 .loading {
   font-family: var(--body);
@@ -477,32 +588,46 @@ a { text-decoration: none; color: inherit; }
       html += '<div class="kr-text">' + esc(kr.text) + '</div>';
       html += '</div>';
     });
+    html += '<div id="inlineKr"></div>';
+    html += '<button class="inline-add-btn" onclick="showInlineAdd(\'kr\')">+ Add Key Result</button>';
 
     // Next Actions
-    if (goal.nextActions && goal.nextActions.length > 0) {
-      html += '<div class="section-label">Next Actions</div>';
-      goal.nextActions.forEach(function(a) {
-        html += '<div class="action-card">';
-        html += '<span class="action-icon">&rarr;</span>';
-        html += '<div class="action-text">' + esc(a) + '</div>';
-        html += '</div>';
-      });
-    }
+    html += '<div class="section-label">Next Actions</div>';
+    (goal.nextActions || []).forEach(function(a) {
+      html += '<div class="action-card">';
+      html += '<span class="action-icon">&rarr;</span>';
+      html += '<div class="action-text">' + esc(a) + '</div>';
+      html += '</div>';
+    });
+    html += '<div id="inlineAction"></div>';
+    html += '<button class="inline-add-btn" onclick="showInlineAdd(\'action\')">+ Add Action</button>';
 
     // Recommended Actions
-    if (goal.recommendedActions && goal.recommendedActions.length > 0) {
-      html += '<div class="section-label">Recommended Actions</div>';
-      goal.recommendedActions.forEach(function(a) {
-        html += '<div class="rec-card">';
-        html += '<span class="rec-icon">&#9670;</span>';
-        html += '<div class="rec-text">' + esc(a) + '</div>';
-        html += '</div>';
-      });
-    }
+    html += '<div class="section-label">Recommended Actions</div>';
+    (goal.recommendedActions || []).forEach(function(a) {
+      html += '<div class="rec-card">';
+      html += '<span class="rec-icon">&#9670;</span>';
+      html += '<div class="rec-text">' + esc(a) + '</div>';
+      html += '</div>';
+    });
+    html += '<div id="inlineRec"></div>';
+    html += '<button class="inline-add-btn" onclick="showInlineAdd(\'rec\')">+ Add Recommendation</button>';
+
+    // Follow Ups / Waiting For
+    html += '<div class="section-label">Follow Ups / Waiting For</div>';
+    (goal.followUps || []).forEach(function(f) {
+      html += '<div class="followup-card">';
+      html += '<span class="followup-icon">&#9203;</span>';
+      html += '<div class="followup-text">' + esc(f.text) + '</div>';
+      if (f.owner) html += '<span class="followup-owner">' + esc(f.owner) + '</span>';
+      html += '</div>';
+    });
+    html += '<div id="inlineFollowUp"></div>';
+    html += '<button class="inline-add-btn" onclick="showInlineAdd(\'followUp\')">+ Add Follow Up</button>';
 
     // Team Members
+    html += '<div class="section-label">Team Members</div>';
     if (goal.teamMembers && goal.teamMembers.length > 0) {
-      html += '<div class="section-label">Team Members</div>';
       html += '<div class="people-grid">';
       goal.teamMembers.forEach(function(m) {
         html += '<div class="person-card">';
@@ -512,10 +637,12 @@ a { text-decoration: none; color: inherit; }
       });
       html += '</div>';
     }
+    html += '<div id="inlineTeam"></div>';
+    html += '<button class="inline-add-btn" onclick="showInlineAdd(\'team\')">+ Add Member</button>';
 
     // Stakeholders
+    html += '<div class="section-label">Stakeholders</div>';
     if (goal.stakeholders && goal.stakeholders.length > 0) {
-      html += '<div class="section-label">Stakeholders</div>';
       html += '<div class="people-grid">';
       goal.stakeholders.forEach(function(s) {
         html += '<div class="stakeholder-card">';
@@ -526,6 +653,15 @@ a { text-decoration: none; color: inherit; }
       html += '</div>';
     }
 
+    // Notes
+    var noteText = (goal.notes && goal.notes.trim()) ? goal.notes : '';
+    html += '<div class="section-label">Notes</div>';
+    html += '<div class="notes-card" id="notesDisplay">';
+    html += noteText ? '<p>' + esc(noteText) + '</p>' : '<p class="empty-note">No notes yet.</p>';
+    html += '</div>';
+    html += '<div id="inlineNotes"></div>';
+    html += '<button class="inline-add-btn" onclick="showNotesEdit()">' + (noteText ? '+ Edit Notes' : '+ Add Notes') + '</button>';
+
     document.getElementById('mainContent').innerHTML = html;
 
     // Wire up KR checkboxes
@@ -534,21 +670,112 @@ a { text-decoration: none; color: inherit; }
         var idx = parseInt(card.getAttribute('data-kr-index'));
         var kr = goal.keyResults[idx];
         kr.done = !kr.done;
-
-        // Update timestamp
-        var now = new Date();
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        goal.lastUpdated = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
-
+        updateTimestamp(goal);
         saveData(fullData);
-
-        // Re-render to update everything
         renderGoal(goal, fullData);
-        runPageAnimation();
       });
     });
 
+    // Expose inline add functions to global scope
+    window.showInlineAdd = function(type) {
+      var container = document.getElementById('inline' + type.charAt(0).toUpperCase() + type.slice(1));
+      if (!container || container.querySelector('.inline-input-row')) return;
+
+      var html = '<div class="inline-input-row">';
+      if (type === 'team') {
+        html += '<input type="text" placeholder="Name" id="inlineName"><input type="text" placeholder="Role" id="inlineRole">';
+      } else if (type === 'followUp') {
+        html += '<input type="text" placeholder="Waiting for..." id="inlineText" style="flex:2"><input type="text" placeholder="Owner" id="inlineOwner" style="flex:1">';
+      } else {
+        var ph = { kr: 'New key result...', action: 'New action...', rec: 'New recommendation...' };
+        html += '<input type="text" placeholder="' + (ph[type] || 'Add...') + '" id="inlineText">';
+      }
+      html += '<button class="inline-save-btn" onclick="saveInline(\'' + type + '\')">Add</button>';
+      html += '<button class="inline-cancel-btn" onclick="cancelInline(\'' + type + '\')">&times;</button>';
+      html += '</div>';
+      container.innerHTML = html;
+      container.querySelector('input').focus();
+
+      container.querySelectorAll('input').forEach(function(inp) {
+        inp.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { e.preventDefault(); saveInline(type); }
+          if (e.key === 'Escape') { e.preventDefault(); cancelInline(type); }
+        });
+      });
+    };
+
+    window.cancelInline = function(type) {
+      var container = document.getElementById('inline' + type.charAt(0).toUpperCase() + type.slice(1));
+      if (container) container.innerHTML = '';
+    };
+
+    window.saveInline = function(type) {
+      if (type === 'kr') {
+        var t = document.getElementById('inlineText').value.trim();
+        if (!t) return;
+        if (!goal.keyResults) goal.keyResults = [];
+        goal.keyResults.push({ text: t, done: false });
+      } else if (type === 'action') {
+        var t = document.getElementById('inlineText').value.trim();
+        if (!t) return;
+        if (!goal.nextActions) goal.nextActions = [];
+        goal.nextActions.push(t);
+      } else if (type === 'rec') {
+        var t = document.getElementById('inlineText').value.trim();
+        if (!t) return;
+        if (!goal.recommendedActions) goal.recommendedActions = [];
+        goal.recommendedActions.push(t);
+      } else if (type === 'followUp') {
+        var t = document.getElementById('inlineText').value.trim();
+        var o = document.getElementById('inlineOwner').value.trim();
+        if (!t) return;
+        if (!goal.followUps) goal.followUps = [];
+        goal.followUps.push({ text: t, owner: o });
+      } else if (type === 'team') {
+        var n = document.getElementById('inlineName').value.trim();
+        var r = document.getElementById('inlineRole').value.trim();
+        if (!n) return;
+        if (!goal.teamMembers) goal.teamMembers = [];
+        goal.teamMembers.push({ name: n, role: r });
+      }
+      updateTimestamp(goal);
+      saveData(fullData);
+      renderGoal(goal, fullData);
+    };
+
+    window.showNotesEdit = function() {
+      var container = document.getElementById('inlineNotes');
+      if (!container || container.querySelector('.inline-notes-area')) return;
+      var current = goal.notes || '';
+      var html = '<div class="inline-notes-area">';
+      html += '<textarea id="notesTextarea" placeholder="Add notes...">' + esc(current) + '</textarea>';
+      html += '<div style="display:flex;gap:8px;margin-top:8px;">';
+      html += '<button class="inline-save-btn" onclick="saveNotes()">Save</button>';
+      html += '<button class="inline-cancel-btn" onclick="cancelNotes()">Cancel</button>';
+      html += '</div></div>';
+      container.innerHTML = html;
+      document.getElementById('notesTextarea').focus();
+    };
+
+    window.cancelNotes = function() {
+      var container = document.getElementById('inlineNotes');
+      if (container) container.innerHTML = '';
+    };
+
+    window.saveNotes = function() {
+      goal.notes = document.getElementById('notesTextarea').value.trim();
+      updateTimestamp(goal);
+      saveData(fullData);
+      renderGoal(goal, fullData);
+    };
+
     runPageAnimation();
+  }
+
+  function updateTimestamp(goal) {
+    var now = new Date();
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    goal.lastUpdated = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
   }
 
   function runPageAnimation() {
@@ -560,7 +787,9 @@ a { text-decoration: none; color: inherit; }
     gsap.from('.kr-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.4 });
     gsap.from('.action-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.5 });
     gsap.from('.rec-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.55 });
+    gsap.from('.followup-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.58 });
     gsap.from('.person-card, .stakeholder-card', { y: 20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.6 });
+    gsap.from('.notes-card', { y: 20, opacity: 0, duration: 0.4, ease: 'power2.out', delay: 0.65 });
   }
 })();
 </script>
