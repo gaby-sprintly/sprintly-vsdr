@@ -589,7 +589,23 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ── INLINE ADD ALIGNMENT FIX ── */
-.inline-add-btn { display: block; margin-top: 12px; }
+.inline-add-btn { display: inline-flex; align-items: center; gap: 4px; margin-top: 16px; }
+
+/* ── FOLLOW-UP OWNER EDIT ── */
+.followup-owner-btn {
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--amber);
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 2px 6px;
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+.followup-owner-btn:hover { background: rgba(245,158,11,0.12); }
 
 /* ── LOADING ── */
 .loading {
@@ -630,7 +646,7 @@ a { text-decoration: none; color: inherit; }
 <script>
 (function() {
   var GOALS_LS_KEY = 'vsdr-goals-data';
-  var DATA_VERSION = 3;
+  var DATA_VERSION = 4;
   var params = new URLSearchParams(window.location.search);
   var goalId = params.get('id');
 
@@ -640,22 +656,9 @@ a { text-decoration: none; color: inherit; }
 
   if (!goalId) { showError(); return; }
 
-  // ── Load data with version check ──
-  var stored = localStorage.getItem(GOALS_LS_KEY);
-  if (stored) {
-    try {
-      var parsed = JSON.parse(stored);
-      if (parsed && parsed.version === DATA_VERSION) {
-        var goal = parsed.goals.find(function(g) { return g.id === goalId; });
-        if (goal) { renderGoal(goal, parsed); return; }
-      } else {
-        // Version mismatch — clear stale data
-        localStorage.removeItem(GOALS_LS_KEY);
-      }
-    } catch(e) {
-      localStorage.removeItem(GOALS_LS_KEY);
-    }
-  }
+  // ── FORCE clear any stale/corrupted localStorage ──
+  // Always clear and re-fetch to ensure clean data
+  localStorage.removeItem(GOALS_LS_KEY);
 
   fetch('goals-data.json')
     .then(function(r) { return r.json(); })
@@ -912,7 +915,7 @@ a { text-decoration: none; color: inherit; }
       html += '<div class="followup-card">';
       html += '<span class="followup-icon">&#9203;</span>';
       html += '<div class="followup-text">' + esc(f.text) + '</div>';
-      if (f.owner) html += '<span class="followup-owner">' + esc(f.owner) + '</span>';
+      html += '<button class="followup-owner-btn" onclick="event.stopPropagation(); editFollowUpOwner(' + i + ')" title="Click to change assignee">' + esc(f.owner || 'Assign') + '</button>';
       html += '<button class="item-delete-btn" onclick="deleteItem(\'followUp\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
@@ -1122,6 +1125,68 @@ a { text-decoration: none; color: inherit; }
       goal.notes = document.getElementById('notesTextarea').value.trim();
       updateTimestamp(goal);
       saveData(fullData);
+      renderGoal(goal, fullData);
+    };
+
+    // ── Edit follow-up owner ──
+    window.editFollowUpOwner = function(idx) {
+      var fu = goal.followUps[idx];
+      if (!fu) return;
+      var card = document.querySelectorAll('.followup-card')[idx];
+      if (!card || card.querySelector('.inline-input-row')) return;
+
+      // Replace the owner button with an inline input
+      var ownerBtn = card.querySelector('.followup-owner-btn');
+      if (ownerBtn) ownerBtn.style.display = 'none';
+
+      var editRow = document.createElement('div');
+      editRow.className = 'inline-input-row';
+      editRow.style.cssText = 'margin:0; flex-shrink:0;';
+      editRow.onclick = function(e) { e.stopPropagation(); };
+      editRow.innerHTML = '<div class="contact-ac-wrap" style="width:140px;">' +
+        '<input type="text" placeholder="Owner" id="fuOwnerEdit" value="' + esc(fu.owner || '') + '" autocomplete="off" style="padding:4px 8px;font-size:11px;">' +
+        '<div class="contact-ac-dropdown" id="fuOwnerDropdown"></div></div>' +
+        '<button class="inline-save-btn" onclick="saveFollowUpOwner(' + idx + ')" style="padding:4px 10px;font-size:11px;">Save</button>' +
+        '<button class="inline-cancel-btn" onclick="cancelFollowUpOwner(' + idx + ')" style="padding:4px 6px;font-size:11px;">&times;</button>';
+
+      var deleteBtn = card.querySelector('.item-delete-btn');
+      card.insertBefore(editRow, deleteBtn);
+
+      var ownerInput = document.getElementById('fuOwnerEdit');
+      var dropdown = document.getElementById('fuOwnerDropdown');
+      ownerInput.focus();
+      setupContactAutocomplete(ownerInput, dropdown);
+
+      ownerInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); saveFollowUpOwner(idx); }
+        if (e.key === 'Escape') { e.preventDefault(); cancelFollowUpOwner(idx); }
+      });
+    };
+
+    window.saveFollowUpOwner = function(idx) {
+      var input = document.getElementById('fuOwnerEdit');
+      if (!input) return;
+      var newOwner = input.value.trim();
+      goal.followUps[idx].owner = newOwner;
+
+      if (_acSelectedContact && _acSelectedContact.id) {
+        goal.followUps[idx].contactId = _acSelectedContact.id;
+        _acSelectedContact = null;
+      } else if (newOwner && !goal.followUps[idx].contactId) {
+        autoInsertContact(newOwner).then(function(contact) {
+          if (contact && contact.id) {
+            goal.followUps[idx].contactId = contact.id;
+            saveData(fullData);
+          }
+        });
+      }
+
+      updateTimestamp(goal);
+      saveData(fullData);
+      renderGoal(goal, fullData);
+    };
+
+    window.cancelFollowUpOwner = function(idx) {
       renderGoal(goal, fullData);
     };
 
