@@ -66,6 +66,8 @@
   box-shadow: 0 4px 16px rgba(78,203,113,0.25);
 }
 .btn-add-goal svg { width: 16px; height: 16px; }
+/* Ensure button is always visible even if GSAP animation fails */
+.btn-add-goal { opacity: 1 !important; }
 
 /* Status badge */
 .status-badge {
@@ -1363,12 +1365,12 @@
 
     // Header + subtitle
     master
-      .from('#pageHeader', { y: 40, opacity: 0, duration: 0.7 })
-      .from('#btnAddGoal', { x: 20, opacity: 0, duration: 0.4 }, '-=0.4')
-      .from('#pageSubtitle', { y: 20, opacity: 0, duration: 0.5 }, '-=0.4');
+      .fromTo('#pageHeader', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, clearProps: 'opacity,transform' })
+      .fromTo('#btnAddGoal', { x: 20, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, clearProps: 'opacity,transform' }, '-=0.4')
+      .fromTo('#pageSubtitle', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, clearProps: 'opacity,transform' }, '-=0.4');
 
     // Stats bar
-    master.from('#statsBar .stat-block', { y: 30, opacity: 0, stagger: 0.08, duration: 0.5 }, '-=0.2');
+    master.fromTo('#statsBar .stat-block', { y: 30, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.08, duration: 0.5, clearProps: 'opacity,transform' }, '-=0.2');
 
     // Count-up
     document.querySelectorAll('.stat-number[data-count]').forEach(function(el) {
@@ -1384,10 +1386,10 @@
     });
 
     // Section eyebrow
-    master.from('#annualEyebrow', { x: -30, opacity: 0, duration: 0.4 }, '-=0.8');
+    master.fromTo('#annualEyebrow', { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, clearProps: 'opacity,transform' }, '-=0.8');
 
     // Goal cards
-    master.from('.goal-card', { y: 50, opacity: 0, stagger: 0.12, duration: 0.6, ease: 'power3.out' }, '-=0.5');
+    master.fromTo('.goal-card', { y: 50, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.12, duration: 0.6, ease: 'power3.out', clearProps: 'opacity,transform' }, '-=0.5');
 
     // Progress rings
     document.querySelectorAll('.goal-card').forEach(function(card) {
@@ -1404,20 +1406,20 @@
     });
 
     // Q2 section — scroll triggered
-    gsap.from('#q2Divider', {
-      scaleX: 0, transformOrigin: 'left center', duration: 0.6, ease: 'power2.out',
+    gsap.fromTo('#q2Divider', { scaleX: 0 }, {
+      scaleX: 1, transformOrigin: 'left center', duration: 0.6, ease: 'power2.out', clearProps: 'transform',
       scrollTrigger: { trigger: '#q2Divider', start: 'top 85%' }
     });
-    gsap.from('#q2Eyebrow', {
-      x: -30, opacity: 0, duration: 0.5, ease: 'power3.out',
+    gsap.fromTo('#q2Eyebrow', { x: -30, opacity: 0 }, {
+      x: 0, opacity: 1, duration: 0.5, ease: 'power3.out', clearProps: 'opacity,transform',
       scrollTrigger: { trigger: '#q2Eyebrow', start: 'top 85%' }
     });
-    gsap.from('#q2Header', {
-      y: 30, opacity: 0, duration: 0.5, ease: 'power3.out',
+    gsap.fromTo('#q2Header', { y: 30, opacity: 0 }, {
+      y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', clearProps: 'opacity,transform',
       scrollTrigger: { trigger: '#q2Header', start: 'top 85%' }
     });
-    gsap.from('.q-card', {
-      y: 40, opacity: 0, stagger: 0.1, duration: 0.5, ease: 'power3.out',
+    gsap.fromTo('.q-card', { y: 40, opacity: 0 }, {
+      y: 0, opacity: 1, stagger: 0.1, duration: 0.5, ease: 'power3.out', clearProps: 'opacity,transform',
       scrollTrigger: { trigger: '#qGrid', start: 'top 85%' }
     });
   }
