@@ -32,6 +32,11 @@
         { "name": "Monshaat", "role": "Government Partner" },
         { "name": "Kate (SF)", "role": "Corporate Host" },
         { "name": "CloudCom", "role": "Tech Partner" }
+      ],
+      "notes": "SF execution week is critical — need daily check-ins with Kate and CloudCom contacts. Yousra to lead founder comms.",
+      "followUps": [
+        { "text": "Waiting for 8 founders to confirm deposit wire transfers", "owner": "Yousra" },
+        { "text": "Waiting for Kate to confirm SF dinner venue", "owner": "Annija" }
       ]
     },
     {
@@ -62,6 +67,11 @@
         { "name": "Monshaat", "role": "Signed Partner" },
         { "name": "HBKU", "role": "In Review" },
         { "name": "Money Fellows", "role": "Prospective Partner" }
+      ],
+      "notes": "",
+      "followUps": [
+        { "text": "Waiting for Nada to send HBKU contract update", "owner": "Yousra" },
+        { "text": "Waiting for Money Fellows to confirm US entry meeting date", "owner": "Annija" }
       ]
     },
     {
@@ -92,6 +102,10 @@
       ],
       "stakeholders": [
         { "name": "NVIDIA", "role": "Content Partner" }
+      ],
+      "notes": "",
+      "followUps": [
+        { "text": "Waiting for first corporate outreach responses", "owner": "Yousra" }
       ]
     },
     {
@@ -118,7 +132,11 @@
         { "name": "Yousra Gaballah", "role": "Lead" },
         { "name": "Gaby (AI)", "role": "Enrichment & Automation" }
       ],
-      "stakeholders": []
+      "stakeholders": [],
+      "notes": "Enrichment pipeline is the bottleneck — once unblocked, growth should accelerate.",
+      "followUps": [
+        { "text": "Waiting for enrichment batch approval", "owner": "Gaby (AI)" }
+      ]
     },
     {
       "id": "revenue-target",
@@ -143,7 +161,9 @@
         { "name": "Yousra Gaballah", "role": "Lead" },
         { "name": "Sherif Nessim", "role": "Finance Advisory" }
       ],
-      "stakeholders": []
+      "stakeholders": [],
+      "notes": "",
+      "followUps": []
     }
   ],
   "quarterlyGoals": [

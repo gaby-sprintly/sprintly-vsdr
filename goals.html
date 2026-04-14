@@ -409,6 +409,143 @@
   font-size: 11px;
 }
 
+/* Follow-ups / Waiting for */
+.followup-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.followup-item {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  line-height: 1.4;
+  padding-left: 18px;
+  position: relative;
+  transition: color 0.2s ease;
+}
+.followup-item::before {
+  content: '\23F3';
+  position: absolute;
+  left: 0;
+  font-size: 10px;
+  top: 2px;
+}
+.followup-item:hover { color: var(--n50); }
+.followup-owner {
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+/* Notes in expanded card */
+.goal-notes {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  line-height: 1.5;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+.goal-notes.empty {
+  font-style: italic;
+  opacity: 0.5;
+}
+
+/* Inline add buttons */
+.inline-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--teal);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 8px;
+  transition: color 0.15s;
+}
+.inline-add-btn:hover { color: var(--green); }
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Inline input row */
+.inline-input-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 8px;
+}
+.inline-input-row input {
+  flex: 1;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.inline-input-row input:focus { border-color: var(--teal); }
+.inline-input-row input::placeholder { color: var(--n400); opacity: 0.5; }
+.inline-save-btn {
+  padding: 6px 12px;
+  background: var(--green);
+  color: #0F1923;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.inline-save-btn:hover { background: #3fba62; }
+.inline-cancel-btn {
+  padding: 6px 8px;
+  background: none;
+  color: var(--n400);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.inline-cancel-btn:hover { color: var(--n50); }
+
+/* Notes textarea inline */
+.inline-notes-area {
+  margin-top: 8px;
+}
+.inline-notes-area textarea {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--n50);
+  font-family: var(--body);
+  font-size: 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 50px;
+  transition: border-color 0.2s;
+}
+.inline-notes-area textarea:focus { border-color: var(--teal); }
+
 /* Quarterly cards */
 .q-grid {
   display: grid;
@@ -747,6 +884,19 @@
       <button class="btn-add-row" onclick="addPersonRow('ngStakeList')">+ Add Stakeholder</button>
     </div>
 
+    <div class="form-group">
+      <label class="form-label">Follow Ups / Waiting For</label>
+      <div class="dynamic-list" id="ngFollowUpList">
+        <div class="person-input-row"><input type="text" placeholder="Waiting for..." style="flex:2"><input type="text" placeholder="Owner" style="flex:1"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>
+      </div>
+      <button class="btn-add-row" onclick="addFollowUpRow('ngFollowUpList')">+ Add Follow Up</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="ngNotes" placeholder="Any additional notes..."></textarea>
+    </div>
+
     <div class="modal-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeModal('newGoalModal')">Cancel</button>
       <button class="modal-btn modal-btn-confirm" onclick="submitNewGoal()">Create Goal</button>
@@ -885,42 +1035,68 @@
         html += '<div class="kr-check' + (kr.done ? ' done' : '') + '">' + (kr.done ? checkSvg : '') + '</div>';
         html += '<span>' + esc(kr.text) + '</span></li>';
       });
-      html += '</ul></div>';
+      html += '</ul>';
+      html += '<div id="inlineKr_' + gi + '"></div>';
+      html += '<button class="inline-add-btn" onclick="event.stopPropagation(); showInlineAdd(\'kr\',' + gi + ')">+ Add Key Result</button>';
+      html += '</div>';
 
       // Next Actions
       html += '<div><div class="details-section-title">Next Actions</div><ul class="actions-list">';
       (g.nextActions || []).forEach(function(a) {
         html += '<li>' + esc(a) + '</li>';
       });
-      html += '</ul></div>';
+      html += '</ul>';
+      html += '<div id="inlineAction_' + gi + '"></div>';
+      html += '<button class="inline-add-btn" onclick="event.stopPropagation(); showInlineAdd(\'action\',' + gi + ')">+ Add Action</button>';
+      html += '</div>';
 
       // Recommended Actions
+      html += '<div><div class="details-section-title">Recommended Actions</div>';
       if (g.recommendedActions && g.recommendedActions.length > 0) {
-        html += '<div><div class="details-section-title">Recommended Actions</div><ul class="rec-actions-list">';
+        html += '<ul class="rec-actions-list">';
         g.recommendedActions.forEach(function(a) {
           html += '<li>' + esc(a) + '</li>';
         });
-        html += '</ul></div>';
+        html += '</ul>';
       }
+      html += '<div id="inlineRec_' + gi + '"></div>';
+      html += '<button class="inline-add-btn" onclick="event.stopPropagation(); showInlineAdd(\'rec\',' + gi + ')">+ Add Recommendation</button>';
+      html += '</div>';
 
-      // Team Members & Stakeholders
-      html += '<div>';
+      // Follow Ups / Waiting For
+      html += '<div><div class="details-section-title">Follow Ups / Waiting For</div>';
+      if (g.followUps && g.followUps.length > 0) {
+        html += '<ul class="followup-list">';
+        g.followUps.forEach(function(f) {
+          html += '<li class="followup-item">' + esc(f.text);
+          if (f.owner) html += '<span class="followup-owner">' + esc(f.owner) + '</span>';
+          html += '</li>';
+        });
+        html += '</ul>';
+      }
+      html += '<div id="inlineFollowUp_' + gi + '"></div>';
+      html += '<button class="inline-add-btn" onclick="event.stopPropagation(); showInlineAdd(\'followUp\',' + gi + ')">+ Add Follow Up</button>';
+      html += '</div>';
+
+      // Team Members
+      html += '<div><div class="details-section-title">Team Members</div>';
       if (g.teamMembers && g.teamMembers.length > 0) {
-        html += '<div class="details-section-title">Team Members</div>';
-        html += '<div class="people-chips" style="margin-bottom:14px;">';
+        html += '<div class="people-chips">';
         g.teamMembers.forEach(function(m) {
           html += '<span class="person-chip">' + esc(m.name) + ' <span class="person-chip-role">' + esc(m.role) + '</span></span>';
         });
         html += '</div>';
       }
-      if (g.stakeholders && g.stakeholders.length > 0) {
-        html += '<div class="details-section-title">Stakeholders</div>';
-        html += '<div class="people-chips">';
-        g.stakeholders.forEach(function(s) {
-          html += '<span class="stakeholder-chip">' + esc(s.name) + ' <span class="stakeholder-chip-role">' + esc(s.role) + '</span></span>';
-        });
-        html += '</div>';
-      }
+      html += '<div id="inlineTeam_' + gi + '"></div>';
+      html += '<button class="inline-add-btn" onclick="event.stopPropagation(); showInlineAdd(\'team\',' + gi + ')">+ Add Member</button>';
+      html += '</div>';
+
+      // Notes
+      html += '<div style="grid-column:1/-1;"><div class="details-section-title">Notes</div>';
+      var noteText = (g.notes && g.notes.trim()) ? g.notes : '';
+      html += '<div class="goal-notes' + (noteText ? '' : ' empty') + '" id="noteDisplay_' + gi + '">' + (noteText ? esc(noteText) : 'No notes yet.') + '</div>';
+      html += '<div id="inlineNotes_' + gi + '"></div>';
+      html += '<button class="inline-add-btn" onclick="event.stopPropagation(); showInlineNotes(' + gi + ')">' + (noteText ? '+ Edit Notes' : '+ Add Notes') + '</button>';
       html += '</div>';
 
       html += '</div></div></div>'; // close details-grid, details-inner, details
@@ -1032,11 +1208,13 @@
       var krItems = details.querySelectorAll('.kr-item');
       var actionItems = details.querySelectorAll('.actions-list li');
       var recItems = details.querySelectorAll('.rec-actions-list li');
+      var followItems = details.querySelectorAll('.followup-item');
       var chips = details.querySelectorAll('.person-chip, .stakeholder-chip');
 
       gsap.from(krItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.15 });
       gsap.from(actionItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.2 });
       gsap.from(recItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.25 });
+      gsap.from(followItems, { x: -15, opacity: 0, stagger: 0.05, duration: 0.3, ease: 'power2.out', delay: 0.28 });
       gsap.from(chips, { scale: 0.8, opacity: 0, stagger: 0.04, duration: 0.25, ease: 'back.out(1.4)', delay: 0.3 });
     }
   }
@@ -1124,6 +1302,159 @@
   }
 
   // ══════════════════════════════════
+  //  INLINE ADD FUNCTIONS
+  // ══════════════════════════════════
+
+  function showInlineAdd(type, gi) {
+    var containerId = 'inline' + type.charAt(0).toUpperCase() + type.slice(1) + '_' + gi;
+    var container = document.getElementById(containerId);
+    if (!container || container.querySelector('.inline-input-row')) return; // already open
+
+    var html = '<div class="inline-input-row" onclick="event.stopPropagation()">';
+    if (type === 'team') {
+      html += '<input type="text" placeholder="Name" id="inlineName_' + type + '_' + gi + '">';
+      html += '<input type="text" placeholder="Role" id="inlineRole_' + type + '_' + gi + '">';
+    } else if (type === 'followUp') {
+      html += '<input type="text" placeholder="Waiting for..." id="inlineText_' + type + '_' + gi + '" style="flex:2">';
+      html += '<input type="text" placeholder="Owner" id="inlineOwner_' + type + '_' + gi + '" style="flex:1">';
+    } else {
+      var placeholders = { kr: 'New key result...', action: 'New action...', rec: 'New recommendation...' };
+      html += '<input type="text" placeholder="' + (placeholders[type] || 'Add item...') + '" id="inlineText_' + type + '_' + gi + '">';
+    }
+    html += '<button class="inline-save-btn" onclick="event.stopPropagation(); saveInlineAdd(\'' + type + '\',' + gi + ')">Add</button>';
+    html += '<button class="inline-cancel-btn" onclick="event.stopPropagation(); cancelInlineAdd(\'' + type + '\',' + gi + ')">&times;</button>';
+    html += '</div>';
+    container.innerHTML = html;
+
+    var firstInput = container.querySelector('input');
+    if (firstInput) firstInput.focus();
+
+    // Allow Enter to save
+    container.querySelectorAll('input').forEach(function(inp) {
+      inp.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); saveInlineAdd(type, gi); }
+        if (e.key === 'Escape') { e.preventDefault(); cancelInlineAdd(type, gi); }
+      });
+    });
+  }
+
+  function cancelInlineAdd(type, gi) {
+    var containerId = 'inline' + type.charAt(0).toUpperCase() + type.slice(1) + '_' + gi;
+    var container = document.getElementById(containerId);
+    if (container) container.innerHTML = '';
+  }
+
+  function saveInlineAdd(type, gi) {
+    var goal = goalsData.goals[gi];
+
+    if (type === 'kr') {
+      var text = document.getElementById('inlineText_kr_' + gi).value.trim();
+      if (!text) return;
+      if (!goal.keyResults) goal.keyResults = [];
+      goal.keyResults.push({ text: text, done: false });
+    } else if (type === 'action') {
+      var text = document.getElementById('inlineText_action_' + gi).value.trim();
+      if (!text) return;
+      if (!goal.nextActions) goal.nextActions = [];
+      goal.nextActions.push(text);
+    } else if (type === 'rec') {
+      var text = document.getElementById('inlineText_rec_' + gi).value.trim();
+      if (!text) return;
+      if (!goal.recommendedActions) goal.recommendedActions = [];
+      goal.recommendedActions.push(text);
+    } else if (type === 'followUp') {
+      var text = document.getElementById('inlineText_followUp_' + gi).value.trim();
+      var owner = document.getElementById('inlineOwner_followUp_' + gi).value.trim();
+      if (!text) return;
+      if (!goal.followUps) goal.followUps = [];
+      goal.followUps.push({ text: text, owner: owner });
+    } else if (type === 'team') {
+      var name = document.getElementById('inlineName_team_' + gi).value.trim();
+      var role = document.getElementById('inlineRole_team_' + gi).value.trim();
+      if (!name) return;
+      if (!goal.teamMembers) goal.teamMembers = [];
+      goal.teamMembers.push({ name: name, role: role });
+    }
+
+    updateTimestamp(goal);
+    saveGoalsData();
+
+    // Remember expanded state, re-render, and re-expand
+    var wasExpanded = document.querySelector('.goal-card[data-goal-index="' + gi + '"]');
+    var isExpanded = wasExpanded && wasExpanded.classList.contains('expanded');
+    renderGoals();
+    renderStats();
+    animateStatCounters();
+
+    // Re-expand the card without animation
+    if (isExpanded) {
+      var card = document.querySelector('.goal-card[data-goal-index="' + gi + '"]');
+      if (card) {
+        card.classList.add('expanded');
+        var details = card.querySelector('.goal-details');
+        var chevron = card.querySelector('.goal-chevron');
+        gsap.set(details, { height: 'auto', opacity: 1 });
+        gsap.set(chevron, { rotation: 180 });
+
+        // Re-animate progress ring
+        var pct = calcProgress(goalsData.goals[gi]);
+        var fill = card.querySelector('.progress-ring-fill');
+        var label = card.querySelector('.progress-ring-label');
+        if (fill) {
+          var circumference = 188.5;
+          var offset = circumference - (pct / 100) * circumference;
+          gsap.set(fill, { strokeDashoffset: offset });
+        }
+        if (label) gsap.set(label, { opacity: 1 });
+      }
+    }
+  }
+
+  function showInlineNotes(gi) {
+    var container = document.getElementById('inlineNotes_' + gi);
+    if (!container || container.querySelector('.inline-notes-area')) return;
+
+    var goal = goalsData.goals[gi];
+    var currentNotes = goal.notes || '';
+
+    var html = '<div class="inline-notes-area" onclick="event.stopPropagation()">';
+    html += '<textarea id="inlineNotesText_' + gi + '" placeholder="Add notes...">' + esc(currentNotes) + '</textarea>';
+    html += '<div style="display:flex;gap:6px;margin-top:6px;">';
+    html += '<button class="inline-save-btn" onclick="event.stopPropagation(); saveInlineNotes(' + gi + ')">Save</button>';
+    html += '<button class="inline-cancel-btn" onclick="event.stopPropagation(); cancelInlineNotes(' + gi + ')">Cancel</button>';
+    html += '</div></div>';
+    container.innerHTML = html;
+    document.getElementById('inlineNotesText_' + gi).focus();
+  }
+
+  function cancelInlineNotes(gi) {
+    var container = document.getElementById('inlineNotes_' + gi);
+    if (container) container.innerHTML = '';
+  }
+
+  function saveInlineNotes(gi) {
+    var goal = goalsData.goals[gi];
+    var text = document.getElementById('inlineNotesText_' + gi).value.trim();
+    goal.notes = text;
+    updateTimestamp(goal);
+    saveGoalsData();
+
+    // Update display
+    var display = document.getElementById('noteDisplay_' + gi);
+    if (display) {
+      display.textContent = text || 'No notes yet.';
+      display.className = 'goal-notes' + (text ? '' : ' empty');
+    }
+    cancelInlineNotes(gi);
+  }
+
+  function updateTimestamp(goal) {
+    var now = new Date();
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    goal.lastUpdated = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  }
+
+  // ══════════════════════════════════
   //  NEW GOAL MODAL
   // ══════════════════════════════════
 
@@ -1137,6 +1468,8 @@
     resetDynamicList('ngRecList', 'Recommended action...');
     resetPersonList('ngTeamList');
     resetPersonList('ngStakeList');
+    resetFollowUpList('ngFollowUpList');
+    document.getElementById('ngNotes').value = '';
 
     var modal = document.getElementById('newGoalModal');
     modal.style.display = 'flex';
@@ -1178,6 +1511,31 @@
     row.innerHTML = '<input type="text" placeholder="Name"><input type="text" placeholder="Role"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button>';
     list.appendChild(row);
     row.querySelector('input').focus();
+  }
+
+  function addFollowUpRow(listId) {
+    var list = document.getElementById(listId);
+    var row = document.createElement('div');
+    row.className = 'person-input-row';
+    row.innerHTML = '<input type="text" placeholder="Waiting for..." style="flex:2"><input type="text" placeholder="Owner" style="flex:1"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button>';
+    list.appendChild(row);
+    row.querySelector('input').focus();
+  }
+
+  function resetFollowUpList(listId) {
+    var list = document.getElementById(listId);
+    list.innerHTML = '<div class="person-input-row"><input type="text" placeholder="Waiting for..." style="flex:2"><input type="text" placeholder="Owner" style="flex:1"><button class="btn-remove-row" onclick="removeRow(this)">&times;</button></div>';
+  }
+
+  function getFollowUpListValues(listId) {
+    var vals = [];
+    document.getElementById(listId).querySelectorAll('.person-input-row').forEach(function(row) {
+      var inputs = row.querySelectorAll('input');
+      var text = inputs[0] ? inputs[0].value.trim() : '';
+      var owner = inputs[1] ? inputs[1].value.trim() : '';
+      if (text) vals.push({ text: text, owner: owner });
+    });
+    return vals;
   }
 
   function removeRow(btn) {
@@ -1258,7 +1616,9 @@
       nextActions: getSimpleListValues('ngActionsList'),
       recommendedActions: getSimpleListValues('ngRecList'),
       teamMembers: getPersonListValues('ngTeamList'),
-      stakeholders: getPersonListValues('ngStakeList')
+      stakeholders: getPersonListValues('ngStakeList'),
+      followUps: getFollowUpListValues('ngFollowUpList'),
+      notes: document.getElementById('ngNotes').value.trim()
     };
 
     goalsData.goals.push(newGoal);
