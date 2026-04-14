@@ -536,6 +536,61 @@ a { text-decoration: none; color: inherit; }
   font-style: italic;
 }
 
+/* ── DELETE BUTTON ── */
+.item-delete-btn {
+  width: 24px; height: 24px;
+  border: none;
+  background: none;
+  color: var(--n400);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+.kr-card:hover .item-delete-btn,
+.action-card:hover .item-delete-btn,
+.rec-card:hover .item-delete-btn,
+.followup-card:hover .item-delete-btn,
+.person-card:hover .item-delete-btn,
+.stakeholder-card:hover .item-delete-btn { opacity: 1; }
+.item-delete-btn:hover { color: var(--coral); background: rgba(239,68,68,0.1); }
+
+/* ── PM ACTIONS ── */
+.pm-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.pm-action-btn {
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--n400);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  transition: color 0.15s;
+}
+.pm-action-btn:hover { color: var(--n50); }
+.pm-action-btn.danger:hover { color: var(--coral); }
+
+/* ── CARD POSITION FOR DELETE ── */
+.person-card, .stakeholder-card { position: relative; }
+.person-card .item-delete-btn,
+.stakeholder-card .item-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+/* ── INLINE ADD ALIGNMENT FIX ── */
+.inline-add-btn { display: block; margin-top: 12px; }
+
 /* ── LOADING ── */
 .loading {
   font-family: var(--body);
@@ -575,7 +630,7 @@ a { text-decoration: none; color: inherit; }
 <script>
 (function() {
   var GOALS_LS_KEY = 'vsdr-goals-data';
-  var DATA_VERSION = 2;
+  var DATA_VERSION = 3;
   var params = new URLSearchParams(window.location.search);
   var goalId = params.get('id');
 
@@ -780,8 +835,15 @@ a { text-decoration: none; color: inherit; }
       if (goal.projectManager.role) {
         html += '<div class="pm-card-role">' + esc(goal.projectManager.role) + '</div>';
       }
+      html += '<div class="pm-actions">';
+      html += '<button class="pm-action-btn" onclick="showChangePM()">Change</button>';
+      html += '<button class="pm-action-btn danger" onclick="removePM()">Remove</button>';
+      html += '</div>';
       html += '</div></div>';
+    } else {
+      html += '<button class="inline-add-btn" onclick="showChangePM()" style="margin-top:12px;">+ Assign Project Manager</button>';
     }
+    html += '<div id="inlinePM"></div>';
 
     html += '</div>'; // close goal-header-left
 
@@ -814,6 +876,7 @@ a { text-decoration: none; color: inherit; }
       html += '<div class="kr-card' + (kr.done ? ' completed' : '') + '" data-kr-index="' + i + '">';
       html += '<div class="kr-checkbox">' + (kr.done ? checkSvg : '') + '</div>';
       html += '<div class="kr-text">' + esc(kr.text) + '</div>';
+      html += '<button class="item-delete-btn" onclick="event.stopPropagation(); deleteItem(\'kr\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
     html += '<div id="inlineKr"></div>';
@@ -821,10 +884,11 @@ a { text-decoration: none; color: inherit; }
 
     // Next Actions
     html += '<div class="section-label">Next Actions</div>';
-    (goal.nextActions || []).forEach(function(a) {
+    (goal.nextActions || []).forEach(function(a, i) {
       html += '<div class="action-card">';
       html += '<span class="action-icon">&rarr;</span>';
       html += '<div class="action-text">' + esc(a) + '</div>';
+      html += '<button class="item-delete-btn" onclick="deleteItem(\'action\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
     html += '<div id="inlineAction"></div>';
@@ -832,10 +896,11 @@ a { text-decoration: none; color: inherit; }
 
     // Recommended Actions
     html += '<div class="section-label">Recommended Actions</div>';
-    (goal.recommendedActions || []).forEach(function(a) {
+    (goal.recommendedActions || []).forEach(function(a, i) {
       html += '<div class="rec-card">';
       html += '<span class="rec-icon">&#9670;</span>';
       html += '<div class="rec-text">' + esc(a) + '</div>';
+      html += '<button class="item-delete-btn" onclick="deleteItem(\'rec\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
     html += '<div id="inlineRec"></div>';
@@ -843,11 +908,12 @@ a { text-decoration: none; color: inherit; }
 
     // Follow Ups / Waiting For
     html += '<div class="section-label">Follow Ups / Waiting For</div>';
-    (goal.followUps || []).forEach(function(f) {
+    (goal.followUps || []).forEach(function(f, i) {
       html += '<div class="followup-card">';
       html += '<span class="followup-icon">&#9203;</span>';
       html += '<div class="followup-text">' + esc(f.text) + '</div>';
       if (f.owner) html += '<span class="followup-owner">' + esc(f.owner) + '</span>';
+      html += '<button class="item-delete-btn" onclick="deleteItem(\'followUp\',' + i + ')" title="Delete">&times;</button>';
       html += '</div>';
     });
     html += '<div id="inlineFollowUp"></div>';
@@ -857,8 +923,9 @@ a { text-decoration: none; color: inherit; }
     html += '<div class="section-label">Team Members</div>';
     if (goal.teamMembers && goal.teamMembers.length > 0) {
       html += '<div class="people-grid">';
-      goal.teamMembers.forEach(function(m) {
+      goal.teamMembers.forEach(function(m, i) {
         html += '<div class="person-card">';
+        html += '<button class="item-delete-btn" onclick="deleteItem(\'team\',' + i + ')" title="Remove">&times;</button>';
         html += '<div class="person-name">' + esc(m.name) + '</div>';
         html += '<div class="person-role">' + esc(m.role) + '</div>';
         html += '</div>';
@@ -872,14 +939,17 @@ a { text-decoration: none; color: inherit; }
     html += '<div class="section-label">Stakeholders</div>';
     if (goal.stakeholders && goal.stakeholders.length > 0) {
       html += '<div class="people-grid">';
-      goal.stakeholders.forEach(function(s) {
+      goal.stakeholders.forEach(function(s, i) {
         html += '<div class="stakeholder-card">';
+        html += '<button class="item-delete-btn" onclick="deleteItem(\'stakeholder\',' + i + ')" title="Remove">&times;</button>';
         html += '<div class="person-name">' + esc(s.name) + '</div>';
         html += '<div class="person-role">' + esc(s.role) + '</div>';
         html += '</div>';
       });
       html += '</div>';
     }
+    html += '<div id="inlineStakeholder"></div>';
+    html += '<button class="inline-add-btn" onclick="showInlineAdd(\'stakeholder\')">+ Add Stakeholder</button>';
 
     // Notes
     var noteText = (goal.notes && goal.notes.trim()) ? goal.notes : '';
@@ -910,7 +980,7 @@ a { text-decoration: none; color: inherit; }
       if (!container || container.querySelector('.inline-input-row')) return;
 
       var formHtml = '<div class="inline-input-row">';
-      if (type === 'team') {
+      if (type === 'team' || type === 'stakeholder') {
         formHtml += '<input type="text" placeholder="Name" id="inlineName"><input type="text" placeholder="Role" id="inlineRole">';
       } else if (type === 'followUp') {
         formHtml += '<input type="text" placeholder="Waiting for..." id="inlineText" style="flex:2">';
@@ -1016,6 +1086,12 @@ a { text-decoration: none; color: inherit; }
         if (!n) return;
         if (!goal.teamMembers) goal.teamMembers = [];
         goal.teamMembers.push({ name: n, role: r });
+      } else if (type === 'stakeholder') {
+        var n = document.getElementById('inlineName').value.trim();
+        var r = document.getElementById('inlineRole').value.trim();
+        if (!n) return;
+        if (!goal.stakeholders) goal.stakeholders = [];
+        goal.stakeholders.push({ name: n, role: r });
       }
       updateTimestamp(goal);
       saveData(fullData);
@@ -1044,6 +1120,64 @@ a { text-decoration: none; color: inherit; }
 
     window.saveNotes = function() {
       goal.notes = document.getElementById('notesTextarea').value.trim();
+      updateTimestamp(goal);
+      saveData(fullData);
+      renderGoal(goal, fullData);
+    };
+
+    // ── Delete items ──
+    window.deleteItem = function(type, idx) {
+      var arr;
+      if (type === 'kr') arr = goal.keyResults;
+      else if (type === 'action') arr = goal.nextActions;
+      else if (type === 'rec') arr = goal.recommendedActions;
+      else if (type === 'followUp') arr = goal.followUps;
+      else if (type === 'team') arr = goal.teamMembers;
+      else if (type === 'stakeholder') arr = goal.stakeholders;
+      if (!arr || idx < 0 || idx >= arr.length) return;
+      arr.splice(idx, 1);
+      updateTimestamp(goal);
+      saveData(fullData);
+      renderGoal(goal, fullData);
+    };
+
+    // ── Project Manager management ──
+    window.showChangePM = function() {
+      var container = document.getElementById('inlinePM');
+      if (!container || container.querySelector('.inline-input-row')) return;
+      var current = goal.projectManager || {};
+      var pmHtml = '<div class="inline-input-row">';
+      pmHtml += '<input type="text" placeholder="Name" id="pmName" value="' + esc(current.name || '') + '">';
+      pmHtml += '<input type="text" placeholder="Role" id="pmRole" value="' + esc(current.role || '') + '">';
+      pmHtml += '<button class="inline-save-btn" onclick="savePM()">Save</button>';
+      pmHtml += '<button class="inline-cancel-btn" onclick="cancelPM()">&times;</button>';
+      pmHtml += '</div>';
+      container.innerHTML = pmHtml;
+      document.getElementById('pmName').focus();
+      container.querySelectorAll('input').forEach(function(inp) {
+        inp.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { e.preventDefault(); savePM(); }
+          if (e.key === 'Escape') { e.preventDefault(); cancelPM(); }
+        });
+      });
+    };
+
+    window.cancelPM = function() {
+      var container = document.getElementById('inlinePM');
+      if (container) container.innerHTML = '';
+    };
+
+    window.savePM = function() {
+      var name = document.getElementById('pmName').value.trim();
+      if (!name) return;
+      goal.projectManager = { name: name, role: document.getElementById('pmRole').value.trim() };
+      updateTimestamp(goal);
+      saveData(fullData);
+      renderGoal(goal, fullData);
+    };
+
+    window.removePM = function() {
+      goal.projectManager = null;
       updateTimestamp(goal);
       saveData(fullData);
       renderGoal(goal, fullData);
