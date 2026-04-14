@@ -1,0 +1,176 @@
+{
+  "goals": [
+    {
+      "id": "mena-to-valley-cohort",
+      "title": "Deliver MENA to the Valley 2026 Cohort",
+      "description": "31 founders confirmed. 23 deposits locked, $92K collected. 8 pending ($32K). Two founder dinners and partner meetings now booked in SF, but deposit collection is still below target with 2 days left.",
+      "status": "at-risk",
+      "lastUpdated": "Apr 13, 2026",
+      "keyResults": [
+        { "text": "31 founders confirmed from 37 responses", "done": true },
+        { "text": "23 deposits locked ($92K)", "done": true },
+        { "text": "8 deposits still pending, $32K outstanding by Apr 15", "done": false },
+        { "text": "SF execution week underway with Kate, CloudCom and founder meetings booked", "done": false }
+      ],
+      "nextActions": [
+        "Run direct deposit follow-up with the 8 laggards before Apr 15",
+        "Convert Sarah Rona, Kate and SF meetings into credibility signals for founders",
+        "Attach bank details to remaining founder threads",
+        "Finalize virtual mentorship agenda for mid-May"
+      ],
+      "recommendedActions": [
+        "Prepare a backup plan if remaining 8 deposits are not collected by deadline",
+        "Draft a founder spotlight series to maintain engagement pre-immersion",
+        "Identify 2-3 additional SF corporate hosts as backup meeting venues"
+      ],
+      "teamMembers": [
+        { "name": "Yousra Gaballah", "role": "Program Lead" },
+        { "name": "Annija Eizenarma", "role": "Strategic Partnerships" },
+        { "name": "Sherif Nessim", "role": "Investment Advisory" }
+      ],
+      "stakeholders": [
+        { "name": "Monshaat", "role": "Government Partner" },
+        { "name": "Kate (SF)", "role": "Corporate Host" },
+        { "name": "CloudCom", "role": "Tech Partner" }
+      ]
+    },
+    {
+      "id": "institutional-partnerships",
+      "title": "Close 3+ Institutional Partnerships",
+      "description": "Monshaat is signed, HBKU remains in review, and new Money Fellows plus CloudCom/ARPU Plus momentum strengthens the institutional pipeline.",
+      "status": "on-track",
+      "lastUpdated": "Apr 10, 2026",
+      "keyResults": [
+        { "text": "Monshaat signed and in delivery mode", "done": true },
+        { "text": "HBKU partnership still awaiting final update and contract movement", "done": false },
+        { "text": "Money Fellows US entry meeting added as a live strategic partnership track", "done": false }
+      ],
+      "nextActions": [
+        "Push Nada for HBKU contract movement this week",
+        "Convert Money Fellows meeting into a scoped partnership path",
+        "Package Monshaat proof into the next partner deck"
+      ],
+      "recommendedActions": [
+        "Create a partnership pipeline tracker with stage gates",
+        "Develop a reusable partnership proposal template from Monshaat success"
+      ],
+      "teamMembers": [
+        { "name": "Yousra Gaballah", "role": "Lead" },
+        { "name": "Annija Eizenarma", "role": "Partnerships" }
+      ],
+      "stakeholders": [
+        { "name": "Monshaat", "role": "Signed Partner" },
+        { "name": "HBKU", "role": "In Review" },
+        { "name": "Money Fellows", "role": "Prospective Partner" }
+      ]
+    },
+    {
+      "id": "ai-squad",
+      "title": "Launch AI Squad with 2+ Corporate Clients",
+      "description": "NVIDIA content and deck are ready, but no paying client has closed and AI Squad is still reliant on outreach rather than active revenue conversations.",
+      "status": "behind",
+      "lastUpdated": "Apr 10, 2026",
+      "keyResults": [
+        { "text": "NVIDIA content produced", "done": true },
+        { "text": "AI Squad deck ready", "done": true },
+        { "text": "First paying corporate client signed", "done": false },
+        { "text": "Second corporate client signed", "done": false }
+      ],
+      "nextActions": [
+        "Turn the deck into 5 founder-led corporate outreach conversations",
+        "Use Money Fellows and CloudCom momentum to test AI Squad adjacency",
+        "Package NVIDIA proof into a sharper commercial pitch",
+        "Start a weekly AI Squad revenue review until first deal closes"
+      ],
+      "recommendedActions": [
+        "Identify 3 warm intros from existing network for AI Squad pilot",
+        "Create a case study from NVIDIA collaboration to use in outreach",
+        "Consider a freemium or pilot pricing model to land first client faster"
+      ],
+      "teamMembers": [
+        { "name": "Yousra Gaballah", "role": "Lead" }
+      ],
+      "stakeholders": [
+        { "name": "NVIDIA", "role": "Content Partner" }
+      ]
+    },
+    {
+      "id": "network-growth",
+      "title": "Grow Network to 8,000+ Contacts",
+      "description": "Database remains at roughly 6,000 contacts, but enrichment is still blocked pending approval and several VIP follow-ups are now overdue.",
+      "status": "at-risk",
+      "lastUpdated": "Apr 10, 2026",
+      "keyResults": [
+        { "text": "~6,000 contacts remain available in CRM", "done": true },
+        { "text": "100-contact enrichment batch still awaiting approval", "done": false },
+        { "text": "Resolve overdue VIP and founder follow-ups before growth push", "done": false }
+      ],
+      "nextActions": [
+        "Unblock enrichment approval and process the top 10 strategic contacts first",
+        "Clear overdue VIP follow-ups from April 7-8",
+        "Add new SF and IMF/World Bank contacts after this week's meetings"
+      ],
+      "recommendedActions": [
+        "Set up automated enrichment pipeline to avoid manual approval bottlenecks",
+        "Create a VIP follow-up cadence to prevent overdue contacts"
+      ],
+      "teamMembers": [
+        { "name": "Yousra Gaballah", "role": "Lead" },
+        { "name": "Gaby (AI)", "role": "Enrichment & Automation" }
+      ],
+      "stakeholders": []
+    },
+    {
+      "id": "revenue-target",
+      "title": "Hit Annual Revenue Target",
+      "description": "Revenue target is still not formalized in VSDR, but $92K of founder deposits are already in and partnership revenue opportunities are active this week.",
+      "status": "on-track",
+      "lastUpdated": "Apr 10, 2026",
+      "keyResults": [
+        { "text": "Annual revenue target still needs to be formally defined in VSDR", "done": false },
+        { "text": "$92K founder deposits already collected toward Q2 cash generation", "done": false },
+        { "text": "Convert current partnership pipeline into contracted revenue", "done": false }
+      ],
+      "nextActions": [
+        "Define the annual revenue target inside VSDR this month",
+        "Track founder deposits plus partnership revenue in one operating view"
+      ],
+      "recommendedActions": [
+        "Build a revenue dashboard that combines deposits, partnerships, and AI Squad income",
+        "Set quarterly revenue milestones with clear owners"
+      ],
+      "teamMembers": [
+        { "name": "Yousra Gaballah", "role": "Lead" },
+        { "name": "Sherif Nessim", "role": "Finance Advisory" }
+      ],
+      "stakeholders": []
+    }
+  ],
+  "quarterlyGoals": [
+    {
+      "id": "close-deposits",
+      "title": "Close all MENA to Valley deposits by Apr 15",
+      "status": "at-risk"
+    },
+    {
+      "id": "virtual-mentorship",
+      "title": "Execute virtual mentorship (mid-May)",
+      "status": "in-progress"
+    },
+    {
+      "id": "sv-immersion",
+      "title": "Silicon Valley immersion (June 2\u20138)",
+      "status": "on-track"
+    },
+    {
+      "id": "close-hbku",
+      "title": "Close HBKU contract",
+      "status": "at-risk"
+    },
+    {
+      "id": "arpu-cloudcom",
+      "title": "Convert ARPU Plus / CloudCom into first US partnerships",
+      "status": "in-progress"
+    }
+  ]
+}

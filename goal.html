@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; font-src https://fonts.gstatic.com https://cdn.fontshare.com; connect-src 'self' https://gxunrnyehltpbgdodkkm.supabase.co; img-src 'self' data: blob: https:;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goal — Safira</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/design-system.css">
+<style>
+a { text-decoration: none; color: inherit; }
+
+/* ── BACK LINK ── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+.back-link:hover { color: var(--n50); }
+.back-link svg { width: 16px; height: 16px; }
+
+/* ── GOAL HEADER ── */
+.goal-header-area {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.goal-header-left { flex: 1; min-width: 300px; }
+.goal-page-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--n50);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.goal-status-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.badge {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.badge::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.badge-green { background: rgba(78,203,113,0.12); color: var(--green); }
+.badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+.badge-coral { background: rgba(239,68,68,0.12); color: var(--coral); }
+.badge-gray  { background: rgba(148,163,184,0.1);  color: var(--n400); }
+.goal-updated-text {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+}
+
+/* ── PROGRESS CARD ── */
+.progress-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 180px;
+}
+.progress-ring-large {
+  position: relative;
+  width: 120px; height: 120px;
+  margin-bottom: 12px;
+}
+.progress-ring-large svg {
+  width: 120px; height: 120px;
+  transform: rotate(-90deg);
+}
+.progress-ring-large .ring-bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.06);
+  stroke-width: 8;
+}
+.progress-ring-large .ring-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 314.16;
+  stroke-dashoffset: 314.16;
+  transition: stroke-dashoffset 0.8s ease;
+}
+.progress-ring-large .ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--n50);
+}
+.progress-card-text {
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--n400);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: var(--body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--n400);
+  margin-top: 40px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+/* ── GLASS CARD ── */
+.glass-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 28px 32px;
+}
+.glass-card p {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--n50);
+  line-height: 1.7;
+  opacity: 0.9;
+}
+.glass-card .empty-note {
+  color: var(--n400);
+  font-style: italic;
+}
+
+/* ── KEY RESULTS CARDS ── */
+.kr-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.kr-card:hover {
+  border-color: rgba(255,255,255,0.12);
+  transform: translateX(4px);
+}
+.kr-card.completed {
+  border-left: 3px solid var(--green);
+}
+.kr-card:not(.completed) {
+  border-left: 3px solid var(--border);
+}
+.kr-checkbox {
+  width: 20px; height: 20px;
+  border-radius: 2px;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.kr-card.completed .kr-checkbox {
+  background: var(--green);
+  border-color: var(--green);
+}
+.kr-checkbox svg { width: 12px; height: 12px; color: #0F1923; }
+.kr-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+  line-height: 1.4;
+  flex: 1;
+}
+.kr-card.completed .kr-text {
+  color: var(--n400);
+  text-decoration: line-through;
+  text-decoration-color: rgba(148,163,184,0.3);
+}
+
+/* ── ACTION CARDS ── */
+.action-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  border-radius: 2px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s ease;
+}
+.action-card:hover { border-color: rgba(255,255,255,0.12); }
+.action-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+  line-height: 1.4;
+}
+.action-icon {
+  color: var(--teal);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ── REC ACTION CARDS ── */
+.rec-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--purple);
+  border-radius: 2px;
+  padding: 16px 20px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.rec-card:hover { border-color: rgba(255,255,255,0.12); }
+.rec-icon {
+  color: var(--purple);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.rec-text {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n50);
+  line-height: 1.4;
+}
+
+/* ── PEOPLE GRID ── */
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.person-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 20px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.person-card:hover {
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+.person-name {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--n50);
+}
+.person-role {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 4px;
+}
+
+/* ── STAKEHOLDER CARDS ── */
+.stakeholder-card {
+  background: var(--n800);
+  border: 1px solid rgba(167,139,250,0.15);
+  border-left: 3px solid var(--purple);
+  border-radius: 2px;
+  padding: 20px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.stakeholder-card:hover {
+  border-color: rgba(167,139,250,0.3);
+  transform: translateY(-2px);
+}
+
+/* ── ERROR CARD ── */
+.error-card {
+  background: var(--n800);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-left: 3px solid var(--coral);
+  border-radius: 2px;
+  padding: 32px;
+  margin-top: 48px;
+  text-align: center;
+}
+.error-card h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--coral);
+  margin-bottom: 12px;
+}
+.error-card p {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--n400);
+}
+.error-card a { color: var(--teal); text-decoration: underline; }
+
+/* ── LOADING ── */
+.loading {
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--n400);
+  padding: 48px 0;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 767px) {
+  .goal-page-title { font-size: 28px; }
+  .goal-header-area { flex-direction: column; }
+  .progress-card { min-width: 0; width: 100%; flex-direction: row; gap: 20px; padding: 20px; }
+  .progress-ring-large { width: 80px; height: 80px; margin-bottom: 0; }
+  .progress-ring-large svg { width: 80px; height: 80px; }
+  .progress-ring-large .ring-bg, .progress-ring-large .ring-fill { stroke-width: 6; }
+  .progress-ring-large .ring-fill { stroke-dasharray: 207.35; stroke-dashoffset: 207.35; }
+  .progress-ring-large .ring-label { font-size: 20px; }
+  .people-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Main Content -->
+<main class="main" id="mainContent">
+  <div class="loading" id="loading">Loading goal...</div>
+</main>
+
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+
+<script src="js/supabase-client.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/sidebar.js"></script>
+<script>initSidebar('goals');</script>
+<script>
+(function() {
+  var GOALS_LS_KEY = 'vsdr-goals-data';
+  var params = new URLSearchParams(window.location.search);
+  var goalId = params.get('id');
+
+  if (!goalId) { showError(); return; }
+
+  // Load data
+  var stored = localStorage.getItem(GOALS_LS_KEY);
+  if (stored) {
+    try {
+      var data = JSON.parse(stored);
+      var goal = data.goals.find(function(g) { return g.id === goalId; });
+      if (goal) { renderGoal(goal, data); return; }
+    } catch(e) { /* fall through */ }
+  }
+
+  fetch('goals-data.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var goal = data.goals.find(function(g) { return g.id === goalId; });
+      if (!goal) { showError(); return; }
+      renderGoal(goal, data);
+    })
+    .catch(function() { showError(); });
+
+  function showError() {
+    document.getElementById('mainContent').innerHTML =
+      '<a href="goals.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back to Goals</a>' +
+      '<div class="error-card"><h2>Goal Not Found</h2><p>Check the URL or <a href="goals.html">go back to Goals</a>.</p></div>';
+  }
+
+  function esc(str) {
+    var d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  function calcProgress(g) {
+    var krs = g.keyResults || [];
+    if (krs.length === 0) return 0;
+    var done = krs.filter(function(k) { return k.done; }).length;
+    return Math.round((done / krs.length) * 100);
+  }
+
+  function badgeClass(status) {
+    if (status === 'on-track') return 'badge-green';
+    if (status === 'behind') return 'badge-coral';
+    if (status === 'at-risk') return 'badge-amber';
+    return 'badge-gray';
+  }
+
+  function statusLabel(s) {
+    return s.split('-').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+  }
+
+  var checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  function saveData(data) {
+    localStorage.setItem(GOALS_LS_KEY, JSON.stringify(data));
+  }
+
+  function renderGoal(goal, fullData) {
+    document.title = goal.title + ' — Safira';
+    var pct = calcProgress(goal);
+
+    var html = '';
+
+    // Back link
+    html += '<a href="goals.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back to Goals</a>';
+
+    // Header area
+    html += '<div class="goal-header-area">';
+    html += '<div class="goal-header-left">';
+    html += '<h1 class="goal-page-title">' + esc(goal.title) + '</h1>';
+    html += '<div class="goal-status-row">';
+    html += '<span class="badge ' + badgeClass(goal.status) + '">' + statusLabel(goal.status) + '</span>';
+    html += '<span class="goal-updated-text">Updated ' + esc(goal.lastUpdated) + '</span>';
+    html += '</div></div>';
+
+    // Progress card
+    var ringColor = goal.status === 'on-track' ? 'var(--green)' : goal.status === 'behind' ? 'var(--coral)' : 'var(--amber)';
+    var isMobile = window.innerWidth < 768;
+    var circumference = isMobile ? 207.35 : 314.16;
+    var offset = circumference - (pct / 100) * circumference;
+
+    html += '<div class="progress-card">';
+    html += '<div class="progress-ring-large">';
+    html += '<svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="50"/>';
+    html += '<circle class="ring-fill" cx="60" cy="60" r="50" style="stroke:' + ringColor + '; stroke-dashoffset:' + offset + '"/>';
+    html += '</svg>';
+    html += '<div class="ring-label">' + pct + '%</div>';
+    html += '</div>';
+    html += '<div class="progress-card-text">Completion</div>';
+    html += '</div>';
+    html += '</div>';
+
+    // Description
+    html += '<div class="section-label">Description</div>';
+    html += '<div class="glass-card"><p>' + esc(goal.description) + '</p></div>';
+
+    // Key Results
+    html += '<div class="section-label">Key Results (' + (goal.keyResults || []).filter(function(k){return k.done;}).length + '/' + (goal.keyResults || []).length + ')</div>';
+    (goal.keyResults || []).forEach(function(kr, i) {
+      html += '<div class="kr-card' + (kr.done ? ' completed' : '') + '" data-kr-index="' + i + '">';
+      html += '<div class="kr-checkbox">' + (kr.done ? checkSvg : '') + '</div>';
+      html += '<div class="kr-text">' + esc(kr.text) + '</div>';
+      html += '</div>';
+    });
+
+    // Next Actions
+    if (goal.nextActions && goal.nextActions.length > 0) {
+      html += '<div class="section-label">Next Actions</div>';
+      goal.nextActions.forEach(function(a) {
+        html += '<div class="action-card">';
+        html += '<span class="action-icon">&rarr;</span>';
+        html += '<div class="action-text">' + esc(a) + '</div>';
+        html += '</div>';
+      });
+    }
+
+    // Recommended Actions
+    if (goal.recommendedActions && goal.recommendedActions.length > 0) {
+      html += '<div class="section-label">Recommended Actions</div>';
+      goal.recommendedActions.forEach(function(a) {
+        html += '<div class="rec-card">';
+        html += '<span class="rec-icon">&#9670;</span>';
+        html += '<div class="rec-text">' + esc(a) + '</div>';
+        html += '</div>';
+      });
+    }
+
+    // Team Members
+    if (goal.teamMembers && goal.teamMembers.length > 0) {
+      html += '<div class="section-label">Team Members</div>';
+      html += '<div class="people-grid">';
+      goal.teamMembers.forEach(function(m) {
+        html += '<div class="person-card">';
+        html += '<div class="person-name">' + esc(m.name) + '</div>';
+        html += '<div class="person-role">' + esc(m.role) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Stakeholders
+    if (goal.stakeholders && goal.stakeholders.length > 0) {
+      html += '<div class="section-label">Stakeholders</div>';
+      html += '<div class="people-grid">';
+      goal.stakeholders.forEach(function(s) {
+        html += '<div class="stakeholder-card">';
+        html += '<div class="person-name">' + esc(s.name) + '</div>';
+        html += '<div class="person-role">' + esc(s.role) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    document.getElementById('mainContent').innerHTML = html;
+
+    // Wire up KR checkboxes
+    document.querySelectorAll('.kr-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var idx = parseInt(card.getAttribute('data-kr-index'));
+        var kr = goal.keyResults[idx];
+        kr.done = !kr.done;
+
+        // Update timestamp
+        var now = new Date();
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        goal.lastUpdated = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+
+        saveData(fullData);
+
+        // Re-render to update everything
+        renderGoal(goal, fullData);
+        runPageAnimation();
+      });
+    });
+
+    runPageAnimation();
+  }
+
+  function runPageAnimation() {
+    gsap.from('.back-link', { x: -20, opacity: 0, duration: 0.4, ease: 'power2.out' });
+    gsap.from('.goal-page-title', { y: 30, opacity: 0, duration: 0.6, ease: 'power3.out', delay: 0.1 });
+    gsap.from('.goal-status-row', { y: 20, opacity: 0, duration: 0.4, ease: 'power2.out', delay: 0.2 });
+    gsap.from('.progress-card', { scale: 0.9, opacity: 0, duration: 0.5, ease: 'back.out(1.4)', delay: 0.3 });
+    gsap.from('.glass-card', { y: 20, opacity: 0, duration: 0.4, ease: 'power2.out', delay: 0.35 });
+    gsap.from('.kr-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.4 });
+    gsap.from('.action-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.5 });
+    gsap.from('.rec-card', { x: -20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.55 });
+    gsap.from('.person-card, .stakeholder-card', { y: 20, opacity: 0, stagger: 0.06, duration: 0.35, ease: 'power2.out', delay: 0.6 });
+  }
+})();
+</script>
+</body>
+</html>
