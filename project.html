@@ -919,21 +919,49 @@ a { text-decoration: none; color: inherit; }
       });
     }
 
-    // Section 6: Possible Introductions
+    // Section 6: Possible Introductions / Lead Buckets
     html += '<div class="section-label">Possible Introductions</div>';
     if (p.possible_intros && p.possible_intros.length > 0) {
-      html += '<div class="intro-grid">';
+      var buckets = {
+        conversation: [],
+        reached: [],
+        next: [],
+        other: []
+      };
+
       p.possible_intros.forEach(function(intro) {
-        // Parse "Name (Context)" pattern
-        var match = intro.match(/^([^(]+)\(([^)]+)\)/);
-        var name = match ? match[1].trim() : intro;
-        var context = match ? match[2].trim() : '';
-        html += '<div class="intro-card">';
-        html += '<div class="intro-name">' + esc(name) + '</div>';
-        if (context) html += '<div class="intro-context">' + esc(context) + '</div>';
-        html += '</div>';
+        if (intro.indexOf('Already in conversation:') === 0) {
+          buckets.conversation.push(intro.replace('Already in conversation:', '').trim());
+        } else if (intro.indexOf('Reached out:') === 0) {
+          buckets.reached.push(intro.replace('Reached out:', '').trim());
+        } else if (intro.indexOf('Next:') === 0) {
+          buckets.next.push(intro.replace('Next:', '').trim());
+        } else {
+          buckets.other.push(intro);
+        }
       });
-      html += '</div>';
+
+      function renderIntroBucket(title, items) {
+        if (!items.length) return;
+        html += '<div class="section-label" style="margin-top:16px;font-size:13px;opacity:.85">' + esc(title) + '</div>';
+        html += '<div class="intro-grid">';
+        items.forEach(function(intro) {
+          var parts = intro.split(' — ');
+          var name = parts[0] || intro;
+          var context = parts.slice(1).join(' — ');
+          html += '<div class="intro-card">';
+          html += '<div class="intro-name">' + esc(name.trim()) + '</div>';
+          if (context) html += '<div class="intro-context">' + esc(context.trim()) + '</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      renderIntroBucket('Already in conversation', buckets.conversation);
+      renderIntroBucket('Reached out', buckets.reached);
+      renderIntroBucket('Next', buckets.next);
+      renderIntroBucket('Other', buckets.other);
+
       html += '<a href="matches.html" class="view-matches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg> View in Matches</a>';
     } else {
       html += '<p class="no-intros">No introductions suggested yet.</p>';
