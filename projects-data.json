@@ -401,7 +401,52 @@
       ],
       "possible_intros": [],
       "notes": "Proceed with caution. Validation not complete."
+    },
+    {
+      "id": "money-fellows",
+      "name": "Money Fellows US Market Entry",
+      "status": "Active",
+      "company_brief": "Money Fellows is exploring US market entry with Sprintly supporting market strategy, segment prioritization, regulatory diligence, and go-to-market planning for a focused launch path.",
+      "executives": [],
+      "spoc": {
+        "name": "TBD",
+        "role": "Money Fellows US market entry lead",
+        "email": ""
+      },
+      "key_metrics": "Strategy document due next week",
+      "timeline": [
+        {
+          "date": "Apr 20, 2026",
+          "milestone": "US Market Entry strategy meeting completed, target segments and workstreams confirmed",
+          "status": "completed"
+        },
+        {
+          "date": "This week",
+          "milestone": "Licensing and regulatory research for US entry",
+          "status": "in_progress"
+        },
+        {
+          "date": "This week",
+          "milestone": "Financial model built covering budget, ROI timeline, and pricing strategy",
+          "status": "in_progress"
+        },
+        {
+          "date": "Next week",
+          "milestone": "Final strategy document delivered with segment recommendations, financial model, and marketing plan",
+          "status": "upcoming"
+        }
+      ],
+      "next_actions": [
+        "Prioritize Muslim Americans and immigrant Rosca communities as the first US beachhead segments, with Sharia-compliant positioning at the center of the narrative",
+        "Translate the four validated segments into a ranked recommendation set: Muslim Americans, immigrant Rosca communities, credit invisible Americans, and gig workers",
+        "Build the financial model covering launch budget, ROI timeline, customer economics, and pricing strategy",
+        "Run US licensing and regulatory research to define the market entry path, constraints, and sequencing",
+        "Develop a localized marketing plan using native language, community terminology, and community-event-based acquisition tactics",
+        "Draft the final strategy document for next week with segment recommendations, financial model, and marketing plan"
+      ],
+      "possible_intros": [],
+      "notes": "Operating truth from the Apr 20, 2026 recap: the viable US target segments are immigrant Rosca communities, credit invisible Americans, gig workers, and Muslim Americans. The strongest initial focus should be Muslim Americans and immigrant Rosca communities, with a clear Sharia-compliant emphasis and messaging that feels culturally native rather than translated. Go-to-market should be localized through the actual terms these communities use and through community events and trusted channels, not generic mass-market performance marketing. The strategy now requires two parallel workstreams before external execution: a financial model covering budget, ROI timeline, and pricing logic, and a licensing/regulatory workstream to determine how Money Fellows can legally and practically enter the US market. The output due next week is a clean strategy document that recommends segment priority, includes the financial model, and lays out the marketing plan."
     }
   ],
-  "last_updated": "2026-03-30T13:55:00Z"
+  "last_updated": "2026-04-20T16:45:00Z"
 }
