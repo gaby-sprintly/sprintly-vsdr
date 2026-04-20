@@ -407,11 +407,22 @@
       "name": "Money Fellows US Market Entry",
       "status": "Active",
       "company_brief": "Money Fellows is exploring US market entry with Sprintly supporting market strategy, segment prioritization, regulatory diligence, and go-to-market planning for a focused launch path.",
-      "executives": [],
+      "executives": [
+        {
+          "name": "Money Fellows team",
+          "role": "Client-side working team for the US market entry workstream",
+          "company": "Money Fellows"
+        },
+        {
+          "name": "Berkeley",
+          "role": "Sprintly's supporting team on strategy and execution for this workstream",
+          "company": "Sprintly Partners"
+        }
+      ],
       "spoc": {
-        "name": "TBD",
-        "role": "Money Fellows US market entry lead",
-        "email": ""
+        "name": "Yousra Gaballah",
+        "role": "Primary Sprintly contact, meeting owner; awaiting explicit Money Fellows-side project lead confirmation",
+        "email": "yousra@sprintlypartners.com"
       },
       "key_metrics": "Strategy document due next week",
       "timeline": [
@@ -437,6 +448,7 @@
         }
       ],
       "next_actions": [
+        "Confirm the named Money Fellows-side single point of contact for day-to-day coordination; until then, keep Yousra as the active Sprintly coordination owner based on the Apr 20 meeting context",
         "Prioritize Muslim Americans and immigrant Rosca communities as the first US beachhead segments, with Sharia-compliant positioning at the center of the narrative",
         "Translate the four validated segments into a ranked recommendation set: Muslim Americans, immigrant Rosca communities, credit invisible Americans, and gig workers",
         "Build the financial model covering launch budget, ROI timeline, customer economics, and pricing strategy",
@@ -445,7 +457,7 @@
         "Draft the final strategy document for next week with segment recommendations, financial model, and marketing plan"
       ],
       "possible_intros": [],
-      "notes": "Operating truth from the Apr 20, 2026 recap: the viable US target segments are immigrant Rosca communities, credit invisible Americans, gig workers, and Muslim Americans. The strongest initial focus should be Muslim Americans and immigrant Rosca communities, with a clear Sharia-compliant emphasis and messaging that feels culturally native rather than translated. Go-to-market should be localized through the actual terms these communities use and through community events and trusted channels, not generic mass-market performance marketing. The strategy now requires two parallel workstreams before external execution: a financial model covering budget, ROI timeline, and pricing logic, and a licensing/regulatory workstream to determine how Money Fellows can legally and practically enter the US market. The output due next week is a clean strategy document that recommends segment priority, includes the financial model, and lays out the marketing plan."
+      "notes": "Operating truth from the Apr 20, 2026 recap: the viable US target segments are immigrant Rosca communities, credit invisible Americans, gig workers, and Muslim Americans. The strongest initial focus should be Muslim Americans and immigrant Rosca communities, with a clear Sharia-compliant emphasis and messaging that feels culturally native rather than translated. Go-to-market should be localized through the actual terms these communities use and through community events and trusted channels, not generic mass-market performance marketing. The strategy now requires two parallel workstreams before external execution: a financial model covering budget, ROI timeline, and pricing logic, and a licensing/regulatory workstream to determine how Money Fellows can legally and practically enter the US market. The output due next week is a clean strategy document that recommends segment priority, includes the financial model, and lays out the marketing plan.\n\nTeam structure update: the client-side working team is captured as the Money Fellows team, while Berkeley is recorded as Sprintly's supporting team on this workstream. Based on the verified meeting/calendar context currently available in the workspace, Yousra is the clearest confirmed active coordination owner because she hosted the Apr 20 meeting and is the only explicitly verified participant in the source recap. The named Money Fellows-side day-to-day point of contact still needs explicit confirmation, so the project record keeps that wording careful rather than overstating certainty."
     }
   ],
   "last_updated": "2026-04-20T16:45:00Z"
