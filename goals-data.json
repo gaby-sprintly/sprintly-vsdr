@@ -5,18 +5,18 @@
       "id": "mena-to-valley-cohort",
       "projectManager": { "name": "Yousra Gaballah", "role": "Program Lead" },
       "title": "Deliver MENA to the Valley 2026 Cohort",
-      "description": "31 founders confirmed. 23 deposits locked, $92K collected. 8 pending ($32K). Two founder dinners and partner meetings now booked in SF, but deposit collection is still below target with 2 days left.",
+      "description": "31 founders confirmed. 23 deposits locked, $92K collected. 8 deposits remain unresolved after the Apr 15 target, but SF founder and partner momentum stayed strong through live introductions and meetings.",
       "status": "at-risk",
-      "lastUpdated": "Apr 13, 2026",
+      "lastUpdated": "Apr 19, 2026",
       "keyResults": [
         { "text": "31 founders confirmed from 37 responses", "done": true },
         { "text": "23 deposits locked ($92K)", "done": true },
-        { "text": "8 deposits still pending, $32K outstanding by Apr 15", "done": false },
-        { "text": "SF execution week underway with Kate, CloudCom and founder meetings booked", "done": false }
+        { "text": "8 deposits still pending, $32K still outstanding after the Apr 15 target", "done": false },
+        { "text": "SF execution week converted into live intros and meetings with Kate, CEQUENS/CloudCom and ecosystem operators", "done": true }
       ],
       "nextActions": [
-        "Run direct deposit follow-up with the 8 laggards before Apr 15",
-        "Convert Sarah Rona, Kate and SF meetings into credibility signals for founders",
+        "Run direct deposit recovery with the 8 laggards and decide whether to escalate through calls or a tighter sequence",
+        "Turn SF introductions and meetings into founder confidence assets and closing proof",
         "Attach bank details to remaining founder threads",
         "Finalize virtual mentorship agenda for mid-May"
       ],
@@ -38,24 +38,24 @@
       "notes": "SF execution week is critical — need daily check-ins with Kate and CloudCom contacts. Yousra to lead founder comms.",
       "followUps": [
         { "text": "Waiting for 8 founders to confirm deposit wire transfers", "owner": "Yousra" },
-        { "text": "Waiting for Kate to confirm SF dinner venue", "owner": "Annija" }
+        { "text": "Waiting for final founder close plan on outstanding $32K", "owner": "Yousra" }
       ]
     },
     {
       "id": "institutional-partnerships",
       "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Close 3+ Institutional Partnerships",
-      "description": "Monshaat is signed, HBKU remains in review, and new Money Fellows plus CloudCom/ARPU Plus momentum strengthens the institutional pipeline.",
+      "description": "Monshaat remains the strongest institutional proof point, HBKU is still stalled in review, and Money Fellows plus CEQUENS/CloudCom activity expanded the institutional pipeline but not yet into signed scope.",
       "status": "on-track",
-      "lastUpdated": "Apr 10, 2026",
+      "lastUpdated": "Apr 20, 2026",
       "keyResults": [
         { "text": "Monshaat signed and in delivery mode", "done": true },
         { "text": "HBKU partnership still awaiting final update and contract movement", "done": false },
-        { "text": "Money Fellows US entry meeting added as a live strategic partnership track", "done": false }
+        { "text": "Money Fellows US market entry workstream formalized with segment, regulatory, and financial modeling priorities", "done": true }
       ],
       "nextActions": [
         "Push Nada for HBKU contract movement this week",
-        "Convert Money Fellows meeting into a scoped partnership path",
+        "Turn Money Fellows into a scoped US market entry advisory workstream with a next-week strategy deliverable",
         "Package Monshaat proof into the next partner deck"
       ],
       "recommendedActions": [
@@ -71,19 +71,19 @@
         { "name": "HBKU", "role": "In Review" },
         { "name": "Money Fellows", "role": "Prospective Partner" }
       ],
-      "notes": "",
+      "notes": "Money Fellows is now a clean strategic workstream rather than a loose meeting follow-up. Confirmed target segments are immigrant Rosca communities, credit invisible Americans, gig workers, and Muslim Americans. The current recommendation is to prioritize Muslim Americans and immigrant Rosca communities first, with Sharia-compliant positioning and localized community language at the core. Before go-to-market, the work needs two concrete tracks: US licensing/regulatory research and a financial model covering budget, ROI timeline, and pricing logic. Final output due next week is a strategy document with segment recommendations, financial modeling, and the marketing plan.",
       "followUps": [
         { "text": "Waiting for Nada to send HBKU contract update", "owner": "Yousra" },
-        { "text": "Waiting for Money Fellows to confirm US entry meeting date", "owner": "Annija" }
+        { "text": "Waiting for Money Fellows strategy document package to be completed next week", "owner": "Annija" }
       ]
     },
     {
       "id": "ai-squad",
       "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Launch AI Squad with 2+ Corporate Clients",
-      "description": "NVIDIA content and deck are ready, but no paying client has closed and AI Squad is still reliant on outreach rather than active revenue conversations.",
+      "description": "NVIDIA content and deck are ready, but no paying client has closed and AI Squad remains stuck at the commercial conversion stage.",
       "status": "behind",
-      "lastUpdated": "Apr 10, 2026",
+      "lastUpdated": "Apr 19, 2026",
       "keyResults": [
         { "text": "NVIDIA content produced", "done": true },
         { "text": "AI Squad deck ready", "done": true },
@@ -116,16 +116,17 @@
       "id": "network-growth",
       "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Grow Network to 8,000+ Contacts",
-      "description": "Database remains at roughly 6,000 contacts, but enrichment is still blocked pending approval and several VIP follow-ups are now overdue.",
+      "description": "Database remains at roughly 6,000 contacts. The broader 100-contact enrichment batch is still blocked pending approval, but 10 strategic contacts were enriched this cycle and VIP follow-ups remain overdue.",
       "status": "at-risk",
-      "lastUpdated": "Apr 10, 2026",
+      "lastUpdated": "Apr 19, 2026",
       "keyResults": [
         { "text": "~6,000 contacts remain available in CRM", "done": true },
         { "text": "100-contact enrichment batch still awaiting approval", "done": false },
+        { "text": "10 strategic contacts enriched this cycle to unblock near-term network quality", "done": true },
         { "text": "Resolve overdue VIP and founder follow-ups before growth push", "done": false }
       ],
       "nextActions": [
-        "Unblock enrichment approval and process the top 10 strategic contacts first",
+        "Secure approval for the full 100-contact enrichment batch",
         "Clear overdue VIP follow-ups from April 7-8",
         "Add new SF and IMF/World Bank contacts after this week's meetings"
       ],
@@ -138,7 +139,7 @@
         { "name": "Gaby (AI)", "role": "Enrichment & Automation" }
       ],
       "stakeholders": [],
-      "notes": "Enrichment pipeline is the bottleneck — once unblocked, growth should accelerate.",
+      "notes": "Enrichment pipeline is still the bottleneck. This cycle improved the top 10 strategic profiles, but the full network growth push still depends on approval.",
       "followUps": [
         { "text": "Waiting for enrichment batch approval", "owner": "Gaby (AI)" }
       ]
@@ -147,12 +148,12 @@
       "id": "revenue-target",
       "projectManager": { "name": "Yousra Gaballah", "role": "Lead" },
       "title": "Hit Annual Revenue Target",
-      "description": "Revenue target is still not formalized in VSDR, but $92K of founder deposits are already in and partnership revenue opportunities are active this week.",
+      "description": "Revenue target is still not formalized in VSDR, but $92K of founder deposits are already in, CloudCom/ARPU Plus momentum is active, and institutional revenue paths remain live.",
       "status": "on-track",
-      "lastUpdated": "Apr 10, 2026",
+      "lastUpdated": "Apr 19, 2026",
       "keyResults": [
         { "text": "Annual revenue target still needs to be formally defined in VSDR", "done": false },
-        { "text": "$92K founder deposits already collected toward Q2 cash generation", "done": false },
+        { "text": "$92K founder deposits already collected toward Q2 cash generation", "done": true },
         { "text": "Convert current partnership pipeline into contracted revenue", "done": false }
       ],
       "nextActions": [
@@ -176,7 +177,7 @@
     {
       "id": "close-deposits",
       "title": "Close all MENA to Valley deposits by Apr 15",
-      "status": "at-risk",
+      "status": "behind",
       "parentGoalId": "mena-to-valley-cohort"
     },
     {
@@ -194,7 +195,7 @@
     {
       "id": "close-hbku",
       "title": "Close HBKU contract",
-      "status": "at-risk",
+      "status": "behind",
       "parentGoalId": "institutional-partnerships"
     },
     {
