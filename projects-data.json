@@ -4,7 +4,7 @@
       "id": "mena-to-valley-2026",
       "name": "MENA to the Valley 2026",
       "status": "Active",
-      "company_brief": "Sprintly Partners' flagship founder bridge program is now managed as a live operating tracker across cohort selection, payment follow-up, founder onboarding, mentor programming, logistics, and partner coordination. The record now reflects the full accessible source set around the cohort: applicant pipeline, pre-selected founders who received deposit requests, replacement contact handling for Roboost, and downstream onboarding dependencies including visas, travel, and session planning.",
+      "company_brief": "Sprintly Partners' flagship founder bridge program is now managed as a live operating tracker across cohort selection, funding follow-up, founder onboarding, mentor programming, invitee management, marketing, program management, and partner coordination. This update preserves the earlier founder-pipeline improvements while restructuring the project around the visible workbook tabs from the shared Excel file. It is a workbook-structure update derived from visible tab metadata, not a row-perfect sync of underlying spreadsheet cells.",
       "executives": [
         {
           "name": "Yousra Gaballah",
@@ -32,11 +32,16 @@
         "role": "Founder & CEO",
         "email": "yousra@sprintlypartners.com"
       },
-      "key_metrics": "23 applications, 12 deposit requests sent, 1 founder contact replaced, 5 workstreams active",
+      "key_metrics": "23 applications, 12 deposit requests sent, 10 visible workbook workstreams mapped into VSDR structure",
       "timeline": [
         {
+          "date": "8 Jan 2026",
+          "milestone": "Early planning checkpoint captured as its own workbook-era milestone bucket",
+          "status": "completed"
+        },
+        {
           "date": "Jan-Mar 2026",
-          "milestone": "Applications collected and founder pipeline assembled across 23 submissions",
+          "milestone": "Applications collected and startup scouting pipeline assembled across 23 submissions",
           "status": "completed"
         },
         {
@@ -45,89 +50,124 @@
           "status": "completed"
         },
         {
-          "date": "Mar 21, 2026",
-          "milestone": "Deposit confirmation deadline for pre-selected founders",
-          "status": "completed"
+          "date": "Apr 2026",
+          "milestone": "Program structure expanded in VSDR to reflect scouting, funding, partnerships, VC, mentors, marketing, invitees, and program management",
+          "status": "in_progress"
         },
         {
-          "date": "Apr 2026",
-          "milestone": "Virtual program launch and founder onboarding kickoff",
+          "date": "Apr-May 2026",
+          "milestone": "Virtual program, mentor scheduling, and partner coordination run in parallel",
           "status": "in_progress"
         },
         {
           "date": "May 2026",
-          "milestone": "Silicon Valley immersion timing shifted to May pending regional stability and logistics readiness",
-          "status": "in_progress"
-        },
-        {
-          "date": "Pre-immersion",
-          "milestone": "Collect remaining balances, onboarding forms, visa details, and travel logistics",
+          "milestone": "Silicon Valley immersion timing remains dependent on founder confirmations and logistics readiness",
           "status": "upcoming"
         }
       ],
       "next_actions": [
-        "Reconcile each of the 12 deposit-requested founders into paid, pending, declined, or no-response status using the live shared tracker",
-        "Send onboarding forms immediately after each deposit receipt and capture visa, travel, and accommodation readiness by founder",
-        "Decide final shortlist outcomes for remaining applicants who did not receive the pre-March deposit request",
+        "Reconnect the live workbook to replace structure-level assumptions with row-level statuses where needed",
+        "Populate partner, scouting partner, mentor, invitee, and funding rows from the authenticated workbook once access is restored",
+        "Reconcile each of the 12 deposit-requested founders into paid, pending, declined, or no-response status using the live tracker",
         "Assign mentor tracks and virtual-program sessions for confirmed founders across AI, GTM, fundraising, and market access",
-        "Lock immersion logistics and founder-by-founder travel dependencies once the live sheet is reconnected"
+        "Lock partner-facing marketing beats, invitee outreach, and immersion logistics against the program calendar"
       ],
       "possible_intros": [
-        "Already in conversation: Tarek Taha (CBE Fintech Hub) — fintech founder support and regional banking context",
-        "Already in conversation: Sara Rona (SVB) — US banking setup and founder onboarding relevance",
-        "Already in conversation: Mohammed Al-Emadi (QDB) — Qatar founder pipeline and institutional bridge",
-        "Next: TechWadi mentors — Silicon Valley founder mentor pool for virtual sessions",
-        "Next: Plug and Play operators — corporate innovation programming and ecosystem access",
-        "Next: Startup Grind Global hosts — showcase and community distribution support"
+        "Partner bucket: CBE Fintech Hub, SVB, QDB, and similar institutional bridge partners should sit in the Partnerships / VC structure",
+        "Scouting partner bucket: ecosystem operators that can source founders across MENA should be tracked separately from corporates and VCs",
+        "Mentor bucket: TechWadi mentors and Silicon Valley operators should be tracked as a dedicated mentor pool, not mixed into general intros",
+        "Invitee bucket: event or showcase invitees should be managed as their own outreach stream tied to marketing and program milestones",
+        "Marketing bucket: showcase amplification partners such as Startup Grind-style community channels should map to program promotion, not startup sourcing"
       ],
-      "notes": "This project was upgraded again to better reflect the full accessible source set tied to the MENA to the Valley cohort. I could not authenticate into the shared OneDrive workbook from this environment, so I could not directly inspect the live spreadsheet tabs. Instead, I consolidated every locally available cohort source that appears to mirror pieces of that sheet: the March 11 application summary, the 12 individualized pre-March deposit emails, the cohort BCC draft, and the 16 founder selection email draft set. That let me add the missing replacement contact for Roboost, formalize the pre-selected founder cohort, expose onboarding dependencies after deposit receipt, and turn the project into a fuller operating tracker rather than a static applicant list. The remaining payment reconciliation, acceptance, visa, and travel fields still require the authenticated live workbook import to be final.",
+      "notes": "This project was restructured again using only workbook-level information visible from the shared Excel link, specifically the tab names Startup Scouting, Funding, Partnerships (Corporates), VC Partners, Yousra, Invitees, 8th Jan, Mentors, Marketing, and Program Management. I could not inspect the underlying workbook cells from this environment, so this is intentionally not a row-perfect spreadsheet sync. Instead, I preserved the existing founder-pipeline and deposit-tracker improvements, then expanded the VSDR project into a more useful planning structure that mirrors the visible workbook categories. Partner, scouting partner, mentor, invitee, funding, marketing, and program-management sections are therefore structural buckets inferred from tab metadata and should be treated as planning scaffolding until the authenticated workbook can be reviewed directly.",
       "trackers": [
         {
-          "title": "Operating Workstreams",
-          "subtitle": "Execution structure for the cohort based on the accessible source set",
+          "title": "Workbook-Derived Workstreams",
+          "subtitle": "Top-level planning structure mapped from the visible workbook tabs, preserving the prior cohort tracker improvements",
           "type": "planning",
           "columns": [
-            "Workstream",
+            "Workbook Tab / Bucket",
+            "Purpose in VSDR",
             "Owner",
-            "Current Status",
+            "Current Read",
             "Next Checkpoint"
           ],
           "rows": [
             [
-              "Applicant review and decisions",
+              "Startup Scouting",
+              "Manage startup sourcing funnel, scouting partners, and applicant qualification",
               "Yousra / Gaby",
-              "23 submissions captured, pre-selected subset identified",
-              "Mark shortlist, waitlist, nurture, and decline for the remaining pipeline"
+              "Founder pipeline already reconstructed and should remain the base layer",
+              "Separate sourced-by-partner vs direct applicants once live workbook rows are visible"
             ],
             [
-              "Deposits and finance follow-up",
-              "Gaby",
-              "12 founders received $4,000 deposit request by Mar 21",
-              "Update founder-by-founder payment reconciliation from the live tracker"
+              "Funding",
+              "Track deposits, balances, sponsor support, and fundraising-related founder readiness",
+              "Gaby / Sherif",
+              "Existing deposit-request logic preserved from prior tracker update",
+              "Add paid / pending / declined / scholarship-or-sponsor fields from live sheet"
             ],
             [
-              "Founder onboarding",
-              "Sprintly ops",
-              "Onboarding triggered after deposit receipt",
-              "Issue forms and capture visa, travel, and accommodation details"
+              "Partnerships (Corporates)",
+              "Manage corporate ecosystem partners, hosts, and program-support relationships",
+              "Annija / Yousra",
+              "Needed as a distinct partner bucket, not mixed into founder pipeline",
+              "List each corporate partner with status, objective, and next ask"
             ],
             [
-              "Virtual programming",
-              "Annija / Sprintly team",
-              "Virtual program communicated as launching in April 2026",
-              "Map confirmed founders to mentor sessions and operator intros"
+              "VC Partners",
+              "Track venture capital relationships relevant to founder intros, fundraising support, and demo-day exposure",
+              "Sherif / Yousra",
+              "VCs are implied as a standalone workstream by the workbook",
+              "Separate active VC partners from general ecosystem contacts"
             ],
             [
-              "Immersion logistics",
-              "Sprintly ops",
-              "Valley immersion moved from earlier plan into May timing",
-              "Finalize travel and on-ground plan once confirmations are locked"
+              "Yousra",
+              "Reserve a leadership bucket for founder-level priorities, approvals, and high-touch owner actions",
+              "Yousra",
+              "Visible workbook tab suggests a dedicated executive workstream",
+              "Convert into approvals, escalations, and key decisions once workbook details are available"
+            ],
+            [
+              "Invitees",
+              "Manage showcase guests, ecosystem guests, and event outreach lists",
+              "Gaby / Marketing",
+              "Invitee flow should be independent from founder and partner records",
+              "Add invitee segmentation, RSVP, and priority tiering"
+            ],
+            [
+              "8th Jan",
+              "Keep early planning notes, kickoff decisions, or event-specific context as a historical milestone bucket",
+              "Program team",
+              "Visible tab signals an important dated planning checkpoint",
+              "Map dated decisions and dependencies into a milestone tracker"
+            ],
+            [
+              "Mentors",
+              "Run mentor pool buildout, assignment, and session scheduling",
+              "Annija / Program team",
+              "Mentor programming already implied in previous tracker, now formalized as its own bucket",
+              "Track mentor function, geography, availability, and matched founders"
+            ],
+            [
+              "Marketing",
+              "Track announcements, partner amplification, founder stories, and event promotion",
+              "Marketing / Gaby",
+              "Marketing was missing as an explicit workstream and is now added",
+              "Create campaign calendar tied to application, cohort, and immersion moments"
+            ],
+            [
+              "Program Management",
+              "Coordinate timeline, owners, dependencies, and cross-workstream execution",
+              "Gaby / Sprintly ops",
+              "Program management now acts as the umbrella operating layer",
+              "Run weekly operating review across all buckets"
             ]
           ]
         },
         {
           "title": "Founder Pipeline Master Tracker",
-          "subtitle": "Applicant pool plus pre-selected cohort indicators reconstructed from all accessible MENA to Valley source files",
+          "subtitle": "Applicant pool plus pre-selected cohort indicators preserved from the earlier accessible-source reconstruction",
           "type": "contacts",
           "columns": [
             "Startup",
@@ -358,8 +398,131 @@
           ]
         },
         {
-          "title": "Selection and Payment Mechanics",
-          "subtitle": "What the accessible source files confirm about cohort progression",
+          "title": "Partner and Ecosystem Buckets",
+          "subtitle": "Structure added from visible workbook categories, awaiting authenticated row-level enrichment",
+          "type": "planning",
+          "columns": [
+            "Bucket",
+            "What belongs here",
+            "Current Status",
+            "How to use it now"
+          ],
+          "rows": [
+            [
+              "Corporate partners",
+              "Corporates, institutional hosts, and commercial ecosystem partners tied to the program",
+              "Bucket added from Partnerships (Corporates) tab metadata",
+              "Use for partner name, relationship stage, program role, and next step"
+            ],
+            [
+              "Scouting partners",
+              "Accelerators, ecosystem builders, hubs, and community partners that can source startups",
+              "Bucket added from Startup Scouting tab metadata",
+              "Use to distinguish sourcing channels from selected founders"
+            ],
+            [
+              "VC partners",
+              "VCs, angel platforms, and investor networks supporting fundraising outcomes",
+              "Bucket added from VC Partners tab metadata",
+              "Use for intros, office hours, demo-day attendance, and follow-up"
+            ],
+            [
+              "Mentors",
+              "Founder mentors, operators, specialists, and Silicon Valley expert pool",
+              "Bucket added from Mentors tab metadata",
+              "Use for expertise mapping, session assignment, and founder pairing"
+            ],
+            [
+              "Invitees",
+              "Guests for showcases, dinners, briefings, or immersion-related events",
+              "Bucket added from Invitees tab metadata",
+              "Use for RSVP tracking and comms prioritization"
+            ]
+          ]
+        },
+        {
+          "title": "Funding and Finance Structure",
+          "subtitle": "Funding tab translated into an operating view while preserving the existing deposit mechanics",
+          "type": "status",
+          "columns": [
+            "Component",
+            "Current Read",
+            "Operational Implication",
+            "Confidence"
+          ],
+          "rows": [
+            [
+              "Founder deposits",
+              "$4,000 deposit request already confirmed for the pre-selected cohort",
+              "Continue using founder-level payment reconciliation as a core tracker",
+              "High"
+            ],
+            [
+              "Remaining balances",
+              "$14,000 post-deposit balance remains part of the confirmed fee structure",
+              "Keep final balance collection separate from initial commitment status",
+              "High"
+            ],
+            [
+              "Sponsorship / partner support",
+              "Funding tab may also contain sponsor-side support, but cells are not visible here",
+              "Reserve fields for sponsor-backed seats or in-kind support",
+              "Low"
+            ],
+            [
+              "Founder fundraising support",
+              "VC and mentor tracks likely connect to fundraising readiness",
+              "Treat funding as both payment operations and investor-prep workflow",
+              "Medium"
+            ]
+          ]
+        },
+        {
+          "title": "Program Management Calendar Structure",
+          "subtitle": "Cross-functional operating scaffold derived from Program Management, Marketing, Yousra, and 8th Jan tabs",
+          "type": "planning",
+          "columns": [
+            "Lane",
+            "What to manage",
+            "Current Read",
+            "Next Step"
+          ],
+          "rows": [
+            [
+              "Leadership / Yousra",
+              "Approvals, escalations, VIP outreach, strategic decisions",
+              "Dedicated tab implies a separate leadership lane",
+              "Capture pending approvals and decisions explicitly"
+            ],
+            [
+              "Program management",
+              "Owners, dependencies, milestones, weekly reviews",
+              "Needed as umbrella coordination across all tabs",
+              "Turn into a weekly operating cadence"
+            ],
+            [
+              "Marketing",
+              "Announcements, cohort storytelling, partner promotion, event comms",
+              "Explicit marketing workstream now added",
+              "Build campaign checkpoints around program milestones"
+            ],
+            [
+              "Invitees and events",
+              "Guest lists, RSVP, special briefings, demo-day or showcase attendance",
+              "Invitee flow should sit close to marketing and program ops",
+              "Create priority invitee segments"
+            ],
+            [
+              "8th Jan milestone",
+              "Historical kickoff notes / dated planning checkpoint",
+              "Visible date tab preserved as a milestone bucket",
+              "Map any recovered details back into timeline and decisions log"
+            ]
+          ]
+        },
+        {
+          "title": "Source Confidence and Sync Limits",
+          "subtitle": "What this update is, and what it is not",
           "type": "status",
           "columns": [
             "Signal",
@@ -367,67 +530,24 @@
           ],
           "rows": [
             [
-              "Application received",
-              "Startup appears in the application submission summary but is not yet proven paid or fully accepted in the accessible sources"
+              "Workbook-structure update",
+              "This VSDR refresh is based on visible workbook/tab metadata plus previously accessible local source files"
             ],
             [
-              "Deposit request sent",
-              "Founder received the pre-March confirmation email requesting a $4,000 deposit by Mar 21 to hold the spot"
+              "Not a spreadsheet sync",
+              "Underlying rows and cell values from the shared Excel workbook were not accessible from this environment"
             ],
             [
-              "Founder contact replaced",
-              "The cohort email draft shows Roboost moved from Hossam Shafick to Mohamed Gessraha / mohamed@tayar.app"
+              "Preserved prior tracker gains",
+              "Founder pipeline, deposit mechanics, and onboarding dependencies from the earlier tracker were intentionally kept"
             ],
             [
-              "Onboarding pending after deposit",
-              "Selection email drafts confirm onboarding forms should be sent after deposit receipt to capture visa, travel, and logistics details"
+              "Needs authenticated enrichment",
+              "Partners, scouting partners, mentors, invitees, and funding rows should be populated from the live workbook once available"
             ],
             [
-              "Needs authenticated live-sheet sync",
-              "Payment receipts, acceptance confirmation, visa progress, and travel readiness still depend on the unavailable shared workbook"
-            ]
-          ]
-        },
-        {
-          "title": "Program Structure",
-          "subtitle": "Program commitments and downstream dependencies surfaced from the email drafts",
-          "type": "planning",
-          "columns": [
-            "Component",
-            "Current Read",
-            "Operational Implication",
-            "Source Basis"
-          ],
-          "rows": [
-            [
-              "Program fee",
-              "$18,000 total, with $4,000 deposit and $14,000 remaining balance",
-              "Finance tracker should show deposit stage separately from final balance collection",
-              "Selection + pre-March email drafts"
-            ],
-            [
-              "Virtual phase",
-              "Virtual program communicated as launching in April 2026",
-              "Confirmed founders need session scheduling and mentor assignment before travel",
-              "Pre-March cohort emails"
-            ],
-            [
-              "Immersion timing",
-              "Silicon Valley immersion pushed to May in the pre-March communication set",
-              "Travel and accommodation planning should not be treated as locked until founder confirmations are reconciled",
-              "Pre-March cohort emails"
-            ],
-            [
-              "Onboarding trigger",
-              "Onboarding form goes out after deposit receipt",
-              "Need a founder-by-founder onboarding status column in the live tracker",
-              "Selection email drafts"
-            ],
-            [
-              "Visa and logistics capture",
-              "Visa, travel, and logistics data collected only after deposit",
-              "Readiness fields in VSDR should remain operational checkpoints, not assumptions",
-              "Selection email drafts"
+              "Safe current use",
+              "The project is now useful for planning and workstream management even before full workbook access is restored"
             ]
           ]
         }
