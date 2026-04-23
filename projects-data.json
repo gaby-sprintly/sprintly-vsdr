@@ -3,8 +3,8 @@
     {
       "id": "mena-to-valley-2026",
       "name": "MENA to the Valley 2026",
-      "status": "Launching",
-      "company_brief": "Sprintly Partners' flagship program connecting MENA/Africa founders with Silicon Valley investors, mentors, and corporate partners through a structured 3-phase journey: regional selection, virtual bootcamp, and 7-10 day Silicon Valley immersion.",
+      "status": "In Progress",
+      "company_brief": "Sprintly Partners' flagship founder bridge program is now managed as a live planning tracker across cohort selection, founder operations, mentor scheduling, immersion logistics, and partner coordination. The project now reflects application-stage contacts, deposit outreach status, and an execution structure the team can use day to day instead of a static summary.",
       "executives": [
         {
           "name": "Yousra Gaballah",
@@ -20,6 +20,11 @@
           "name": "Sherif Nessim",
           "role": "Investment Advisory",
           "company": "Sprintly Partners"
+        },
+        {
+          "name": "Gaby",
+          "role": "Operations & follow-up coordination",
+          "company": "Sprintly Partners"
         }
       ],
       "spoc": {
@@ -27,41 +32,314 @@
         "role": "Founder & CEO",
         "email": "yousra@sprintlypartners.com"
       },
-      "key_metrics": "23 applications received",
+      "key_metrics": "23 applicants, 12 deposit outreach sent, 4 key workstreams active",
       "timeline": [
         {
-          "date": "Feb-Mar 2026",
-          "milestone": "Applications open",
+          "date": "Jan-Mar 2026",
+          "milestone": "Application collection and founder pipeline build",
           "status": "completed"
         },
         {
-          "date": "April 2026",
-          "milestone": "Cohort selection",
+          "date": "Mar 21, 2026",
+          "milestone": "Deposit confirmation deadline for pre-selected founders",
+          "status": "completed"
+        },
+        {
+          "date": "Apr 2026",
+          "milestone": "Cohort selection, founder qualification, and acceptance tracking",
           "status": "in_progress"
         },
         {
           "date": "Mid-May 2026",
-          "milestone": "Virtual mentorship sessions",
+          "milestone": "Virtual mentorship sessions and mentor assignment rollout",
           "status": "upcoming"
         },
         {
-          "date": "June 2-8, 2026",
+          "date": "Late May 2026",
+          "milestone": "Travel, logistics, and partner briefing lock",
+          "status": "upcoming"
+        },
+        {
+          "date": "Jun 2-8, 2026",
           "milestone": "Silicon Valley immersion week",
           "status": "upcoming"
         }
       ],
       "next_actions": [
-        "Review and shortlist from 23 applications",
-        "Confirm mentor assignments from AI Squad",
-        "Finalize virtual session schedule for May",
-        "Book SV immersion venues and corporate visits"
+        "Finalize shortlist and assign each applicant to shortlist, waitlist, nurture, or decline",
+        "Confirm which of the 12 founders who received deposit outreach have paid, replied, or need follow-up",
+        "Assign mentors and Sprintly owners across finance, GTM, fundraising, and logistics workstreams",
+        "Lock the May virtual calendar and map each selected founder to required sessions",
+        "Convert remaining pipeline into a decision tracker with acceptance, payment, visa, and travel checkpoints"
       ],
       "possible_intros": [
-        "Tarek Taha (CBE Fintech Hub) for fintech founders",
-        "Sara Rona (SVB) for US banking setup",
-        "Mohammed Al-Emadi (QDB) for Qatar founders"
+        "Already in conversation: Tarek Taha (CBE Fintech Hub) — fintech founder support and regional banking context",
+        "Already in conversation: Sara Rona (SVB) — US banking setup and founder onboarding relevance",
+        "Already in conversation: Mohammed Al-Emadi (QDB) — Qatar founder pipeline and institutional bridge",
+        "Next: TechWadi mentors — Silicon Valley founder mentor pool for virtual sessions",
+        "Next: Plug and Play operators — corporate innovation programming and ecosystem access",
+        "Next: Startup Grind Global hosts — showcase and community distribution support"
       ],
-      "notes": ""
+      "notes": "This project was upgraded from a lightweight summary into an execution tracker using the local MENA to Valley source files available in the workspace. Founder rows were reconstructed from the application summary and the pre-March deposit email set. The original OneDrive spreadsheet could not be found or fetched from the workspace, so payment reconciliation, acceptance state, visa progress, and travel readiness are still represented as planning placeholders until the live sheet is connected or imported.",
+      "trackers": [
+        {
+          "title": "Planning Overview",
+          "subtitle": "Program workstreams and current operating state",
+          "type": "planning",
+          "columns": [
+            "Workstream",
+            "Owner",
+            "Current Status",
+            "Next Checkpoint"
+          ],
+          "rows": [
+            [
+              "Founder pipeline",
+              "Yousra / Gaby",
+              "23 applications consolidated, shortlist in progress",
+              "Tag each applicant with final decision"
+            ],
+            [
+              "Deposits & confirmations",
+              "Gaby",
+              "12 pre-selected founders received deposit request",
+              "Update paid / pending / no-response by founder"
+            ],
+            [
+              "Mentor programming",
+              "Annija",
+              "Mentor assignments not yet locked",
+              "Confirm May session roster"
+            ],
+            [
+              "Immersion logistics",
+              "Sprintly ops",
+              "Venues and corporate visits still to be finalized",
+              "Lock travel and on-ground agenda"
+            ],
+            [
+              "Institutional partnerships",
+              "Yousra",
+              "Monshaat and HBKU linkage active around cohort quality",
+              "Convert partner commitments into founder nominations"
+            ]
+          ]
+        },
+        {
+          "title": "Founder Tracker",
+          "subtitle": "Applicants and status pulled from local MENA to Valley source files",
+          "type": "contacts",
+          "columns": [
+            "Startup",
+            "Founder",
+            "Stage",
+            "Location",
+            "Status",
+            "Contact"
+          ],
+          "rows": [
+            [
+              "Drop Me",
+              "Ahmed Saeed Hamoud",
+              "Seed",
+              "Cairo, Egypt",
+              "Application received",
+              "ahsaeed@dropmeeg.com"
+            ],
+            [
+              "Hype",
+              "Ammar Montaser",
+              "MVP",
+              "Cairo / UAE",
+              "Deposit outreach sent",
+              "ammarmms@hypeapp.me"
+            ],
+            [
+              "Bokra Holding",
+              "Ayman Aly",
+              "Series A",
+              "Egypt",
+              "Deposit outreach sent",
+              "ayman.elsawy@bokra.com"
+            ],
+            [
+              "DoctorVoice",
+              "Ehab Gamal",
+              "Seed",
+              "Egypt",
+              "Deposit outreach sent",
+              "ehab@doctorvoice.net"
+            ],
+            [
+              "JAFURA Global",
+              "Fady Nabil",
+              "Seed",
+              "Egypt",
+              "Deposit outreach sent",
+              "fady.nabel10@gmail.com"
+            ],
+            [
+              "RECLASS",
+              "Mohamed Elwakeel",
+              "MVP",
+              "Egypt / UAE",
+              "Deposit outreach sent",
+              "mohamed.elwakeel@reclassedu.com"
+            ],
+            [
+              "Nubrick",
+              "Ali Abdelwahab",
+              "Seed",
+              "Egypt",
+              "Deposit outreach sent",
+              "aliabdelwahab2004@gmail.com"
+            ],
+            [
+              "Wihda",
+              "Amdjed Khelifi",
+              "Seed",
+              "Algeria",
+              "Deposit outreach sent",
+              "khamjed123@gmail.com"
+            ],
+            [
+              "theQA",
+              "Ahmad Al Ebrahim",
+              "Seed",
+              "Kuwait",
+              "Deposit outreach sent",
+              "ahmad@theQA.io"
+            ],
+            [
+              "Anovera",
+              "Amr Ahmed",
+              "MVP",
+              "Unknown",
+              "Deposit outreach sent",
+              "amrz08875@gmail.com"
+            ],
+            [
+              "ChroniTrack Health Ltd.",
+              "Omoruwa German",
+              "MVP",
+              "Nigeria",
+              "Deposit outreach sent",
+              "omoruwagerman9@gmail.com"
+            ],
+            [
+              "DiffAbility",
+              "Maha Sallam",
+              "Idea",
+              "Egypt",
+              "Deposit outreach sent",
+              "maha1.sallam@gmail.com"
+            ],
+            [
+              "For Wheelz",
+              "Tamer Abdellatif",
+              "Seed",
+              "Saudi Arabia",
+              "Application received",
+              "tamer@forwheelz.com"
+            ],
+            [
+              "SpacePoint",
+              "Abdullah AlSalmani",
+              "Seed",
+              "UAE",
+              "Application received",
+              "abdel.alsalmani@gmail.com"
+            ],
+            [
+              "Resiliocs Intelligence",
+              "Moustafa Naiem",
+              "Seed",
+              "Toronto, Canada",
+              "Application received",
+              "moustafa.naiem@resiliocs.com"
+            ],
+            [
+              "Blaze",
+              "Raafat El-Saeed",
+              "Seed",
+              "Cairo, Egypt",
+              "Application received",
+              "raafatelsaeed@blaze-ai.io"
+            ],
+            [
+              "EMA.AI App",
+              "Khaled Alshekha",
+              "MVP",
+              "Egypt",
+              "Application received",
+              "alshekha.khaled@gmail.com"
+            ],
+            [
+              "banknbox (DisrupTech Ventures)",
+              "Bassem Mahmoud",
+              "Seed",
+              "Cairo, Egypt",
+              "Application received",
+              "bmahmoud@banknbox.com"
+            ],
+            [
+              "Silicon Badia (Roboost)",
+              "Hossam Shafick",
+              "Series A / Seed submission mix",
+              "Egypt",
+              "Deposit outreach sent",
+              "hossam@siliconbadia.com"
+            ],
+            [
+              "Olimi AI",
+              "TBD",
+              "Seed",
+              "Egypt",
+              "Application received",
+              "TBD"
+            ],
+            [
+              "Perceptr inc",
+              "TBD",
+              "MVP",
+              "Cairo, Egypt",
+              "Application received",
+              "TBD"
+            ],
+            [
+              "P-Vita",
+              "TBD",
+              "Seed",
+              "Egypt",
+              "Application received",
+              "TBD"
+            ]
+          ]
+        },
+        {
+          "title": "Status Legend",
+          "subtitle": "How the tracker is currently interpreting local source data",
+          "type": "status",
+          "columns": [
+            "Status",
+            "Definition"
+          ],
+          "rows": [
+            [
+              "Application received",
+              "Appears in application log, but no corresponding pre-March deposit outreach found in local files"
+            ],
+            [
+              "Deposit outreach sent",
+              "Founder appears in the deposit follow-up email draft list"
+            ],
+            [
+              "Needs live sheet sync",
+              "Reserved for any fields that still depend on the unavailable OneDrive tracker"
+            ]
+          ]
+        }
+      ]
     },
     {
       "id": "monshaat",

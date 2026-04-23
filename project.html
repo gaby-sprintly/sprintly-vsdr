@@ -238,6 +238,117 @@ a { text-decoration: none; color: inherit; }
   padding-left: 140px;
 }
 
+/* ── TRACKERS ── */
+.tracker-card {
+  background: var(--n800);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+}
+
+.tracker-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.tracker-title {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--n50);
+}
+
+.tracker-subtitle {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n400);
+  margin-top: 4px;
+}
+
+.tracker-badge {
+  font-family: var(--body);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--teal);
+  border: 1px solid rgba(45,212,191,0.28);
+  background: rgba(45,212,191,0.08);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.tracker-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.tracker-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+
+.tracker-table th,
+.tracker-table td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  vertical-align: top;
+}
+
+.tracker-table th {
+  font-family: var(--body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--n400);
+  background: rgba(255,255,255,0.02);
+}
+
+.tracker-table td {
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--n50);
+  line-height: 1.5;
+}
+
+.tracker-table tr:last-child td {
+  border-bottom: none;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status-chip.received {
+  color: var(--n50);
+  background: rgba(148,163,184,0.14);
+}
+
+.status-chip.outreach {
+  color: var(--amber);
+  background: rgba(245,158,11,0.14);
+}
+
+.status-chip.sync {
+  color: var(--teal);
+  background: rgba(45,212,191,0.14);
+}
+
 .timeline::before {
   content: '';
   position: absolute;
@@ -534,6 +645,8 @@ a { text-decoration: none; color: inherit; }
   .timeline::before { left: 90px; }
   .timeline-date { left: -100px; width: 80px; font-size: 11px; }
   .actions-bar { left: 0; padding: 12px 24px; }
+  .tracker-card { padding: 18px; }
+  .tracker-table { min-width: 560px; }
 }
 
 /* ── MODAL OVERLAY ── */
@@ -830,6 +943,54 @@ a { text-decoration: none; color: inherit; }
     return d.innerHTML;
   }
 
+  function statusChip(status) {
+    var label = String(status || 'Unknown');
+    var normalized = label.toLowerCase();
+    var cls = 'received';
+    if (normalized.indexOf('deposit outreach sent') !== -1) cls = 'outreach';
+    else if (normalized.indexOf('live sheet') !== -1 || normalized.indexOf('sync') !== -1) cls = 'sync';
+    return '<span class="status-chip ' + cls + '">' + esc(label) + '</span>';
+  }
+
+  function renderTrackerValue(value, columnName) {
+    var text = value == null ? '' : String(value);
+    var key = (columnName || '').toLowerCase();
+    if (key === 'status') return statusChip(text);
+    if (text === 'TBD') return '<span class="empty-note">TBD</span>';
+    return esc(text);
+  }
+
+  function renderTrackers(trackers) {
+    if (!trackers || !trackers.length) return '';
+    var html = '<div class="section-label">Project Tracker</div>';
+    trackers.forEach(function(tracker) {
+      html += '<div class="tracker-card">';
+      html += '<div class="tracker-header">';
+      html += '<div><div class="tracker-title">' + esc(tracker.title || 'Tracker') + '</div>';
+      if (tracker.subtitle) html += '<div class="tracker-subtitle">' + esc(tracker.subtitle) + '</div>';
+      html += '</div>';
+      if (tracker.type) html += '<div class="tracker-badge">' + esc(tracker.type) + '</div>';
+      html += '</div>';
+      if (tracker.columns && tracker.columns.length && tracker.rows && tracker.rows.length) {
+        html += '<div class="tracker-table-wrap"><table class="tracker-table"><thead><tr>';
+        tracker.columns.forEach(function(column) {
+          html += '<th>' + esc(column) + '</th>';
+        });
+        html += '</tr></thead><tbody>';
+        tracker.rows.forEach(function(row) {
+          html += '<tr>';
+          tracker.columns.forEach(function(column, index) {
+            html += '<td>' + renderTrackerValue(row[index], column) + '</td>';
+          });
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+      }
+      html += '</div>';
+    });
+    return html;
+  }
+
   function renderProject(p) {
     document.title = p.name + ' — Safira';
 
@@ -907,6 +1068,8 @@ a { text-decoration: none; color: inherit; }
       });
       html += '</div>';
     }
+
+    html += renderTrackers(p.trackers);
 
     // Section 5: Next Actions
     if (p.next_actions && p.next_actions.length > 0) {
