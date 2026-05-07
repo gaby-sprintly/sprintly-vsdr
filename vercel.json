@@ -12,7 +12,8 @@
   ],
   "functions": {
     "api/sync-all.js": { "maxDuration": 60 },
-    "api/airtable-sync.js": { "maxDuration": 15 }
+    "api/airtable-sync.js": { "maxDuration": 15 },
+    "api/ingest-contacts.js": { "maxDuration": 60 }
   },
   "crons": [
     { "path": "/api/sync-all", "schedule": "0 4 * * *" }

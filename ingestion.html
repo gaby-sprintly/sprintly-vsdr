@@ -203,15 +203,30 @@
   </div>
 </div>
 
+<!-- Ingest Result Modal -->
+<div class="modal-overlay" id="ingestResultModal" style="display:none" onclick="if(event.target===this)closeIngestResult()">
+  <div class="modal-box" style="max-width:560px">
+    <h2 id="ingestResultTitle" style="font-family:var(--display);font-size:20px;margin-bottom:8px">Import complete</h2>
+    <p id="ingestResultSubtitle" style="color:var(--n400);font-size:13px;margin-bottom:16px"></p>
+    <div id="ingestResultCounts" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;font-size:14px;margin-bottom:16px"></div>
+    <div id="ingestResultDetails" style="max-height:280px;overflow-y:auto;font-size:12px;color:var(--n400);border-top:1px solid var(--border);padding-top:12px;margin-top:12px;display:none"></div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px">
+      <button class="btn-primary" onclick="closeIngestResult()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="js/supabase-client.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/sync-client.js"></script>
 <script src="js/sidebar.js"></script>
 <script>initSidebar('ingestion');</script>
 <script>
-const FIELDS = ['first_name','last_name','email','company','title','linkedin','phone','industry','region','contact_type','tags'];
+// Allowed Supabase columns the backend will accept (must match ALLOWED_FIELDS in /api/ingest-contacts.js)
+const FIELDS = ['first_name','last_name','email','company','title','linkedin','phone','industry','region','contact_type','tags','status','source','notes','vip','gaby_notes','introduced_by','last_contacted'];
 
 function showToast(msg, type = 'success') {
   const c = document.getElementById('toastContainer');
@@ -220,6 +235,10 @@ function showToast(msg, type = 'success') {
   t.textContent = msg;
   c.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function openSyncModal() { document.getElementById('syncModal').style.display = 'flex'; }
@@ -232,7 +251,97 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
 }
 
-// CSV Upload
+// ── Shared: call /api/ingest-contacts ───────────────────────────────────
+async function callIngest(source, rows, opts) {
+  opts = opts || {};
+  let actor = 'unknown';
+  try {
+    if (typeof getCurrentUser === 'function') {
+      const u = await getCurrentUser();
+      if (u && u.email) actor = u.email;
+    }
+  } catch (_) {}
+
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(() => ctrl.abort(), 60000);
+  try {
+    const resp = await fetch('/api/ingest-contacts', {
+      method: 'POST',
+      signal: ctrl.signal,
+      headers: { 'Content-Type': 'application/json', 'x-ingest-actor': actor },
+      body: JSON.stringify({
+        source,
+        rows,
+        dedup_by: opts.dedup_by || ['email'],
+        push_to_airtable: opts.push_to_airtable !== false,
+        dry_run: !!opts.dry_run
+      })
+    });
+    clearTimeout(timeoutId);
+    let body = null;
+    try { body = await resp.json(); } catch (_) { body = {}; }
+    return { httpStatus: resp.status, body: body || {} };
+  } catch (e) {
+    clearTimeout(timeoutId);
+    return { httpStatus: 0, body: { ok: false, error: e && e.name === 'AbortError' ? 'Request timed out' : (e.message || 'Network error') } };
+  }
+}
+
+// Result modal — shows the truthful breakdown of an upload.
+function openIngestResult(source, result) {
+  const modal = document.getElementById('ingestResultModal');
+  const titleEl = document.getElementById('ingestResultTitle');
+  const subEl = document.getElementById('ingestResultSubtitle');
+  const countsEl = document.getElementById('ingestResultCounts');
+  const detailsEl = document.getElementById('ingestResultDetails');
+
+  const b = result.body || {};
+  const httpFail = result.httpStatus !== 200;
+  const hardError = b.status === 'error' || httpFail;
+  const partial = b.status === 'partial';
+
+  titleEl.textContent = httpFail ? 'Import failed' : (b.status === 'success' ? 'Import complete' : (partial ? 'Import completed with issues' : 'Import failed'));
+  titleEl.style.color = hardError ? 'var(--coral)' : (partial ? 'var(--amber)' : 'var(--green)');
+  const sourceLabel = source === 'csv' ? 'CSV' : (source === 'manual' ? 'Manual' : 'Bulk Paste');
+  subEl.textContent = sourceLabel + ' · attempted ' + (b.attempted || 0) + (b.requestId ? ' · requestId ' + b.requestId : '');
+
+  if (httpFail || !b) {
+    countsEl.innerHTML = '<div style="grid-column:1/-1;color:var(--coral)">' + escapeHtml(b.error || ('HTTP ' + result.httpStatus)) + '</div>';
+    detailsEl.style.display = 'none';
+  } else {
+    countsEl.innerHTML =
+      countCell('Inserted',           b.inserted || 0,            'var(--green)') +
+      countCell('Skipped (duplicate)', b.skipped_duplicate || 0,  'var(--n400)') +
+      countCell('Skipped (invalid)',   b.skipped_invalid || 0,    'var(--amber)') +
+      countCell('Failed',              b.failed || 0,             (b.failed || 0) > 0 ? 'var(--coral)' : 'var(--n400)') +
+      countCell('Pushed to Airtable',  b.pushed_to_airtable || 0, 'var(--teal)');
+
+    let detailHtml = '';
+    if (Array.isArray(b.duplicates) && b.duplicates.length) {
+      detailHtml += '<strong style="color:var(--n50)">Duplicates skipped (' + b.duplicates.length + (b.duplicates.length === 50 ? '+' : '') + '):</strong><br>';
+      detailHtml += b.duplicates.slice(0, 20).map(d => '· ' + escapeHtml(d.email || ('row ' + d.row_index))).join('<br>') + '<br><br>';
+    }
+    if (Array.isArray(b.invalids) && b.invalids.length) {
+      detailHtml += '<strong style="color:var(--n50)">Invalid rows (' + b.invalids.length + '):</strong><br>';
+      detailHtml += b.invalids.slice(0, 20).map(i => '· row ' + i.row_index + (i.email ? ' (' + escapeHtml(i.email) + ')' : '') + ': ' + escapeHtml(i.errors.join('; '))).join('<br>') + '<br><br>';
+    }
+    if (Array.isArray(b.errors) && b.errors.length) {
+      detailHtml += '<strong style="color:var(--coral)">Write errors (' + b.errors.length + '):</strong><br>';
+      detailHtml += b.errors.slice(0, 10).map(e => '· ' + escapeHtml(e.type) + ' row ' + (e.row_index ?? '?') + ': ' + escapeHtml(e.error)).join('<br>');
+    }
+    detailsEl.innerHTML = detailHtml;
+    detailsEl.style.display = detailHtml ? 'block' : 'none';
+  }
+
+  modal.style.display = 'flex';
+}
+function closeIngestResult() { document.getElementById('ingestResultModal').style.display = 'none'; renderHistory(); }
+function countCell(label, value, color) {
+  return '<div><div style="font-size:11px;color:var(--n400);text-transform:uppercase;letter-spacing:0.5px">' + escapeHtml(label) + '</div>' +
+         '<div style="font-size:20px;font-weight:600;color:' + color + '">' + value + '</div></div>';
+}
+
+// ── CSV Upload ───────────────────────────────────────────────────────────
 let csvData = [];
 let csvHeaders = [];
 
@@ -258,20 +367,19 @@ function showCSVPreview() {
   document.getElementById('csvPreview').style.display = 'block';
   const table = document.getElementById('previewTable');
   const preview = csvData.slice(0, 5);
-  let html = '<thead><tr>' + csvHeaders.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
-  preview.forEach(row => { html += '<tr>' + csvHeaders.map(h => `<td>${row[h] || ''}</td>`).join('') + '</tr>'; });
+  let html = '<thead><tr>' + csvHeaders.map(h => `<th>${escapeHtml(h)}</th>`).join('') + '</tr></thead><tbody>';
+  preview.forEach(row => { html += '<tr>' + csvHeaders.map(h => `<td>${escapeHtml(row[h] || '')}</td>`).join('') + '</tr>'; });
   html += '</tbody>';
   table.innerHTML = html;
 
-  // Mapping
   const area = document.getElementById('mappingArea');
   area.innerHTML = '';
   csvHeaders.forEach(h => {
     const guess = FIELDS.find(f => f.toLowerCase() === h.toLowerCase().replace(/\s+/g, '_')) || '';
     area.innerHTML += `<div class="mapping-row">
-      <span class="mapping-label">${h}</span>
+      <span class="mapping-label">${escapeHtml(h)}</span>
       <span class="mapping-arrow">→</span>
-      <select class="mapping-select" data-csv="${h}">
+      <select class="mapping-select" data-csv="${escapeHtml(h)}">
         <option value="">Skip</option>
         ${FIELDS.map(f => `<option value="${f}" ${f === guess ? 'selected' : ''}>${f}</option>`).join('')}
       </select>
@@ -287,6 +395,7 @@ function resetCSV() {
   document.getElementById('csvFile').value = '';
   document.getElementById('csvStatus').textContent = '';
   document.getElementById('csvProgress').style.display = 'none';
+  document.getElementById('csvProgressFill').style.width = '0%';
 }
 
 async function importCSV() {
@@ -294,37 +403,71 @@ async function importCSV() {
   const mappings = {};
   document.querySelectorAll('.mapping-select').forEach(s => { if (s.value) mappings[s.dataset.csv] = s.value; });
   if (!Object.values(mappings).length) { showToast('Map at least one column', 'info'); return; }
+  if (!Object.values(mappings).includes('email')) {
+    showToast('Map a column to "email" — required for dedup', 'info');
+    return;
+  }
 
+  // Map every row through the column mapping
   const rows = csvData.map(row => {
     const obj = {};
-    Object.entries(mappings).forEach(([csv, field]) => { if (row[csv]) obj[field] = row[csv]; });
+    Object.entries(mappings).forEach(([csv, field]) => { if (row[csv] != null && row[csv] !== '') obj[field] = row[csv]; });
     return obj;
   }).filter(r => Object.keys(r).length > 0);
 
+  const btn = document.getElementById('csvImportBtn');
   const bar = document.getElementById('csvProgress');
   const fill = document.getElementById('csvProgressFill');
   const status = document.getElementById('csvStatus');
+  btn.disabled = true;
   bar.style.display = 'block';
-  let imported = 0;
+  fill.style.width = '20%';
+  status.textContent = `Validating + deduplicating ${rows.length} rows…`;
 
-  for (let i = 0; i < rows.length; i += 50) {
-    const batch = rows.slice(i, i + 50);
-    try {
-      await sbFetch('contacts', { method: 'POST', body: batch });
-      imported += batch.length;
-    } catch (e) { console.error(e); }
-    const pct = Math.round((i + batch.length) / rows.length * 100);
-    fill.style.width = pct + '%';
-    status.textContent = `Importing... ${imported}/${rows.length}`;
+  // Backend caps at 5000 per request — chunk client-side if needed
+  const CHUNK = 2000;
+  const aggregate = {
+    attempted: 0, inserted: 0, skipped_duplicate: 0, skipped_invalid: 0,
+    failed: 0, pushed_to_airtable: 0, duplicates: [], invalids: [], errors: [],
+    status: 'success', requestId: null
+  };
+  let lastResult = null;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const slice = rows.slice(i, i + CHUNK);
+    fill.style.width = Math.min(20 + Math.round((i / rows.length) * 70), 90) + '%';
+    status.textContent = `Importing rows ${i + 1}–${Math.min(i + CHUNK, rows.length)} of ${rows.length}…`;
+    lastResult = await callIngest('csv', slice, { dedup_by: ['email'], push_to_airtable: true });
+    if (lastResult.httpStatus !== 200) break;
+    const b = lastResult.body;
+    aggregate.attempted += b.attempted || 0;
+    aggregate.inserted  += b.inserted  || 0;
+    aggregate.skipped_duplicate += b.skipped_duplicate || 0;
+    aggregate.skipped_invalid   += b.skipped_invalid   || 0;
+    aggregate.failed    += b.failed    || 0;
+    aggregate.pushed_to_airtable += b.pushed_to_airtable || 0;
+    aggregate.duplicates = aggregate.duplicates.concat(b.duplicates || []).slice(0, 50);
+    aggregate.invalids   = aggregate.invalids.concat(b.invalids   || []).slice(0, 50);
+    aggregate.errors     = aggregate.errors.concat(b.errors       || []).slice(0, 50);
+    if (b.status === 'partial') aggregate.status = 'partial';
+    if (b.status === 'error')   { aggregate.status = 'error'; break; }
+    aggregate.requestId = b.requestId;
   }
 
   fill.style.width = '100%';
-  status.textContent = `Done! ${imported} contacts imported.`;
-  showToast(`${imported} contacts imported!`, 'success');
-  addHistory('CSV Upload', imported, 'success');
+  btn.disabled = false;
+
+  if (lastResult && lastResult.httpStatus !== 200) {
+    status.textContent = 'Failed: ' + (lastResult.body && lastResult.body.error ? lastResult.body.error : 'unknown');
+    showToast('Import failed', 'info');
+    openIngestResult('csv', lastResult);
+    return;
+  }
+  status.textContent = `${aggregate.inserted} inserted · ${aggregate.skipped_duplicate} duplicate · ${aggregate.skipped_invalid} invalid${aggregate.failed ? ' · ' + aggregate.failed + ' failed' : ''}`;
+  showToast(`${aggregate.inserted} new contacts added · ${aggregate.skipped_duplicate} skipped (duplicate)`, aggregate.status === 'success' ? 'success' : 'info');
+  openIngestResult('csv', { httpStatus: 200, body: aggregate });
 }
 
-// Manual Add
+// ── Manual Add ───────────────────────────────────────────────────────────
 async function addManualContact(e) {
   e.preventDefault();
   const form = document.getElementById('manualForm');
@@ -332,21 +475,32 @@ async function addManualContact(e) {
   const obj = {};
   for (const [k, v] of fd.entries()) {
     if (k === 'vip') { obj.vip = true; continue; }
-    if (v) obj[k] = v;
+    if (v !== '' && v != null) obj[k] = v;
   }
   if (!fd.has('vip')) obj.vip = false;
 
-  try {
-    await sbFetch('contacts', { method: 'POST', body: [obj] });
+  // Submit button: disable while in flight
+  const submitBtn = form.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+  const result = await callIngest('manual', [obj], { dedup_by: ['email'], push_to_airtable: true });
+  submitBtn.disabled = false;
+
+  const b = result.body || {};
+  if (result.httpStatus === 200 && b.inserted === 1) {
     showToast('Contact added!', 'success');
     form.reset();
-    addHistory('Manual Add', 1, 'success');
-  } catch (e) {
-    showToast('Error: ' + e.message, 'info');
+  } else if (result.httpStatus === 200 && b.skipped_duplicate === 1) {
+    showToast('Already exists — skipped', 'info');
+  } else if (result.httpStatus === 200 && b.skipped_invalid === 1) {
+    const reason = (b.invalids && b.invalids[0] && b.invalids[0].errors.join('; ')) || 'invalid';
+    showToast('Could not add: ' + reason, 'info');
+  } else {
+    showToast('Error: ' + (b.error || 'see import history'), 'info');
   }
+  openIngestResult('manual', result);
 }
 
-// Bulk Paste
+// ── Bulk Paste ───────────────────────────────────────────────────────────
 let bulkParsed = [];
 
 function parseBulk() {
@@ -363,16 +517,25 @@ function parseBulk() {
     const email = parts[1] || '';
     if (!email.includes('@')) return;
     const company = parts[2] || '';
-    bulkParsed.push({ first_name: firstName, last_name: lastName, email, company: company || undefined });
+    const title = parts[3] || '';
+    const linkedin = parts[4] || '';
+    bulkParsed.push({
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      company: company || undefined,
+      title: title || undefined,
+      linkedin: linkedin || undefined
+    });
   });
 
   const preview = document.getElementById('bulkPreview');
-  if (!bulkParsed.length) { preview.innerHTML = '<p style="color:var(--coral);font-size:13px">No valid contacts found. Use format: First Last, email, Company</p>'; return; }
+  if (!bulkParsed.length) { preview.innerHTML = '<p style="color:var(--coral);font-size:13px">No valid contacts found. Use format: First Last, email, Company, Title, LinkedIn</p>'; return; }
 
   let html = `<p style="font-size:13px;color:var(--green);margin-bottom:8px">${bulkParsed.length} contacts parsed</p>`;
-  html += '<div style="overflow-x:auto"><table class="preview-table"><thead><tr><th>First</th><th>Last</th><th>Email</th><th>Company</th></tr></thead><tbody>';
-  bulkParsed.slice(0, 10).forEach(c => { html += `<tr><td>${c.first_name}</td><td>${c.last_name}</td><td>${c.email}</td><td>${c.company || ''}</td></tr>`; });
-  if (bulkParsed.length > 10) html += `<tr><td colspan="4" style="color:var(--n400)">... and ${bulkParsed.length - 10} more</td></tr>`;
+  html += '<div style="overflow-x:auto"><table class="preview-table"><thead><tr><th>First</th><th>Last</th><th>Email</th><th>Company</th><th>Title</th></tr></thead><tbody>';
+  bulkParsed.slice(0, 10).forEach(c => { html += `<tr><td>${escapeHtml(c.first_name)}</td><td>${escapeHtml(c.last_name)}</td><td>${escapeHtml(c.email)}</td><td>${escapeHtml(c.company || '')}</td><td>${escapeHtml(c.title || '')}</td></tr>`; });
+  if (bulkParsed.length > 10) html += `<tr><td colspan="5" style="color:var(--n400)">... and ${bulkParsed.length - 10} more</td></tr>`;
   html += '</tbody></table></div>';
   preview.innerHTML = html;
   document.getElementById('bulkImportBtn').disabled = false;
@@ -380,71 +543,88 @@ function parseBulk() {
 
 async function importBulk() {
   if (!bulkParsed.length) return;
+  const btn = document.getElementById('bulkImportBtn');
   const bar = document.getElementById('bulkProgress');
   const fill = document.getElementById('bulkProgressFill');
   const status = document.getElementById('bulkStatus');
+  btn.disabled = true;
   bar.style.display = 'block';
-  let imported = 0;
+  fill.style.width = '40%';
+  status.textContent = `Importing ${bulkParsed.length} contacts…`;
 
-  for (let i = 0; i < bulkParsed.length; i += 50) {
-    const batch = bulkParsed.slice(i, i + 50).map(c => {
-      const obj = { first_name: c.first_name, last_name: c.last_name, email: c.email };
-      if (c.company) obj.company = c.company;
-      return obj;
-    });
-    try {
-      await sbFetch('contacts', { method: 'POST', body: batch });
-      imported += batch.length;
-    } catch (e) { console.error(e); }
-    fill.style.width = Math.round((i + batch.length) / bulkParsed.length * 100) + '%';
-    status.textContent = `Importing... ${imported}/${bulkParsed.length}`;
-  }
-
+  const result = await callIngest('bulk', bulkParsed, { dedup_by: ['email'], push_to_airtable: true });
   fill.style.width = '100%';
-  status.textContent = `Done! ${imported} contacts imported.`;
-  showToast(`${imported} contacts imported!`, 'success');
-  addHistory('Bulk Paste', imported, 'success');
+  btn.disabled = false;
+
+  if (result.httpStatus !== 200) {
+    status.textContent = 'Failed: ' + (result.body && result.body.error ? result.body.error : 'unknown');
+    showToast('Import failed', 'info');
+    openIngestResult('bulk', result);
+    return;
+  }
+  const b = result.body;
+  status.textContent = `${b.inserted} inserted · ${b.skipped_duplicate} duplicate · ${b.skipped_invalid} invalid${b.failed ? ' · ' + b.failed + ' failed' : ''}`;
+  showToast(`${b.inserted} new contacts added · ${b.skipped_duplicate} skipped (duplicate)`, b.status === 'success' ? 'success' : 'info');
+  openIngestResult('bulk', result);
   bulkParsed = [];
   document.getElementById('bulkImportBtn').disabled = true;
 }
 
-// Import History
-const HISTORY_KEY = 'vsdr_import_history';
-
-function getHistory() {
-  let h = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null');
-  if (!h) {
-    h = [
-      { date: '2026-03-25', method: 'CSV Upload', count: 142, status: 'success' },
-      { date: '2026-03-28', method: 'Manual Add', count: 3, status: 'success' }
-    ];
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
-  }
-  return h;
+// ── Import History (real, from import_runs Supabase table) ──────────────
+function formatTs(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' +
+         d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+function sourceLabel(src) {
+  return src === 'csv' ? 'CSV Upload' : (src === 'manual' ? 'Manual Add' : (src === 'bulk' ? 'Bulk Paste' : src || '—'));
 }
 
-function renderHistory() {
-  const h = getHistory();
+async function renderHistory() {
   const body = document.getElementById('historyBody');
-  if (!h.length) { body.innerHTML = '<tr><td colspan="4" style="color:var(--n400);text-align:center;padding:20px">No import history</td></tr>'; return; }
-  body.innerHTML = h.map(r => `<tr>
-    <td>${r.date}</td><td>${r.method}</td><td>${r.count}</td>
-    <td><span class="status-badge ${r.status}">${r.status}</span></td>
-  </tr>`).join('');
-}
-
-function addHistory(method, count, status) {
-  const h = getHistory();
-  h.unshift({ date: new Date().toISOString().slice(0, 10), method, count, status });
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
-  renderHistory();
+  body.innerHTML = '<tr><td colspan="4" style="color:var(--n400);text-align:center;padding:16px">Loading…</td></tr>';
+  try {
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/import_runs?select=id,started_at,source,triggered_by,status,rows_attempted,rows_inserted,rows_skipped_duplicate,rows_skipped_invalid,rows_failed,rows_pushed_to_airtable&order=started_at.desc&limit=20', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if (!resp.ok) {
+      body.innerHTML = '<tr><td colspan="4" style="color:var(--coral);text-align:center;padding:16px">Could not load import history (HTTP ' + resp.status + '). Did the migration run?</td></tr>';
+      return;
+    }
+    const rows = await resp.json();
+    if (!rows.length) {
+      body.innerHTML = '<tr><td colspan="4" style="color:var(--n400);text-align:center;padding:16px">No import history yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = rows.map(r => {
+      const counts = (r.rows_inserted || 0) +
+        ' new · ' + (r.rows_skipped_duplicate || 0) + ' dup' +
+        (r.rows_skipped_invalid ? ' · ' + r.rows_skipped_invalid + ' invalid' : '') +
+        (r.rows_failed ? ' · ' + r.rows_failed + ' failed' : '');
+      const statusCls = r.status === 'success' ? 'success' : 'partial';
+      return `<tr>
+        <td>${escapeHtml(formatTs(r.started_at))}</td>
+        <td>${escapeHtml(sourceLabel(r.source))}${r.triggered_by ? ' · <span style="opacity:0.6">' + escapeHtml(r.triggered_by) + '</span>' : ''}</td>
+        <td>${escapeHtml(counts)}</td>
+        <td><span class="status-badge ${statusCls}">${escapeHtml(r.status)}</span></td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    body.innerHTML = '<tr><td colspan="4" style="color:var(--coral);text-align:center;padding:16px">Error: ' + escapeHtml(e.message) + '</td></tr>';
+  }
 }
 
 function clearHistory() {
-  localStorage.removeItem(HISTORY_KEY);
+  // We no longer keep a localStorage copy; this is a one-shot cleanup of the old key plus a reload from server.
+  try { localStorage.removeItem('vsdr_import_history'); } catch (_) {}
+  showToast('History reloaded from database', 'info');
   renderHistory();
-  showToast('History cleared', 'info');
 }
+
+// One-shot: drop the legacy localStorage seed from the prior fake-history UI.
+try { localStorage.removeItem('vsdr_import_history'); } catch (_) {}
 
 renderHistory();
 </script>
