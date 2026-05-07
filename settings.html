@@ -315,13 +315,63 @@ function escapeHtml(s) {
   });
 }
 
+// Phase labels shown in the running modal
+var PHASE_LABELS = {
+  pulling:   'Pulling Airtable + diffing Supabase…',
+  archiving: 'Archiving removed contacts…',
+  pushing:   'Pushing new Supabase contacts to Airtable…',
+  done:      'Finalising…'
+};
+
+function updateRunningStatus(body) {
+  var line1 = PHASE_LABELS[body.phase] || ('Phase: ' + body.phase);
+  var counts =
+    '<strong>' + (body.inserted || 0) + '</strong> inserted · ' +
+    '<strong>' + (body.updated || 0) + '</strong> updated · ' +
+    '<strong>' + (body.archived || 0) + '</strong> archived · ' +
+    '<strong>' + (body.pushed || 0) + '</strong> pushed' +
+    (body.failed ? ' · <strong style="color:var(--coral);">' + body.failed + '</strong> failed' : '');
+  var totals = (body.airtable_total ? 'Airtable so far: ' + body.airtable_total : '') +
+               (body.supabase_total ? ' · Supabase total: ' + body.supabase_total : '');
+  document.getElementById('syncRunningStatus').innerHTML =
+    escapeHtml(line1) +
+    '<br><span style="font-size:13px;opacity:0.85;">' + counts + '</span>' +
+    (totals ? '<br><span style="font-size:11px;opacity:0.6;">' + escapeHtml(totals) + '</span>' : '');
+}
+
+// Single chunk POST. Returns the parsed body and HTTP status.
+async function syncCallChunk(runId, actor) {
+  var url = runId ? ('/api/sync-all?run=' + encodeURIComponent(runId)) : '/api/sync-all';
+  var ctrl = new AbortController();
+  var timeoutId = setTimeout(function () { ctrl.abort(); }, 12000);
+  try {
+    var resp = await fetch(url, {
+      method: 'POST',
+      signal: ctrl.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-sync-trigger': 'manual',
+        'x-sync-actor': actor || 'unknown'
+      },
+      body: JSON.stringify({})
+    });
+    clearTimeout(timeoutId);
+    var body = null;
+    try { body = await resp.json(); } catch (_) { body = {}; }
+    return { httpStatus: resp.status, body: body || {} };
+  } catch (e) {
+    clearTimeout(timeoutId);
+    return { httpStatus: 0, body: { ok: false, error: e && e.name === 'AbortError' ? 'Chunk request timed out' : (e.message || 'Network error') } };
+  }
+}
+
 async function confirmSync() {
   var btn = document.getElementById('syncConfirmBtn');
-  if (btn) { btn.disabled = true; }
+  if (btn) btn.disabled = true;
   setSyncStep('running');
   document.getElementById('bigSyncBtn').disabled = true;
+  document.getElementById('syncRunningStatus').textContent = 'Starting…';
 
-  // Identify the actor (best-effort) so the log shows who clicked.
   var actor = 'unknown';
   try {
     if (typeof getCurrentUser === 'function') {
@@ -330,65 +380,97 @@ async function confirmSync() {
     }
   } catch (_) {}
 
-  var resp, body;
-  try {
-    resp = await fetch('/api/sync-all', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-sync-trigger': 'manual',
-        'x-sync-actor': actor
-      },
-      body: JSON.stringify({})
-    });
-    body = await resp.json().catch(function () { return {}; });
-  } catch (e) {
-    body = { ok: false, error: (e && e.message) || 'Network error' };
-    resp = { status: 0 };
+  var runId = null;
+  var lastBody = null;
+  var consecutiveErrors = 0;
+  var maxIterations = 200; // hard ceiling; ~5000 records / ~25 records per chunk = 200 chunks worst case
+  var startedAt = Date.now();
+
+  for (var i = 0; i < maxIterations; i++) {
+    var res = await syncCallChunk(runId, actor);
+    lastBody = res.body;
+
+    // First call returned a 409 lock conflict
+    if (res.httpStatus === 409) {
+      setSyncStep('result');
+      document.getElementById('bigSyncBtn').disabled = false;
+      document.getElementById('syncResultIcon').textContent = '⏳';
+      document.getElementById('syncResultTitle').textContent = 'Sync already running';
+      document.getElementById('syncResultDetail').textContent = (res.body && res.body.error) || 'Another sync is in progress. Try again in a minute.';
+      if (typeof syncToast === 'function') syncToast('A sync is already running.', 'warning');
+      renderSyncInfo();
+      return;
+    }
+
+    // Hard error from server (5xx) or network/timeout. Allow 2 retries before bailing.
+    if (res.httpStatus === 0 || res.httpStatus >= 500 || (res.body && res.body.ok === false && !res.body.phase)) {
+      consecutiveErrors++;
+      if (consecutiveErrors >= 3) {
+        setSyncStep('result');
+        document.getElementById('bigSyncBtn').disabled = false;
+        document.getElementById('syncResultIcon').textContent = '❌';
+        document.getElementById('syncResultTitle').textContent = 'Sync failed';
+        document.getElementById('syncResultDetail').innerHTML =
+          escapeHtml((res.body && res.body.error) || 'Engine returned an error. See sync log for details.') +
+          (res.body && res.body.requestId ? '<br><span style="opacity:0.6;font-size:11px;">requestId: ' + escapeHtml(res.body.requestId) + '</span>' : '') +
+          (runId ? '<br><span style="opacity:0.6;font-size:11px;">runId: ' + escapeHtml(runId) + '</span>' : '');
+        if (typeof syncToast === 'function') syncToast('Sync failed: ' + ((res.body && res.body.error) || 'unknown error'), 'error');
+        renderSyncInfo();
+        return;
+      }
+      // brief backoff and retry the SAME chunk
+      await new Promise(function (r) { setTimeout(r, 800 * consecutiveErrors); });
+      continue;
+    }
+    consecutiveErrors = 0;
+
+    // Capture runId from first call
+    if (!runId && res.body.runId) runId = res.body.runId;
+
+    // Live progress
+    updateRunningStatus(res.body);
+
+    // Terminal states
+    if (res.body.status === 'success' || res.body.status === 'partial' || res.body.status === 'error') {
+      var b = res.body;
+      var isPartial = b.status === 'partial';
+      var isErr = b.status === 'error';
+      setSyncStep('result');
+      document.getElementById('bigSyncBtn').disabled = false;
+      document.getElementById('syncResultIcon').textContent = isErr ? '❌' : (isPartial ? '⚠️' : '✅');
+      document.getElementById('syncResultTitle').textContent = isErr ? 'Sync failed' : (isPartial ? 'Sync completed with errors' : 'Sync complete');
+      var summary =
+        'Airtable: ' + (b.airtable_total || 0) + ' · Supabase: ' + (b.supabase_total || 0) + '<br>' +
+        '<strong>' + (b.inserted || 0) + '</strong> inserted · ' +
+        '<strong>' + (b.updated || 0) + '</strong> updated · ' +
+        '<strong>' + (b.archived || 0) + '</strong> archived · ' +
+        '<strong>' + (b.pushed || 0) + '</strong> pushed' +
+        (b.failed ? ' · <strong style="color:var(--coral);">' + b.failed + '</strong> failed' : '') +
+        '<br><span style="opacity:0.6;font-size:12px;">' + ((Date.now() - startedAt) / 1000).toFixed(1) + 's wall time</span>';
+      document.getElementById('syncResultDetail').innerHTML = summary;
+      if (typeof syncToast === 'function') {
+        syncToast(
+          isErr ? 'Sync failed' : (isPartial ? 'Sync finished with ' + b.failed + ' failure(s)' : 'Sync complete'),
+          isErr ? 'error' : (isPartial ? 'warning' : 'success')
+        );
+      }
+      renderSyncInfo();
+      loadCounts();
+      return;
+    }
+
+    // Still running — short pause before next chunk so we don't slam the API
+    await new Promise(function (r) { setTimeout(r, 250); });
   }
 
-  // Render the result panel
+  // Hit max iterations without terminal status
   setSyncStep('result');
   document.getElementById('bigSyncBtn').disabled = false;
-
-  if (resp.status === 409) {
-    document.getElementById('syncResultIcon').textContent = '⏳';
-    document.getElementById('syncResultTitle').textContent = 'Sync already running';
-    document.getElementById('syncResultDetail').textContent = body.error || 'Another sync is in progress. Try again in a minute.';
-    if (typeof syncToast === 'function') syncToast('A sync is already running.', 'warning');
-    renderSyncInfo();
-    return;
-  }
-
-  if (!body || body.ok === false || resp.status >= 500) {
-    document.getElementById('syncResultIcon').textContent = '❌';
-    document.getElementById('syncResultTitle').textContent = 'Sync failed';
-    document.getElementById('syncResultDetail').innerHTML =
-      escapeHtml(body && body.error ? body.error : 'See the sync log for details.') +
-      (body && body.requestId ? '<br><span style="opacity:0.6;font-size:11px;">requestId: ' + escapeHtml(body.requestId) + '</span>' : '');
-    if (typeof syncToast === 'function') syncToast('Sync failed: ' + ((body && body.error) || 'unknown error'), 'error');
-    renderSyncInfo();
-    return;
-  }
-
-  // Success or partial
-  var isPartial = body.status === 'partial';
-  document.getElementById('syncResultIcon').textContent = isPartial ? '⚠️' : '✅';
-  document.getElementById('syncResultTitle').textContent = isPartial ? 'Sync completed with errors' : 'Sync complete';
-  var summary =
-    'Airtable: ' + (body.airtable_total || 0) + ' · Supabase: ' + (body.supabase_total || 0) + '<br>' +
-    '<strong>' + (body.inserted || 0) + '</strong> inserted · ' +
-    '<strong>' + (body.updated || 0) + '</strong> updated · ' +
-    '<strong>' + (body.archived || 0) + '</strong> archived · ' +
-    '<strong>' + (body.pushed || 0) + '</strong> pushed' +
-    (body.failed ? ' · <strong style="color:var(--coral);">' + body.failed + '</strong> failed' : '') +
-    (typeof body.duration_ms === 'number' ? '<br><span style="opacity:0.6;font-size:12px;">' + (body.duration_ms / 1000).toFixed(1) + 's</span>' : '');
-  document.getElementById('syncResultDetail').innerHTML = summary;
-  if (typeof syncToast === 'function') {
-    syncToast(isPartial ? 'Sync finished with ' + body.failed + ' failure(s)' : 'Sync complete', isPartial ? 'warning' : 'success');
-  }
+  document.getElementById('syncResultIcon').textContent = '⚠️';
+  document.getElementById('syncResultTitle').textContent = 'Sync stopped (too many chunks)';
+  document.getElementById('syncResultDetail').innerHTML = 'Hit safety ceiling of ' + maxIterations + ' chunks without finishing. Check the sync log.' +
+    (runId ? '<br><span style="opacity:0.6;font-size:11px;">runId: ' + escapeHtml(runId) + '</span>' : '');
   renderSyncInfo();
-  loadCounts();
 }
 
 // ── Sync log (real, from sync_runs Supabase table) ────────────────────

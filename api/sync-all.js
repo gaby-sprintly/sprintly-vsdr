@@ -1,48 +1,45 @@
 // Vercel Serverless Function — Full Airtable ↔ Supabase Contact Sync
-//
-// POST /api/sync-all
-//   Triggered by:
-//     - The "Sync Now" button on settings.html (header: x-sync-trigger=manual, x-sync-actor=<email>)
-//     - Vercel Cron (header: authorization=Bearer <CRON_SECRET>, x-sync-trigger=scheduled)
-//
-// Direction (per Phase A defaults):
-//   Airtable wins for:  first_name, last_name, email, company, title, linkedin,
-//                       contact_type, status, industry, region, source, notes,
-//                       tags, last_contacted, introduced_by
-//   Supabase wins for:  vip, follow_up_date, follow_up_reason, needs_follow_up,
-//                       gaby_notes, enrichment_status, enriched_at
-//                       (these are kept in sync per-record by /api/airtable-sync,
-//                        so the bulk run does not push them again)
+// CHUNKED EXECUTION — each call processes one slice (target <8s) so the run
+// fits within Vercel Hobby's 10s ceiling AND survives transient slowness.
 //
 // Lifecycle:
-//   1. Acquire lock by inserting a sync_runs row with status='running'
-//      (unique partial index on status='running' enforces single-flight).
-//      Stale lock > 10 min is auto-broken.
-//   2. Page through Airtable Network table (100/page).
-//   3. Page through Supabase contacts (1000/page) and index by airtable_id.
-//   4. Diff: classify each Airtable record as INSERT (no Supabase row) or
-//      UPDATE (any Airtable-wins field changed).
-//   5. Diff: any Supabase row whose airtable_id is missing from the Airtable
-//      payload gets soft-archived (status='archived').
-//   6. Diff: any Supabase row with no airtable_id gets pushed to Airtable
-//      (creates a new Airtable record), then the new airtable_id is written
-//      back to the Supabase row.
-//   7. Apply all writes with a parallel batch of MAX_PARALLEL=8.
-//      Per-record failures are recorded in sync_runs.error_log but do not
-//      abort the run.
-//   8. Update sync_runs with final status/counts and return the summary.
+//   POST /api/sync-all
+//     → starts a new run. Returns { runId, status: 'running', phase: 'pulling', ... }.
+//   POST /api/sync-all?run=<runId>
+//     → continues the run; advances ONE chunk; returns updated state.
+//   The frontend (settings.html) polls until status ∈ {'success','partial','error'}.
+//
+// Phases:
+//   1. pulling     — fetch next ~5 Airtable pages (≤500 records), look up the
+//                    matching Supabase rows via airtable_id IN (...), diff +
+//                    write inserts/updates for that slice. Records every
+//                    seen Airtable id into airtable_seen_ids.
+//   2. archiving   — page through Supabase rows that have an airtable_id,
+//                    soft-archive any whose id is NOT in airtable_seen_ids.
+//   3. pushing     — page through Supabase rows that have NO airtable_id,
+//                    create matching Airtable records, write the new id back.
+//   4. done        — mark run final.
+//
+// Conflict resolution (per agreed defaults — unchanged from monolithic version):
+//   Airtable wins:  first_name, last_name, email, company, title, linkedin,
+//                   contact_type, status, industry, region, source, notes,
+//                   tags, last_contacted, introduced_by
+//   Supabase wins:  vip, follow_up_*, needs_follow_up, gaby_notes, enrichment_*
+//                   (kept in sync per-record by /api/airtable-sync)
 
-const AIRTABLE_BASE_ID = 'appVHIMu9xoabpge8';
+const AIRTABLE_BASE_ID  = 'appVHIMu9xoabpge8';
 const AIRTABLE_TABLE_ID = 'tblllCSH6H33t6JVN'; // Network
 const AIRTABLE_PAGE_SIZE = 100;
-const SUPABASE_PAGE_SIZE = 1000;
+const AIRTABLE_PAGES_PER_CHUNK = 5;            // ≤500 records per call
+const SUPABASE_PAGE_SIZE = 1000;               // for archive/push scans
+const ARCHIVE_BATCH_PER_CHUNK = 1000;
+const PUSH_BATCH_PER_CHUNK    = 100;
 const MAX_PARALLEL = 8;
-const STALE_LOCK_SECONDS = 600; // 10 min
-const REQUEST_TIMEOUT_MS = 8000;
+const STALE_LOCK_SECONDS = 600;                // 10 min
+const REQUEST_TIMEOUT_MS = 7000;
 const MAX_RETRIES = 2;
 
 // ── Field mapping ────────────────────────────────────────────────────────
-// Airtable field name → Supabase column name (Airtable wins)
 const AT_TO_SB = {
   'First Name':      'first_name',
   'Last Name':       'last_name',
@@ -60,9 +57,6 @@ const AT_TO_SB = {
   'Tags':            'tags',
   'Introduced By':   'introduced_by'
 };
-
-// Supabase column → Airtable field (used only when pushing brand-new Supabase
-// contacts up to Airtable). Boolean → "Yes"/"No" handled inline.
 const SB_TO_AT_FOR_NEW = {
   first_name:    'First Name',
   last_name:     'Last Name',
@@ -80,7 +74,6 @@ const SB_TO_AT_FOR_NEW = {
   follow_up_date: 'Follow-Up Date',
   follow_up_reason: 'Follow-up reason'
 };
-
 const CONTACT_TYPE_AT_TO_SB = {
   'Founder':        'founder',
   'Investor - VC':  'investor',
@@ -115,7 +108,7 @@ async function fetchWithRetry(url, opts) {
       const transient = resp.status === 429 || resp.status === 502 || resp.status === 503 || resp.status === 504;
       if (transient && attempt < MAX_RETRIES) {
         const ra = resp.headers.get('retry-after');
-        const wait = ra && !isNaN(parseFloat(ra)) ? parseFloat(ra) * 1000 : Math.pow(2, attempt) * 500;
+        const wait = ra && !isNaN(parseFloat(ra)) ? parseFloat(ra) * 1000 : Math.pow(2, attempt) * 400;
         await sleep(wait);
         attempt++;
         continue;
@@ -124,7 +117,7 @@ async function fetchWithRetry(url, opts) {
     } catch (e) {
       clearTimeout(timeoutId);
       if (attempt < MAX_RETRIES && (e.name === 'AbortError' || /fetch failed|network/i.test(e.message || ''))) {
-        await sleep(Math.pow(2, attempt) * 500);
+        await sleep(Math.pow(2, attempt) * 400);
         attempt++;
         continue;
       }
@@ -133,20 +126,16 @@ async function fetchWithRetry(url, opts) {
   }
 }
 
-// Normalise values for diff so trivial differences (whitespace, case in email,
-// null-vs-empty-string, tag order) don't produce spurious updates.
 function normaliseForDiff(v, col) {
   if (v === undefined || v === null || v === '') return null;
   if (col === 'email' && typeof v === 'string') return v.trim().toLowerCase();
   if (col === 'tags' && Array.isArray(v)) {
     return v.map(function (x) { return typeof x === 'object' ? (x.name || '') : x; })
-            .filter(Boolean)
-            .sort();
+            .filter(Boolean).sort();
   }
   if (typeof v === 'string') return v.trim();
   return v;
 }
-
 function tagsEqual(a, b) {
   const na = normaliseForDiff(a, 'tags') || [];
   const nb = normaliseForDiff(b, 'tags') || [];
@@ -155,7 +144,6 @@ function tagsEqual(a, b) {
   return true;
 }
 
-// Convert one Airtable record to the subset of Supabase columns it owns.
 function airtableToSupabasePayload(rec) {
   const f = rec.fields || {};
   const out = {};
@@ -186,20 +174,15 @@ function airtableToSupabasePayload(rec) {
   return out;
 }
 
-// Convert one Supabase row to Airtable fields when CREATING a new Airtable record.
 function supabaseToAirtableFields(row) {
   const out = {};
   Object.keys(SB_TO_AT_FOR_NEW).forEach(function (sbCol) {
     const atField = SB_TO_AT_FOR_NEW[sbCol];
     let v = row[sbCol];
     if (v === undefined || v === null || v === '') return;
-    if (sbCol === 'contact_type') {
-      out[atField] = CONTACT_TYPE_SB_TO_AT[v] || null;
-    } else if (sbCol === 'vip') {
-      out[atField] = !!v;
-    } else {
-      out[atField] = v;
-    }
+    if (sbCol === 'contact_type') out[atField] = CONTACT_TYPE_SB_TO_AT[v] || null;
+    else if (sbCol === 'vip') out[atField] = !!v;
+    else out[atField] = v;
   });
   if (row.needs_follow_up !== undefined && row.needs_follow_up !== null) {
     out['Needs Follow Up'] = row.needs_follow_up ? 'Yes' : 'No';
@@ -207,7 +190,6 @@ function supabaseToAirtableFields(row) {
   return out;
 }
 
-// Compute the patch to send to Supabase: only "Airtable-wins" cols that differ.
 function computeSupabasePatch(airtableDesired, supabaseRow) {
   const patch = {};
   Object.keys(AT_TO_SB).forEach(function (atField) {
@@ -228,7 +210,6 @@ function envSupabase() {
   return { url: url, key: key };
 }
 
-// Run a function over a list with bounded concurrency.
 async function pMapBounded(items, limit, fn) {
   const results = new Array(items.length);
   let cursor = 0;
@@ -246,81 +227,18 @@ async function pMapBounded(items, limit, fn) {
   return results;
 }
 
-// ── Airtable & Supabase IO ───────────────────────────────────────────────
-async function fetchAllAirtable(apiKey) {
-  const out = [];
-  let offset = null;
-  do {
-    const url = new URL('https://api.airtable.com/v0/' + AIRTABLE_BASE_ID + '/' + AIRTABLE_TABLE_ID);
-    url.searchParams.set('pageSize', String(AIRTABLE_PAGE_SIZE));
-    if (offset) url.searchParams.set('offset', offset);
-    const resp = await fetchWithRetry(url.toString(), {
-      headers: { 'Authorization': 'Bearer ' + apiKey }
-    });
-    if (!resp.ok) {
-      const t = await resp.text();
-      throw new Error('Airtable list failed: ' + resp.status + ' ' + t.slice(0, 200));
-    }
-    const data = await resp.json();
-    (data.records || []).forEach(function (r) { out.push(r); });
-    offset = data.offset || null;
-  } while (offset);
-  return out;
-}
-
-async function fetchAllSupabase(sbUrl, sbKey) {
-  const out = [];
-  let from = 0;
-  while (true) {
-    const to = from + SUPABASE_PAGE_SIZE - 1;
-    const resp = await fetchWithRetry(sbUrl + '/rest/v1/contacts?select=*', {
-      headers: {
-        'apikey': sbKey,
-        'Authorization': 'Bearer ' + sbKey,
-        'Range': from + '-' + to,
-        'Prefer': 'count=exact'
-      }
-    });
-    if (!resp.ok && resp.status !== 206) {
-      const t = await resp.text();
-      throw new Error('Supabase list failed: ' + resp.status + ' ' + t.slice(0, 200));
-    }
-    const rows = await resp.json();
-    rows.forEach(function (r) { out.push(r); });
-    const cr = resp.headers.get('content-range') || '';
-    const total = parseInt((cr.split('/')[1] || '0'), 10);
-    if (rows.length === 0 || from + rows.length >= total) break;
-    from += rows.length;
+// ── Airtable IO ──────────────────────────────────────────────────────────
+async function fetchAirtablePage(apiKey, offset) {
+  const url = new URL('https://api.airtable.com/v0/' + AIRTABLE_BASE_ID + '/' + AIRTABLE_TABLE_ID);
+  url.searchParams.set('pageSize', String(AIRTABLE_PAGE_SIZE));
+  if (offset) url.searchParams.set('offset', offset);
+  const resp = await fetchWithRetry(url.toString(), { headers: { 'Authorization': 'Bearer ' + apiKey } });
+  if (!resp.ok) {
+    const t = await resp.text();
+    throw new Error('Airtable list failed: ' + resp.status + ' ' + t.slice(0, 200));
   }
-  return out;
-}
-
-async function patchSupabaseRow(sbUrl, sbKey, id, patch) {
-  const resp = await fetchWithRetry(sbUrl + '/rest/v1/contacts?id=eq.' + encodeURIComponent(id), {
-    method: 'PATCH',
-    headers: {
-      'apikey': sbKey,
-      'Authorization': 'Bearer ' + sbKey,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
-    },
-    body: JSON.stringify(patch)
-  });
-  if (!resp.ok) throw new Error('PATCH supabase ' + resp.status + ' ' + (await resp.text()).slice(0, 200));
-}
-
-async function insertSupabaseRow(sbUrl, sbKey, row) {
-  const resp = await fetchWithRetry(sbUrl + '/rest/v1/contacts', {
-    method: 'POST',
-    headers: {
-      'apikey': sbKey,
-      'Authorization': 'Bearer ' + sbKey,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
-    },
-    body: JSON.stringify(row)
-  });
-  if (!resp.ok) throw new Error('INSERT supabase ' + resp.status + ' ' + (await resp.text()).slice(0, 200));
+  const data = await resp.json();
+  return { records: data.records || [], offset: data.offset || null };
 }
 
 async function createAirtableRecord(apiKey, fields) {
@@ -337,31 +255,78 @@ async function createAirtableRecord(apiKey, fields) {
   return data.id;
 }
 
-// ── Lock / sync_runs IO ──────────────────────────────────────────────────
+// ── Supabase IO ──────────────────────────────────────────────────────────
+async function supabaseRowsByAirtableIds(sbUrl, sbKey, airtableIds) {
+  if (!airtableIds.length) return [];
+  // Postgrest IN syntax: airtable_id=in.(id1,id2,...). Quote each value.
+  const inList = airtableIds.map(function (id) { return '"' + id + '"'; }).join(',');
+  const url = sbUrl + '/rest/v1/contacts?select=*&airtable_id=in.(' + encodeURIComponent(inList) + ')';
+  const resp = await fetchWithRetry(url, {
+    headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey }
+  });
+  if (!resp.ok) throw new Error('Supabase IN query failed: ' + resp.status + ' ' + (await resp.text()).slice(0, 200));
+  return resp.json();
+}
+
+async function patchSupabaseRow(sbUrl, sbKey, id, patch) {
+  const resp = await fetchWithRetry(sbUrl + '/rest/v1/contacts?id=eq.' + encodeURIComponent(id), {
+    method: 'PATCH',
+    headers: {
+      'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey,
+      'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(patch)
+  });
+  if (!resp.ok) throw new Error('PATCH supabase ' + resp.status + ' ' + (await resp.text()).slice(0, 200));
+}
+
+async function insertSupabaseRow(sbUrl, sbKey, row) {
+  const resp = await fetchWithRetry(sbUrl + '/rest/v1/contacts', {
+    method: 'POST',
+    headers: {
+      'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey,
+      'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(row)
+  });
+  if (!resp.ok) throw new Error('INSERT supabase ' + resp.status + ' ' + (await resp.text()).slice(0, 200));
+}
+
+async function supabaseCount(sbUrl, sbKey, query) {
+  const resp = await fetchWithRetry(sbUrl + '/rest/v1/contacts?select=id&limit=1' + (query ? '&' + query : ''), {
+    headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey, 'Prefer': 'count=exact', 'Range': '0-0' }
+  });
+  if (!resp.ok && resp.status !== 206) return 0;
+  const cr = resp.headers.get('content-range') || '';
+  return parseInt((cr.split('/')[1] || '0'), 10) || 0;
+}
+
+async function supabasePage(sbUrl, sbKey, query, from, size) {
+  const to = from + size - 1;
+  const resp = await fetchWithRetry(sbUrl + '/rest/v1/contacts?select=*' + (query ? '&' + query : ''), {
+    headers: {
+      'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey,
+      'Range': from + '-' + to
+    }
+  });
+  if (!resp.ok && resp.status !== 206) throw new Error('Supabase page failed: ' + resp.status);
+  return resp.json();
+}
+
+// ── sync_runs IO ─────────────────────────────────────────────────────────
 async function tryAcquireLock(sbUrl, sbKey, trigger, triggeredBy) {
-  // First, break any stale lock older than STALE_LOCK_SECONDS.
+  // Auto-break stale locks
   const cutoff = new Date(Date.now() - STALE_LOCK_SECONDS * 1000).toISOString();
   await fetch(sbUrl + '/rest/v1/sync_runs?status=eq.running&started_at=lt.' + encodeURIComponent(cutoff), {
     method: 'PATCH',
-    headers: {
-      'apikey': sbKey,
-      'Authorization': 'Bearer ' + sbKey,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
-    },
+    headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
     body: JSON.stringify({ status: 'error', finished_at: new Date().toISOString(), notes: 'stale lock auto-broken' })
   });
-
-  // Attempt to insert a fresh running row. Unique partial index enforces single-flight.
+  // Insert fresh running row
   const insertResp = await fetch(sbUrl + '/rest/v1/sync_runs', {
     method: 'POST',
-    headers: {
-      'apikey': sbKey,
-      'Authorization': 'Bearer ' + sbKey,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    },
-    body: JSON.stringify({ trigger: trigger, triggered_by: triggeredBy, status: 'running' })
+    headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+    body: JSON.stringify({ trigger: trigger, triggered_by: triggeredBy, status: 'running', phase: 'pulling' })
   });
   if (insertResp.status === 409) return { acquired: false, reason: 'A sync is already running.' };
   if (!insertResp.ok) {
@@ -372,22 +337,194 @@ async function tryAcquireLock(sbUrl, sbKey, trigger, triggeredBy) {
   return { acquired: true, run: rows[0] };
 }
 
+async function getRun(sbUrl, sbKey, runId) {
+  const resp = await fetch(sbUrl + '/rest/v1/sync_runs?id=eq.' + encodeURIComponent(runId) + '&select=*', {
+    headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey }
+  });
+  if (!resp.ok) return null;
+  const rows = await resp.json();
+  return rows[0] || null;
+}
+
 async function updateRun(sbUrl, sbKey, runId, patch) {
   await fetch(sbUrl + '/rest/v1/sync_runs?id=eq.' + encodeURIComponent(runId), {
     method: 'PATCH',
-    headers: {
-      'apikey': sbKey,
-      'Authorization': 'Bearer ' + sbKey,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
-    },
+    headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
     body: JSON.stringify(patch)
   });
 }
 
+// ── Phase: pulling ───────────────────────────────────────────────────────
+// Pull ≤AIRTABLE_PAGES_PER_CHUNK pages from Airtable starting at run.airtable_offset,
+// query Supabase for matching airtable_ids, diff + write inserts/updates.
+async function runPullChunk(run, sb, apiKey, requestId) {
+  let offset = run.airtable_offset === 'DONE' ? null : run.airtable_offset;
+  const startedFromBeginning = !offset && (!run.airtable_seen_ids || run.airtable_seen_ids.length === 0);
+  const recsThisChunk = [];
+  let pulled = 0;
+  let endOfTable = false;
+
+  // 1) Pull a few pages
+  for (let p = 0; p < AIRTABLE_PAGES_PER_CHUNK; p++) {
+    const page = await fetchAirtablePage(apiKey, offset);
+    page.records.forEach(function (r) { recsThisChunk.push(r); });
+    pulled += page.records.length;
+    offset = page.offset;
+    if (!offset) { endOfTable = true; break; }
+  }
+
+  // 2) Fetch matching Supabase rows by airtable_id
+  const ids = recsThisChunk.map(function (r) { return r.id; });
+  const matches = await supabaseRowsByAirtableIds(sb.url, sb.key, ids);
+  const sbByAtId = new Map();
+  matches.forEach(function (row) { if (row.airtable_id) sbByAtId.set(row.airtable_id, row); });
+
+  // 3) Classify
+  const inserts = [];
+  const updates = [];
+  recsThisChunk.forEach(function (rec) {
+    const desired = airtableToSupabasePayload(rec);
+    const existing = sbByAtId.get(rec.id);
+    if (!existing) {
+      const newRow = Object.assign({}, desired, { airtable_id: rec.id });
+      if (newRow.status == null) newRow.status = 'active';
+      inserts.push({ row: newRow, recId: rec.id });
+    } else {
+      const patch = computeSupabasePatch(desired, existing);
+      if (Object.keys(patch).length > 0) {
+        updates.push({ id: existing.id, recId: rec.id, patch: patch });
+      }
+    }
+  });
+
+  // 4) Apply writes (parallel, bounded)
+  let chunkInserted = 0, chunkUpdated = 0, chunkFailed = 0;
+  const chunkErrors = [];
+
+  await pMapBounded(inserts, MAX_PARALLEL, async function (job) {
+    try { await insertSupabaseRow(sb.url, sb.key, job.row); chunkInserted++; }
+    catch (e) { chunkFailed++; chunkErrors.push({ type: 'insert_supabase', recordId: job.recId, error: (e && e.message || String(e)).slice(0, 300) }); }
+  });
+  await pMapBounded(updates, MAX_PARALLEL, async function (job) {
+    try { await patchSupabaseRow(sb.url, sb.key, job.id, job.patch); chunkUpdated++; }
+    catch (e) { chunkFailed++; chunkErrors.push({ type: 'update_supabase', recordId: job.recId, error: (e && e.message || String(e)).slice(0, 300) }); }
+  });
+
+  // 5) Update run state — append to seen_ids and counters
+  const newSeenIds = (run.airtable_seen_ids || []).concat(ids);
+  const newPhase = endOfTable ? 'archiving' : 'pulling';
+  const cumulativeInserted = (run.inserted || 0) + chunkInserted;
+  const cumulativeUpdated  = (run.updated  || 0) + chunkUpdated;
+  const cumulativeFailed   = (run.failed   || 0) + chunkFailed;
+  const newErrorLog = (run.error_log || []).concat(chunkErrors).slice(0, 200);
+
+  const patch = {
+    phase: newPhase,
+    airtable_offset: endOfTable ? 'DONE' : offset,
+    airtable_seen_ids: newSeenIds,
+    airtable_total: newSeenIds.length,
+    inserted: cumulativeInserted,
+    updated: cumulativeUpdated,
+    failed: cumulativeFailed,
+    error_log: newErrorLog,
+    archive_offset: 0,
+    push_offset: 0
+  };
+  if (startedFromBeginning) patch.supabase_total = await supabaseCount(sb.url, sb.key, '');
+  await updateRun(sb.url, sb.key, run.id, patch);
+
+  console.log('[sync ' + requestId + '] pull chunk: pulled=' + pulled + ' ins=' + chunkInserted + ' upd=' + chunkUpdated + ' fail=' + chunkFailed + ' nextPhase=' + newPhase);
+
+  return {
+    phase: newPhase,
+    pulled_this_chunk: pulled,
+    chunk_inserted: chunkInserted,
+    chunk_updated: chunkUpdated,
+    chunk_failed: chunkFailed
+  };
+}
+
+// ── Phase: archiving ─────────────────────────────────────────────────────
+// Page through Supabase rows that have an airtable_id, soft-archive any whose
+// id is NOT in airtable_seen_ids and are not already archived.
+async function runArchiveChunk(run, sb, requestId) {
+  const seenSet = new Set(run.airtable_seen_ids || []);
+  const from = run.archive_offset || 0;
+  const rows = await supabasePage(sb.url, sb.key, 'airtable_id=not.is.null&status=neq.archived&order=id.asc', from, ARCHIVE_BATCH_PER_CHUNK);
+  const toArchive = rows.filter(function (r) { return r.airtable_id && !seenSet.has(r.airtable_id); });
+
+  let chunkArchived = 0, chunkFailed = 0;
+  const chunkErrors = [];
+  await pMapBounded(toArchive, MAX_PARALLEL, async function (row) {
+    try { await patchSupabaseRow(sb.url, sb.key, row.id, { status: 'archived' }); chunkArchived++; }
+    catch (e) { chunkFailed++; chunkErrors.push({ type: 'archive_supabase', recordId: row.id, error: (e && e.message || String(e)).slice(0, 300) }); }
+  });
+
+  const advancedTo = from + rows.length;
+  const reachedEnd = rows.length < ARCHIVE_BATCH_PER_CHUNK;
+  const newPhase = reachedEnd ? 'pushing' : 'archiving';
+
+  await updateRun(sb.url, sb.key, run.id, {
+    phase: newPhase,
+    archive_offset: reachedEnd ? 0 : advancedTo,
+    archived: (run.archived || 0) + chunkArchived,
+    failed: (run.failed || 0) + chunkFailed,
+    error_log: (run.error_log || []).concat(chunkErrors).slice(0, 200)
+  });
+
+  console.log('[sync ' + requestId + '] archive chunk: scanned=' + rows.length + ' arch=' + chunkArchived + ' fail=' + chunkFailed + ' nextPhase=' + newPhase);
+  return { phase: newPhase, scanned: rows.length, chunk_archived: chunkArchived, chunk_failed: chunkFailed };
+}
+
+// ── Phase: pushing ───────────────────────────────────────────────────────
+// Page through Supabase rows with airtable_id IS NULL, push to Airtable, write
+// the new id back to Supabase.
+async function runPushChunk(run, sb, apiKey, requestId) {
+  const from = run.push_offset || 0;
+  const rows = await supabasePage(sb.url, sb.key, 'airtable_id=is.null&status=neq.archived&order=id.asc', from, PUSH_BATCH_PER_CHUNK);
+  const candidates = rows.filter(function (r) { return r.first_name || r.last_name || r.email; });
+
+  let chunkPushed = 0, chunkFailed = 0;
+  const chunkErrors = [];
+
+  // Limit Airtable concurrency more — Airtable rate limit is 5 req/sec/base.
+  await pMapBounded(candidates, 4, async function (row) {
+    try {
+      const newAtId = await createAirtableRecord(apiKey, supabaseToAirtableFields(row));
+      await patchSupabaseRow(sb.url, sb.key, row.id, { airtable_id: newAtId });
+      chunkPushed++;
+    } catch (e) {
+      chunkFailed++;
+      chunkErrors.push({ type: 'push_airtable', recordId: row.id, error: (e && e.message || String(e)).slice(0, 300) });
+    }
+  });
+
+  const advancedTo = from + rows.length;
+  const reachedEnd = rows.length < PUSH_BATCH_PER_CHUNK;
+  const newPhase = reachedEnd ? 'done' : 'pushing';
+
+  const patch = {
+    phase: newPhase,
+    push_offset: reachedEnd ? 0 : advancedTo,
+    pushed: (run.pushed || 0) + chunkPushed,
+    failed: (run.failed || 0) + chunkFailed,
+    error_log: (run.error_log || []).concat(chunkErrors).slice(0, 200)
+  };
+  if (reachedEnd) {
+    const totalAttempted = (run.inserted || 0) + (run.updated || 0) + (run.archived || 0) + (run.pushed || 0) + chunkPushed;
+    const totalFailed = (run.failed || 0) + chunkFailed;
+    patch.status = totalFailed === 0 ? 'success' : (totalFailed < totalAttempted + totalFailed ? 'partial' : 'error');
+    patch.finished_at = new Date().toISOString();
+    patch.notes = 'chunked run; airtable_seen=' + ((run.airtable_seen_ids || []).length);
+  }
+  await updateRun(sb.url, sb.key, run.id, patch);
+
+  console.log('[sync ' + requestId + '] push chunk: scanned=' + rows.length + ' push=' + chunkPushed + ' fail=' + chunkFailed + ' nextPhase=' + newPhase);
+  return { phase: newPhase, scanned: rows.length, chunk_pushed: chunkPushed, chunk_failed: chunkFailed, finalStatus: patch.status };
+}
+
 // ── Handler ──────────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
-  // Tight CORS — only the production domain
   res.setHeader('Access-Control-Allow-Origin', 'https://vsdr.vercel.app');
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -396,11 +533,9 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method not allowed' });
 
-  // Auth: cron uses CRON_SECRET; manual UI uses no secret but is locked to the
-  // app origin via CORS + the unique-running-lock prevents abuse.
   const trigger = (req.headers['x-sync-trigger'] || 'manual').toLowerCase();
-  const cronSecret = process.env.CRON_SECRET;
   if (trigger === 'scheduled') {
+    const cronSecret = process.env.CRON_SECRET;
     const auth = req.headers['authorization'] || '';
     if (!cronSecret || auth !== 'Bearer ' + cronSecret) {
       return res.status(401).json({ ok: false, error: 'Cron auth failed' });
@@ -414,152 +549,69 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ ok: false, requestId: requestId, error: 'Server env not configured (need SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEY and AIRTABLE_API_KEY)' });
   }
 
-  const triggeredBy = (req.headers['x-sync-actor'] || (trigger === 'scheduled' ? 'cron' : 'unknown')).toString().slice(0, 200);
-
-  // 1. Lock
-  const lock = await tryAcquireLock(sb.url, sb.key, trigger === 'scheduled' ? 'scheduled' : 'manual', triggeredBy);
-  if (!lock.acquired) {
-    return res.status(409).json({ ok: false, requestId: requestId, error: lock.reason });
-  }
-  const run = lock.run;
-  const startedAt = Date.now();
-  console.log('[sync-all ' + requestId + '] lock acquired, run=' + run.id);
-
-  const errorLog = [];
-  let inserted = 0, updated = 0, archived = 0, pushed = 0, failed = 0;
+  // Continue an existing run? Or start a new one?
+  const url = new URL(req.url, 'http://x');
+  const continueRunId = url.searchParams.get('run');
+  let run;
 
   try {
-    // 2 + 3. Pull both sides in parallel.
-    const [airtableRecs, supabaseRows] = await Promise.all([
-      fetchAllAirtable(apiKey),
-      fetchAllSupabase(sb.url, sb.key)
-    ]);
-    console.log('[sync-all ' + requestId + '] pulled airtable=' + airtableRecs.length + ' supabase=' + supabaseRows.length);
-
-    await updateRun(sb.url, sb.key, run.id, { airtable_total: airtableRecs.length, supabase_total: supabaseRows.length });
-
-    // Index Supabase by airtable_id (only rows that have one)
-    const sbByAirtableId = new Map();
-    const sbWithoutAirtable = [];
-    supabaseRows.forEach(function (r) {
-      if (r.airtable_id) sbByAirtableId.set(r.airtable_id, r);
-      else sbWithoutAirtable.push(r);
-    });
-    const airtableIdSet = new Set(airtableRecs.map(function (r) { return r.id; }));
-
-    // 4. Classify Airtable records → INSERT or UPDATE
-    const inserts = [];
-    const updates = [];
-    airtableRecs.forEach(function (rec) {
-      const desired = airtableToSupabasePayload(rec);
-      const existing = sbByAirtableId.get(rec.id);
-      if (!existing) {
-        const newRow = Object.assign({}, desired, { airtable_id: rec.id });
-        // Default a few VSDR-managed cols on insert
-        if (newRow.status == null) newRow.status = 'active';
-        inserts.push({ row: newRow, recId: rec.id });
-      } else {
-        const patch = computeSupabasePatch(desired, existing);
-        if (Object.keys(patch).length > 0) {
-          updates.push({ id: existing.id, recId: rec.id, patch: patch });
-        }
+    if (continueRunId) {
+      run = await getRun(sb.url, sb.key, continueRunId);
+      if (!run) return res.status(404).json({ ok: false, requestId: requestId, error: 'Run not found' });
+      if (run.status !== 'running') {
+        return res.status(200).json({ ok: run.status !== 'error', requestId: requestId, runId: run.id, ...summarise(run) });
       }
-    });
+    } else {
+      const triggeredBy = (req.headers['x-sync-actor'] || (trigger === 'scheduled' ? 'cron' : 'unknown')).toString().slice(0, 200);
+      const lock = await tryAcquireLock(sb.url, sb.key, trigger === 'scheduled' ? 'scheduled' : 'manual', triggeredBy);
+      if (!lock.acquired) return res.status(409).json({ ok: false, requestId: requestId, error: lock.reason });
+      run = lock.run;
+      console.log('[sync ' + requestId + '] new run ' + run.id + ' acquired');
+    }
 
-    // 5. Soft-archive Supabase rows whose airtable_id is gone from Airtable
-    const archives = [];
-    sbByAirtableId.forEach(function (row, atId) {
-      if (!airtableIdSet.has(atId) && row.status !== 'archived') {
-        archives.push({ id: row.id, atId: atId });
-      }
-    });
+    // Dispatch one chunk based on phase
+    let chunkResult;
+    if (run.phase === 'pulling')          chunkResult = await runPullChunk(run, sb, apiKey, requestId);
+    else if (run.phase === 'archiving')   chunkResult = await runArchiveChunk(run, sb, requestId);
+    else if (run.phase === 'pushing')     chunkResult = await runPushChunk(run, sb, apiKey, requestId);
+    else if (run.phase === 'done')        chunkResult = { phase: 'done' };
+    else throw new Error('Unknown phase: ' + run.phase);
 
-    // 6. Push Supabase rows that have no airtable_id up to Airtable
-    const pushesPlan = sbWithoutAirtable
-      .filter(function (r) { return r.first_name || r.last_name || r.email; }) // skip empty stubs
-      .map(function (r) { return { sbId: r.id, fields: supabaseToAirtableFields(r) }; });
-
-    console.log('[sync-all ' + requestId + '] plan: insert=' + inserts.length + ' update=' + updates.length + ' archive=' + archives.length + ' push=' + pushesPlan.length);
-
-    // 7a. Apply Supabase INSERTs (parallel)
-    const insertResults = await pMapBounded(inserts, MAX_PARALLEL, async function (job) {
-      try { await insertSupabaseRow(sb.url, sb.key, job.row); inserted++; return { ok: true }; }
-      catch (e) { failed++; errorLog.push({ type: 'insert_supabase', recordId: job.recId, error: e.message }); return { ok: false }; }
-    });
-
-    // 7b. Apply Supabase UPDATEs
-    await pMapBounded(updates, MAX_PARALLEL, async function (job) {
-      try { await patchSupabaseRow(sb.url, sb.key, job.id, job.patch); updated++; return { ok: true }; }
-      catch (e) { failed++; errorLog.push({ type: 'update_supabase', recordId: job.recId, error: e.message }); return { ok: false }; }
-    });
-
-    // 7c. Apply Supabase ARCHIVEs
-    await pMapBounded(archives, MAX_PARALLEL, async function (job) {
-      try {
-        await patchSupabaseRow(sb.url, sb.key, job.id, { status: 'archived' });
-        archived++;
-        return { ok: true };
-      }
-      catch (e) { failed++; errorLog.push({ type: 'archive_supabase', recordId: job.id, error: e.message }); return { ok: false }; }
-    });
-
-    // 7d. Apply Airtable PUSH (create + write back airtable_id)
-    await pMapBounded(pushesPlan, Math.min(MAX_PARALLEL, 5), async function (job) {
-      try {
-        const newAtId = await createAirtableRecord(apiKey, job.fields);
-        await patchSupabaseRow(sb.url, sb.key, job.sbId, { airtable_id: newAtId });
-        pushed++;
-        return { ok: true };
-      } catch (e) {
-        failed++;
-        errorLog.push({ type: 'push_airtable', recordId: job.sbId, error: e.message });
-        return { ok: false };
-      }
-    });
-
-    // 8. Finalize
-    const status = failed === 0 ? 'success' : (failed < (inserts.length + updates.length + archives.length + pushesPlan.length) ? 'partial' : 'error');
-    await updateRun(sb.url, sb.key, run.id, {
-      status: status,
-      finished_at: new Date().toISOString(),
-      inserted: inserted,
-      updated: updated,
-      archived: archived,
-      pushed: pushed,
-      failed: failed,
-      error_log: errorLog.slice(0, 200), // cap log size
-      notes: 'Airtable=' + airtableRecs.length + ' Supabase=' + supabaseRows.length + ' duration=' + (Date.now() - startedAt) + 'ms'
-    });
-
-    console.log('[sync-all ' + requestId + '] done status=' + status + ' inserted=' + inserted + ' updated=' + updated + ' archived=' + archived + ' pushed=' + pushed + ' failed=' + failed);
-
+    // Re-read for cumulative counts
+    const fresh = await getRun(sb.url, sb.key, run.id) || run;
     return res.status(200).json({
-      ok: status !== 'error',
+      ok: true,
       requestId: requestId,
       runId: run.id,
-      status: status,
-      airtable_total: airtableRecs.length,
-      supabase_total: supabaseRows.length,
-      inserted: inserted,
-      updated: updated,
-      archived: archived,
-      pushed: pushed,
-      failed: failed,
-      duration_ms: Date.now() - startedAt
+      ...summarise(fresh),
+      chunk: chunkResult
     });
   } catch (e) {
-    console.error('[sync-all ' + requestId + '] fatal:', e && e.message);
-    await updateRun(sb.url, sb.key, run.id, {
-      status: 'error',
-      finished_at: new Date().toISOString(),
-      inserted: inserted,
-      updated: updated,
-      archived: archived,
-      pushed: pushed,
-      failed: failed,
-      error_log: errorLog.concat([{ type: 'fatal', error: (e && e.message) || String(e) }]).slice(0, 200),
-      notes: 'fatal after ' + (Date.now() - startedAt) + 'ms'
-    });
-    return res.status(500).json({ ok: false, requestId: requestId, runId: run.id, error: (e && e.message) || 'Unknown error' });
+    console.error('[sync ' + requestId + '] fatal:', e && e.message);
+    if (run && run.id) {
+      await updateRun(sb.url, sb.key, run.id, {
+        status: 'error',
+        finished_at: new Date().toISOString(),
+        error_log: ((run && run.error_log) || []).concat([{ type: 'fatal', error: (e && e.message) || String(e) }]).slice(0, 200),
+        notes: 'fatal in ' + (run && run.phase ? run.phase : 'unknown') + ' phase'
+      });
+    }
+    return res.status(500).json({ ok: false, requestId: requestId, runId: run && run.id, error: (e && e.message) || 'Unknown error' });
   }
 };
+
+function summarise(run) {
+  return {
+    status: run.status,
+    phase: run.phase,
+    airtable_total: run.airtable_total || 0,
+    supabase_total: run.supabase_total || 0,
+    inserted: run.inserted || 0,
+    updated: run.updated || 0,
+    archived: run.archived || 0,
+    pushed: run.pushed || 0,
+    failed: run.failed || 0,
+    started_at: run.started_at,
+    finished_at: run.finished_at
+  };
+}
