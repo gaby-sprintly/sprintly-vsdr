@@ -126,7 +126,7 @@ module.exports = async function handler(req, res) {
   // ── Supabase update ──
   if (wantsSupabase) {
     const SUPABASE_URL = process.env.SUPABASE_URL || 'https://gxunrnyehltpbgdodkkm.supabase.co';
-    const SUPABASE_SECRET = process.env.SUPABASE_SECRET_KEY;
+    const SUPABASE_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
     if (!SUPABASE_SECRET) {
       console.error('[sync ' + requestId + '] missing SUPABASE_SECRET_KEY env');
       return res.status(500).json({ ok: false, requestId: requestId, error: 'Supabase secret not configured' });
