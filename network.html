@@ -737,6 +737,7 @@ a { text-decoration: none; color: inherit; }
 
 <script src="js/supabase-client.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/sync-client.js"></script>
 <script src="js/sidebar.js"></script>
 <script>initSidebar('network');</script>
 <script>
@@ -1233,52 +1234,38 @@ async function confirmEnrich() {
 }
 
 async function toggleVip(contactId, airtableId, makeVip, btnEl) {
-  // Immediate UI feedback
-  btnEl.disabled = true;
-  btnEl.style.opacity = '0.5';
+  var payload = { supabaseId: contactId, supabaseFields: { vip: makeVip } };
+  if (airtableId) { payload.airtableId = airtableId; payload.fields = { VIP: makeVip }; }
 
-  // Single server call: updates both Supabase and Airtable (bypasses RLS)
-  try {
-    var payload = {
-      supabaseId: contactId,
-      supabaseFields: { vip: makeVip }
-    };
-    if (airtableId) {
-      payload.airtableId = airtableId;
-      payload.fields = { VIP: makeVip };
-    }
+  var result = await withSyncButton(btnEl, function () { return syncContact(payload); });
 
-    var resp = await fetch('/api/airtable-sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    var result = await resp.json();
-    console.log('VIP toggle result:', JSON.stringify(result));
-
-    if (result.supabase && !result.supabase.ok) {
-      console.error('Supabase VIP failed:', result.supabase.error);
-    }
-  } catch (e) {
-    console.error('VIP toggle failed:', e);
+  if (result.ok) {
+    syncToast(makeVip ? 'Marked as VIP' : 'VIP removed', 'success');
+  } else if (result.partial) {
+    var which = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+    syncToast('Partial save — ' + which + ' did not update. ' + (result.errorMessage || ''), 'warning');
+  } else {
+    syncToast('VIP update failed: ' + (result.errorMessage || 'unknown error'), 'error');
+    console.error('[VIP toggle] requestId=' + result.requestId, result);
   }
 
-  // Refresh page data (VIP section, stats, cards)
   if (typeof window.initPage === 'function') window.initPage();
 }
 
 // ── Set Contact Type (Founder/Investor/Corporate) ──
 async function setContactType(contactId, airtableId, newType, btnEl) {
-  // Toggle: if already this type, clear it
   var isActive = btnEl.classList.contains('active');
   var typeValue = isActive ? 'other' : newType;
 
-  // UI: deactivate all type buttons in this card, activate clicked one
+  // Snapshot current button states for rollback on failure
   var labels = btnEl.parentElement.querySelectorAll('.btn-label:not(.followup-btn)');
-  labels.forEach(function(b) { b.classList.remove('active'); });
+  var prevActive = [];
+  labels.forEach(function (b) { prevActive.push(b.classList.contains('active')); });
+
+  // Optimistic UI
+  labels.forEach(function (b) { b.classList.remove('active'); });
   if (!isActive) btnEl.classList.add('active');
 
-  // Airtable type mapping
   var airtableTypeMap = {
     'founder': 'Founder',
     'investor': 'Investor - VC',
@@ -1286,25 +1273,28 @@ async function setContactType(contactId, airtableId, newType, btnEl) {
     'other': null
   };
 
-  try {
-    var payload = {
-      supabaseId: contactId,
-      supabaseFields: { contact_type: typeValue }
-    };
-    if (airtableId) {
-      payload.airtableId = airtableId;
-      payload.fields = { 'Contact Type': airtableTypeMap[typeValue] !== undefined ? airtableTypeMap[typeValue] : null };
-    }
-    await fetch('/api/airtable-sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch (e) {
-    console.error('Set type failed:', e);
+  var payload = { supabaseId: contactId, supabaseFields: { contact_type: typeValue } };
+  if (airtableId) {
+    payload.airtableId = airtableId;
+    payload.fields = { 'Contact Type': airtableTypeMap[typeValue] !== undefined ? airtableTypeMap[typeValue] : null };
   }
 
-  // Refresh page data so filter tabs update
+  var result = await withSyncButton(btnEl, function () { return syncContact(payload); });
+
+  if (result.ok) {
+    syncToast(isActive ? 'Type cleared' : 'Type set to ' + newType, 'success');
+  } else {
+    // Roll back UI to snapshot
+    labels.forEach(function (b, i) { b.classList.toggle('active', prevActive[i]); });
+    if (result.partial) {
+      var which = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+      syncToast('Partial save — ' + which + ' did not update. Rolled back.', 'warning');
+    } else {
+      syncToast('Type change failed: ' + (result.errorMessage || 'unknown error'), 'error');
+    }
+    console.error('[setContactType] requestId=' + result.requestId, result);
+  }
+
   if (typeof window.initPage === 'function') window.initPage();
 }
 
@@ -1326,24 +1316,37 @@ async function toggleFollowUp(contactId, airtableId, makeFollowUp, btnEl) {
     document.getElementById('followUpStep2').style.display = 'none';
     document.getElementById('followUpModal').classList.add('open');
   } else {
-    // Clear follow-up directly (no modal needed)
+    // Clear follow-up directly (no modal). Optimistic UI with rollback on failure.
+    var wasActive = btnEl.classList.contains('active');
+    var prevTitle = btnEl.title;
     btnEl.classList.remove('active');
     btnEl.title = 'Flag for follow-up';
-    try {
-      var payload = {
-        supabaseId: contactId,
-        supabaseFields: { follow_up_date: null, follow_up_reason: null, needs_follow_up: false }
-      };
-      if (airtableId) {
-        payload.airtableId = airtableId;
-        payload.fields = { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': 'No' };
+
+    var payload = {
+      supabaseId: contactId,
+      supabaseFields: { follow_up_date: null, follow_up_reason: null, needs_follow_up: false }
+    };
+    if (airtableId) {
+      payload.airtableId = airtableId;
+      payload.fields = { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': 'No' };
+    }
+
+    var result = await withSyncButton(btnEl, function () { return syncContact(payload); });
+
+    if (result.ok) {
+      syncToast('Follow-up cleared', 'success');
+    } else {
+      // rollback
+      if (wasActive) btnEl.classList.add('active');
+      btnEl.title = prevTitle;
+      if (result.partial) {
+        var which = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+        syncToast('Partial save — ' + which + ' did not update. Rolled back.', 'warning');
+      } else {
+        syncToast('Follow-up clear failed: ' + (result.errorMessage || 'unknown error'), 'error');
       }
-      await fetch('/api/airtable-sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch (e) { console.error('Follow-up clear failed:', e); }
+      console.error('[follow-up clear] requestId=' + result.requestId, result);
+    }
     if (typeof window.initPage === 'function') window.initPage();
   }
 }
@@ -1361,33 +1364,40 @@ async function confirmFollowUpModal() {
   if (!followUpDate) { dateInput.focus(); return; }
   if (!followUpReason) { reasonInput.focus(); reasonInput.placeholder = 'Please enter a reason'; return; }
 
-  // Show success
-  document.getElementById('followUpStep1').style.display = 'none';
-  document.getElementById('followUpStep2').style.display = 'block';
-
   var s = _nwFollowUpState;
-  if (s.btnEl) { s.btnEl.classList.add('active'); s.btnEl.title = 'Remove follow-up'; }
+  var confirmBtn = document.querySelector('#followUpStep1 .btn-primary, #followUpStep1 button[onclick*="confirmFollowUpModal"]');
 
-  try {
-    var payload = {
-      supabaseId: s.contactId,
-      supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason, needs_follow_up: true }
-    };
-    if (s.airtableId) {
-      payload.airtableId = s.airtableId;
-      payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': 'Yes' };
+  var payload = {
+    supabaseId: s.contactId,
+    supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason, needs_follow_up: true }
+  };
+  if (s.airtableId) {
+    payload.airtableId = s.airtableId;
+    payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': 'Yes' };
+  }
+
+  var result = await withSyncButton(confirmBtn, function () { return syncContact(payload); });
+
+  if (result.ok) {
+    if (s.btnEl) { s.btnEl.classList.add('active'); s.btnEl.title = 'Remove follow-up'; }
+    document.getElementById('followUpStep1').style.display = 'none';
+    document.getElementById('followUpStep2').style.display = 'block';
+    syncToast('Follow-up saved', 'success');
+    setTimeout(function () {
+      closeFollowUpModal();
+      if (typeof window.initPage === 'function') window.initPage();
+    }, 1400);
+  } else {
+    if (result.partial) {
+      // Supabase saved but Airtable failed (or vice versa). Reflect on UI conservatively.
+      if (s.btnEl) { s.btnEl.classList.add('active'); s.btnEl.title = 'Remove follow-up'; }
+      var which = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+      syncToast('Partial save — ' + which + ' did not update.', 'warning');
+    } else {
+      syncToast('Follow-up save failed: ' + (result.errorMessage || 'unknown error'), 'error');
     }
-    await fetch('/api/airtable-sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch (e) { console.error('Follow-up save failed:', e); }
-
-  setTimeout(function() {
-    closeFollowUpModal();
-    if (typeof window.initPage === 'function') window.initPage();
-  }, 2000);
+    console.error('[follow-up save] requestId=' + result.requestId, result);
+  }
 }
 
 // Close follow-up modal on overlay click / Escape

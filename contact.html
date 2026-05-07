@@ -827,6 +827,7 @@ a { text-decoration: none; color: inherit; }
 
 <script src="js/supabase-client.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/sync-client.js"></script>
 <script src="js/sidebar.js"></script>
 <script>initSidebar('network');</script>
 <script>
@@ -1208,25 +1209,31 @@ async function toggleContactVip(btnEl) {
   if (!cd) return;
   var makeVip = !cd.vip;
 
-  // UI feedback
-  btnEl.disabled = true;
-  try {
-    await fetch('/api/airtable-sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        supabaseId: cd.id,
-        supabaseFields: { vip: makeVip },
-        airtableId: cd.airtable_id || undefined,
-        fields: cd.airtable_id ? { VIP: makeVip } : undefined
-      })
-    });
+  var payload = {
+    supabaseId: cd.id,
+    supabaseFields: { vip: makeVip }
+  };
+  if (cd.airtable_id) { payload.airtableId = cd.airtable_id; payload.fields = { VIP: makeVip }; }
+
+  var result = await withSyncButton(btnEl, function () { return syncContact(payload); });
+
+  if (result.ok) {
     cd.vip = makeVip;
     btnEl.innerHTML = (makeVip ? '&#9733;' : '&#9734;') + ' VIP';
-    if (makeVip) { btnEl.classList.add('vip-active'); }
-    else { btnEl.classList.remove('vip-active'); }
-  } catch (e) { console.error('VIP toggle failed:', e); }
-  btnEl.disabled = false;
+    btnEl.classList.toggle('vip-active', makeVip);
+    syncToast(makeVip ? 'Marked as VIP' : 'VIP removed', 'success');
+  } else if (result.partial) {
+    var which = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+    syncToast('Partial save — ' + which + ' did not update.', 'warning');
+    if (result.supabase && result.supabase.ok) {
+      cd.vip = makeVip;
+      btnEl.innerHTML = (makeVip ? '&#9733;' : '&#9734;') + ' VIP';
+      btnEl.classList.toggle('vip-active', makeVip);
+    }
+  } else {
+    syncToast('VIP update failed: ' + (result.errorMessage || 'unknown error'), 'error');
+    console.error('[contact VIP] requestId=' + result.requestId, result);
+  }
 }
 
 // ── Toggle Follow-Up from contact detail ──
@@ -1236,26 +1243,31 @@ async function toggleContactFollowUp(btnEl) {
   var hasFollowUp = !!cd.follow_up_date;
 
   if (hasFollowUp) {
-    // Deactivate: clear follow-up directly
-    btnEl.disabled = true;
-    try {
-      await fetch('/api/airtable-sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          supabaseId: cd.id,
-          supabaseFields: { follow_up_date: null, follow_up_reason: null, needs_follow_up: false },
-          airtableId: cd.airtable_id || undefined,
-          fields: cd.airtable_id ? { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': 'No' } : undefined
-        })
-      });
+    var payload = {
+      supabaseId: cd.id,
+      supabaseFields: { follow_up_date: null, follow_up_reason: null, needs_follow_up: false }
+    };
+    if (cd.airtable_id) {
+      payload.airtableId = cd.airtable_id;
+      payload.fields = { 'Follow-Up Date': null, 'Follow-up reason': null, 'Needs Follow Up': 'No' };
+    }
+
+    var result = await withSyncButton(btnEl, function () { return syncContact(payload); });
+
+    if (result.ok) {
       cd.follow_up_date = null;
       cd.follow_up_reason = null;
       btnEl.innerHTML = '🔔 Follow Up';
       btnEl.classList.remove('action-btn-amber', 'followup-active');
       btnEl.classList.add('action-btn-neutral');
-    } catch (e) { console.error('Follow-up clear failed:', e); }
-    btnEl.disabled = false;
+      syncToast('Follow-up cleared', 'success');
+    } else if (result.partial) {
+      var whichFu = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+      syncToast('Partial save — ' + whichFu + ' did not update.', 'warning');
+    } else {
+      syncToast('Follow-up clear failed: ' + (result.errorMessage || 'unknown error'), 'error');
+      console.error('[contact follow-up clear] requestId=' + result.requestId, result);
+    }
   } else {
     // Activate: open the follow-up modal with date picker + reason
     window._followUpBtnRef = btnEl;
@@ -1282,36 +1294,44 @@ async function confirmFollowUp() {
   if (!followUpDate) { dateInput.focus(); return; }
   if (!followUpReason) { reasonInput.focus(); reasonInput.placeholder = 'Please enter a reason'; return; }
 
-  // Show success state immediately
   var modal = document.getElementById('followUpModal');
-  var step1 = modal.querySelector('#followUpStep1');
-  var success = modal.querySelector('.modal-success');
-  if (step1) step1.style.display = 'none';
-  if (success) success.style.display = 'block';
+  var confirmBtn = modal.querySelector('#followUpStep1 .btn-primary, #followUpStep1 button[onclick*="confirmFollowUp"]');
 
-  try {
-    await fetch('/api/airtable-sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        supabaseId: cd.id,
-        supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason, needs_follow_up: true },
-        airtableId: cd.airtable_id || undefined,
-        fields: cd.airtable_id ? { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': 'Yes' } : undefined
-      })
-    });
+  var payload = {
+    supabaseId: cd.id,
+    supabaseFields: { follow_up_date: followUpDate, follow_up_reason: followUpReason, needs_follow_up: true }
+  };
+  if (cd.airtable_id) {
+    payload.airtableId = cd.airtable_id;
+    payload.fields = { 'Follow-Up Date': followUpDate, 'Follow-up reason': followUpReason, 'Needs Follow Up': 'Yes' };
+  }
+
+  var result = await withSyncButton(confirmBtn, function () { return syncContact(payload); });
+
+  if (result.ok) {
     cd.follow_up_date = followUpDate;
     cd.follow_up_reason = followUpReason;
-    // Update the button
     var btnEl = window._followUpBtnRef;
     if (btnEl) {
       btnEl.innerHTML = '🔔 Needs Follow-Up';
       btnEl.classList.remove('action-btn-neutral');
       btnEl.classList.add('action-btn-amber', 'followup-active');
     }
-  } catch (e) { console.error('Follow-up save failed:', e); }
-
-  setTimeout(function() { closeModal('followUpModal'); }, 2000);
+    var step1 = modal.querySelector('#followUpStep1');
+    var success = modal.querySelector('.modal-success');
+    if (step1) step1.style.display = 'none';
+    if (success) success.style.display = 'block';
+    syncToast('Follow-up saved', 'success');
+    setTimeout(function () { closeModal('followUpModal'); }, 1400);
+  } else {
+    if (result.partial) {
+      var whichSv = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+      syncToast('Partial save — ' + whichSv + ' did not update.', 'warning');
+    } else {
+      syncToast('Follow-up save failed: ' + (result.errorMessage || 'unknown error'), 'error');
+    }
+    console.error('[contact follow-up save] requestId=' + result.requestId, result);
+  }
 }
 
 // ── Set Contact Type from contact detail ──
@@ -1323,8 +1343,13 @@ async function setContactTypeDetail(newType, btnEl) {
 
   var airtableTypeMap = { 'founder': 'Founder', 'investor': 'Investor - VC', 'corporate': 'Corporate', 'other': null };
 
-  // Deactivate all type buttons, activate clicked one
-  document.querySelectorAll('.type-btn').forEach(function(b) {
+  // Snapshot current state of all type buttons for rollback on failure
+  var allTypeBtns = document.querySelectorAll('.type-btn');
+  var snapshot = [];
+  allTypeBtns.forEach(function (b) { snapshot.push({ el: b, className: b.className }); });
+
+  // Optimistic UI
+  allTypeBtns.forEach(function (b) {
     b.classList.remove('type-active', 'action-btn-green', 'action-btn-teal', 'action-btn-amber');
     b.classList.add('action-btn-neutral');
   });
@@ -1336,21 +1361,28 @@ async function setContactTypeDetail(newType, btnEl) {
     else if (newType === 'corporate') btnEl.classList.add('action-btn-amber');
   }
 
-  btnEl.disabled = true;
-  try {
-    await fetch('/api/airtable-sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        supabaseId: cd.id,
-        supabaseFields: { contact_type: typeValue },
-        airtableId: cd.airtable_id || undefined,
-        fields: cd.airtable_id ? { 'Contact Type': airtableTypeMap[typeValue] !== undefined ? airtableTypeMap[typeValue] : null } : undefined
-      })
-    });
+  var payload = { supabaseId: cd.id, supabaseFields: { contact_type: typeValue } };
+  if (cd.airtable_id) {
+    payload.airtableId = cd.airtable_id;
+    payload.fields = { 'Contact Type': airtableTypeMap[typeValue] !== undefined ? airtableTypeMap[typeValue] : null };
+  }
+
+  var result = await withSyncButton(btnEl, function () { return syncContact(payload); });
+
+  if (result.ok) {
     cd.contact_type = typeValue;
-  } catch (e) { console.error('Set type failed:', e); }
-  btnEl.disabled = false;
+    syncToast(isActive ? 'Type cleared' : 'Type set to ' + newType, 'success');
+  } else {
+    // Roll back UI to pre-click state
+    snapshot.forEach(function (s) { s.el.className = s.className; });
+    if (result.partial) {
+      var whichTy = result.supabase && result.supabase.ok ? 'Airtable' : 'Supabase';
+      syncToast('Partial save — ' + whichTy + ' did not update. Rolled back.', 'warning');
+    } else {
+      syncToast('Type change failed: ' + (result.errorMessage || 'unknown error'), 'error');
+    }
+    console.error('[contact setType] requestId=' + result.requestId, result);
+  }
 }
 
 async function confirmEnrichContact() {
